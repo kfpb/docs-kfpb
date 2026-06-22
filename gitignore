@@ -1,0 +1,9 @@
+*.cache
+*.jpg
+*.png
+*.jpeg
+*.zip
+*.pdf
+/udmasuk
+/smasuk
+config/koneksi.php

@@ -1,0 +1,71 @@
+<div class="navbar navbar-inner block-header">
+	<div class="muted pull-left">Registrasi Rencana Tindakan Penyimpangan ALL</div>
+</div>
+<?php echo"<a href='home2.php?pages=ncinter4' class='btn btn-suncess'>Export XLS</a>" ?>
+<div class="block-content collapse in">
+
+	<table cellpadding="2" cellspacing="2" border="2" id="Tb14">
+	<thead>
+		<tr><th width=1%>Urut</th>
+			<th width=10%>No.nc</th>
+			<th>Rencana Tindakan</th>
+			<th width=8%>Batas Waktu</th>
+			<th width=8%>Penanggung jawab</th>
+			<th>Hasil Verifikasi</th>
+			<th width=8%>Tgl Verif/ Selesai</th>
+			<th width=8%>Batas Waktu (ke-2 & 3)</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+
+					
+		$dsp = mysql_query("SELECT a.*,b.cNama, b.cJabatan FROM cdis a LEFT JOIN users b ON a.pid=b.cId  ORDER BY a.psacc DESC");
+		
+		while($s = mysql_fetch_array($dsp)) {
+			$p = mysql_fetch_array (mysql_query("SELECT * FROM ncinter WHERE ncid='$s[ncid]'"));
+			$sft = Array("A"=>"Rutin","B"=>"Cito","C"=>"Super Cito");
+			$bdg = Array("A"=>"suncess","B"=>"warning","C"=>"important");
+			$sifat = "<span class='label label-".$bdg[$s[dSifat]]."'>".$sft[$s[pSifat]]."</span>";
+			$tglS=$s[ptgls];
+			if ($s[ptgls]=="0000-00-00"){
+				$tglS="-";
+			}
+			
+			if ($s[psacc]=='N'){
+				$st = "<strong>Blm Selesai</strong>";
+			}else{
+				$st = "Selesai";
+			}
+		
+			if ($s[psTglselesai]=="0000-00-00"){
+				echo "<tr class=suncess>";
+			}else{
+				echo "<tr>";
+			}
+			$pds = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId=$s[cId]"));
+			
+			echo	"<td>$s[urut]</td>
+					<td><font size=1><a target=_blank href=home.php?pages=ncinter&act=detail&id=$p[ncid]>$p[ncnmr]</a></font></td>
+					<td>$s[pInstruksi]</td>
+					<td>";echo tgl_indo1($s[ptgls]);echo"</td>
+					<td>$pds[cJabatan]</td>
+					<td>$s[info]</td>
+					<td>";echo tgl_indo($s[psTglselesai]);echo"</td>
+					<td>BW2 = ";echo tgl_indo2($s[ptgls2]);echo"<br>
+					BW3 = ";echo tgl_indo2 ($s[ptgls3]);echo"</td>
+					<td>$st</td>";
+					
+					
+
+	
+		}
+	?>
+	</tbody>
+	</table>
+	<br><br>
+	
+
+</div>
+

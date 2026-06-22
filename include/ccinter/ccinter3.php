@@ -1,0 +1,212 @@
+<?php
+if($_GET[act]=="print"){
+?>
+<script type="text/javascript">
+window.print() 
+</script>
+
+<style type="text/css">
+#print {
+	margin:auto;
+	border:1px solid #2A9FAA;
+	text-align:left;
+	font-family:"Courier New", Courier, monospace;
+	width:1200px;
+	font-size:14px;
+}
+#print .title {
+	margin:auto;
+	text-align:right;
+	font-family:"Courier New", Courier, monospace;
+	font-size:14px;
+}
+#print span {
+	text-align:left;
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;	
+	font-size:14px;
+}
+#print table {
+	border-collapse:collapse;
+	width:95%;
+	margin:20px;
+}
+#print .table1 {
+	border-collapse:collapse;
+	width:100%;
+	text-align:left;
+}
+#print .table2 {
+	margin:20px;
+	border-collapse:collapse;;
+	width:auto;
+}
+#print table hr {
+	border:1px dashed #A0A0A4;	
+}
+#print .ttd {
+	margin-right:500px;
+}
+#print table th {
+	background:#A0A0A4;
+	color:#000;
+	font-family:Verdana, Geneva, sans-serif;
+	font-size:14px;
+	font:normal;
+	text-transform:uppercase;
+	height:30px;
+}
+
+#print table tr {
+	font-family:Verdana, Geneva, sans-serif;
+	font-size:14px
+}
+
+#print .grand {
+	width:700px;
+	padding:10px;
+	text-align:left;	
+}
+#print .grand table {
+	margin-left:-90px;	
+}
+#logo{
+	width:111px;
+	height:90px;
+	padding-top:10px;	
+	margin-left:10px;
+}
+</style>
+
+<title>E-KFPB Kimia Farma Plant Banjaran</title>
+<?php
+
+	$tanggal = tgl_indo(date("Y-m-d"));
+	$jam     = date("H:i:s");
+	$hari_ini = $seminggu[$hari];
+	$tglm = $_POST[tglm];
+	$tgls = $_POST[tgls];
+	
+?>
+	<div id="print">
+	
+			<p align=right><img src='http://ekfpb.com/bnj/include/ccinter/logo.png'>
+			<br>
+				
+<?
+$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM ccinter a,users b WHERE a.ccpengirim1=b.cId AND a.ccid='$_GET[id]'"));
+	$ef = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM ccinter a,users b WHERE a.ccpengirim=b.cId AND a.ccid='$_GET[id]'"));
+	$efg = mysql_fetch_array(mysql_query("SELECT nama_jcc FROM jeniscc WHERE kode_jcc='$ef[jeniscc]'"));
+	$efgh = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM ccinter a,users b WHERE a.ccpengirim2=b.cId AND a.ccid='$_GET[id]'"));
+
+
+	
+?>
+<center><h3><font face=arial>Formulir Verifikasi Tindak Lanjut Perubahan</font></h3></center>
+
+	<table width="100%">
+	 <tr><td>Pengendalian Perubahan No:</td><td><?=$e[ccnmr1];?></td></tr>
+    <tr><td width=400>Nama Prod/Bhn/Alat/Ruangan/Prosedur*:</td><td><?=$e[ccperihal1];?></td></tr>
+    <tr><td width=400>No.Kode Sediaan/Bhn/Alat/Ruangan/Prosedur*:</td><td><?=$e[ccperihal];?></td></tr>
+
+	</table>
+
+<?
+
+$e = mysql_fetch_array(mysql_query("SELECT a.*,b.*,c.cNama,c.cFoto,d.* FROM rtcc a 
+									LEFT JOIN cdis b ON a.ccid=b.ccid 
+									LEFT JOIN users c ON b.pid=c.cId 
+									LEFT JOIN ccinter d ON a.ccid=d.ccid
+									WHERE b.cId='$_SESSION[cv]' AND pdid=81 AND a.ccid=$_GET[id] OR b.cId='$_SESSION[cv]' AND pdid=99 AND a.ccid=$_GET[id]"));
+									
+$ed = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cNama='$e[cNama]'"));
+$edf = mysql_fetch_array(mysql_query("SELECT * FROM rtcc WHERE dPendisposisi='81' AND ccid='$_GET[id]' OR dPendisposisi='99' AND ccid='$_GET[id]'"));
+
+$qds = mysql_query("SELECT a.*,(SELECT cNama FROM users WHERE cId=$_SESSION[cv]) as dPdisposisi FROM rtcc a WHERE a.ccid='$_GET[id]'");
+$ds = mysql_fetch_array($qds);
+$jds = mysql_num_rows($qds);
+
+$pds0 = mysql_query("SELECT a.*,
+					(SELECT b.cNama FROM users b WHERE b.cId=a.pId) As oleh,
+					(SELECT b.cNama FROM users b WHERE b.cId=a.cId) As kepada, 
+					(SELECT b.cIdjab FROM users b WHERE b.cId=a.cId) As kepadajab 
+					FROM cdis a WHERE a.ccid='$_GET[id]' AND a.pId='81' OR a.ccid='$_GET[id]' AND a.pId='99' ORDER BY a.pdid DESC");
+
+$jds0 = mysql_num_rows($pds0);
+
+if ($jds0>0){ ?>
+
+
+<!-- isi disposisi-->
+
+<table class="table table-bordered" border=1 width="100%">
+<thead>
+    <td><b><center>No.Urut</center></b></td>
+	<td><b><center>Rencana Tindakan</center></b></td>
+    <td><b><center>PIC</b></center></td>
+	<td><b><center>Tgl. Batas Waktu</b></center></td> 
+	<td><b><center>Hasil Tindakan/ Verifikasi</b></center></td>
+    <td><b><center>Tgl Verifikasi</b></center></td>
+      
+</thead>
+<?php
+$pds = mysql_query("SELECT a.*,
+					(SELECT b.cNama FROM users b WHERE b.cId=a.pId) As oleh,
+					(SELECT b.cNama FROM users b WHERE b.cId=a.cId) As kepada, 
+					(SELECT b.cJabatan FROM users b WHERE b.cId=a.cId) As kepadajab 
+					FROM cdis a WHERE a.ccid='$_GET[id]' AND a.pId='55' OR a.ccid='$_GET[id]' AND a.pId='81' OR a.ccid='$_GET[id]' AND a.pId='99' ORDER BY a.urut ASC");
+//$pds = mysql_query("SELECT a.cUser, a.cNama, b.psACC, b.psTglbaca FROM users a LEFT JOIN cdis b ON b.cId=a.cId WHERE b.ccid='$_GET[id]'");
+
+while ($t=mysql_fetch_array($pds)){
+	$tglBaca = tgl_indo($t[psTglbaca]);
+	$tglSelesai = tgl_indo($t[psTglselesai]);
+	$tglSelesai2 = tgl_indo($t[psTglselesai2]);
+	$tglSelesai3 = tgl_indo($t[psTglselesai3]);
+	$tglDis = tgl_indo($t[ptgl]);
+	$tgltarget = tgl_indo($t[ptgls]);
+	$tgltarget2 = tgl_indo($t[ptgls2]);
+	$tgltarget3 = tgl_indo($t[ptgls3]);
+	if ($t[psTglbaca]=="0000-00-00"){
+		$tglBaca="<span class='label label-important'>Belum dilihat</span>";
+	}
+	if ($t[psTglselesai]=="0000-00-00"){
+		$tglSelesai="<span class='label label-important'>Belum selesai</span>";
+	}
+	if ($t[psACC]=="N"){
+		echo "<tr>
+		        <td width=20>$t[urut]</td>
+				<td width=300>$t[pInstruksi]</td>
+				<td width=100>PIC :<br>($t[kepadajab])</td>
+				<td width=100><b>Bts Waktu 1:</b><br> $tgltarget<br>
+				<b>Bts Waktu 2 :</b><br> $tgltarget2<br>
+				<b>Bts Waktu 3 :</b><br> $tgltarget3</td>
+				<td width=300><b>Hasil Tindakan User :</b> $t[info]
+				<br><b>Verif 1 :<br></b> $t[info1]
+				<br><b>Verif 2 (jika ada):<br></b> $t[info2]
+				<br><b>Verif 3 (jika ada):<br></b> $t[info3]</td>
+				<td width=100><b>Tgl Verif 1:<br></b> $tglSelesai<br><b>Tgl Verif 2:<br></b> $tglSelesai2<br><b>Tgl Verif 3:<br></b> $tglSelesai3</td>
+			 </tr>";
+	}else{
+		echo "<tr>
+		        <td width=20>$t[urut]</td>
+				<td width=300>$t[pInstruksi]</td>
+				<td width=100>PIC :<br>($t[kepadajab])</td>
+				<td width=100><b>Bts Waktu 1:</b><br> $tgltarget<br>
+				<b>Bts Waktu 2 :</b><br> $tgltarget2<br>
+				<b>Bts Waktu 3 :</b><br> $tgltarget3</td>
+                <td width=300><b>Hasil Tindakan User :</b> $t[info]
+				<br><b>Verif 1 :<br></b> $t[info1]
+				<br><b>Verif 2 (jika ada):<br></b> $t[info2]
+				<br><b>Verif 3 (jika ada):<br></b> $t[info3]</td>
+                <td width=100><b>Tgl Verif 1:<br></b> $tglSelesai<br><b>Tgl Verif 2:<br></b> $tglSelesai2<br><b>Tgl Verif 3:<br></b> $tglSelesai3</td>
+			 </tr>";
+	}
+}
+?>
+<? echo"</table>*Coret yang tidak perlu<br>**Bila belum selesai"; } ?>
+<br><br>
+
+
+</div>
+
+<?php	
+} ?>

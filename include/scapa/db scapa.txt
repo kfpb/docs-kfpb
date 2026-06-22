@@ -1,0 +1,136 @@
+CREATE TABLE IF NOT EXISTS `isurat` (
+  `iid` int(11) NOT NULL AUTO_INCREMENT,
+  `inmr` varchar(50) NOT NULL,
+  `itgl` date NOT NULL,
+  `ipengirim` varchar(100) NOT NULL,
+  `ikepada` int(11) NOT NULL,
+  `iperihal` varchar(100) NOT NULL,
+  `jenisms` varchar(3) NOT NULL,
+  `iket` text NOT NULL,
+  `ifile` varchar(100) NOT NULL,
+  `istatus` enum('Y','N') NOT NULL,
+  `itgl_baca` date NOT NULL,
+  `itgl_balas` date NOT NULL,
+  `inmr_bls` varchar(50) NOT NULL,
+  PRIMARY KEY (`iid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=201 ;
+
+CREATE TABLE IF NOT EXISTS `disposisi` (
+  `dId` int(11) NOT NULL AUTO_INCREMENT,
+  `dNoagenda` varchar(50) NOT NULL,
+  `dPendisposisi` int(11) NOT NULL,
+  `iid` int(11) NOT NULL,
+  `siid` int(11) NOT NULL,
+  `disfile` varchar(100) NOT NULL,
+  PRIMARY KEY (`dId`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `pdis` (
+  `pdid` int(11) NOT NULL AUTO_INCREMENT,
+  `ptgl` date NOT NULL,
+  `pNoagenda` varchar(50) NOT NULL,
+  `ptgls` date NOT NULL,
+  `pId` int(11) NOT NULL,
+  `cId` int(11) NOT NULL,
+  `pInstruksi` text NOT NULL,
+  `pSifat` enum('A','B','C') NOT NULL,
+  `psACC` enum('Y','N') NOT NULL,
+  `psTglbaca` date NOT NULL,
+  `psTglselesai` date NOT NULL,
+  `siid` int(11) NOT NULL,
+  `iid` int(11) NOT NULL,
+  `info` varchar(50) NOT NULL,
+  `kode` varchar(50) NOT NULL,
+  `jawab` enum('Y','N') NOT NULL,
+  `filedis` varchar(100) NOT NULL,
+  PRIMARY KEY (`pdid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+-------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `icapa` (
+  `icid` int(11) NOT NULL AUTO_INCREMENT, >iid
+  `icnmr` varchar(50) NOT NULL, >>inmr
+  `ictgl` date NOT NULL, >> itgl
+  `idari` int(11) NOT NULL,  >>ipengirim
+  `ickepada` int(11) NOT NULL, >ikepada
+  `icperihal` varchar(100) NOT NULL, >iperihal
+  `jeniscapa` varchar(3) NOT NULL, >>jenisms
+  `icket` text NOT NULL,  >>iket
+  `icfile` varchar(100) NOT NULL, > ifile
+  `icstatus` enum('Y','N') NOT NULL, > istatus
+  PRIMARY KEY (`icid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `ucapa` (
+  `dUd` int(11) NOT NULL AUTO_INCREMENT, >dId
+  `dNo` varchar(50) NOT NULL,  >dNoagenda
+  `dPembuat` int(11) NOT NULL, >dPendisposisi
+  `icid` int(11) NOT NULL, 
+  `sccid` int(11) NOT NULL,
+  `disfile` varchar(100) NOT NULL,
+  PRIMARY KEY (`dUd`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `pcapa` (
+  `pcid` int(11) NOT NULL AUTO_INCREMENT, > pdid
+  `pctgl` date NOT NULL,  > ptgl
+  `pNcapa` varchar(50) NOT NULL, >pNoagenda
+  `pctgls` date NOT NULL, > ptgls
+  `pId` int(11) NOT NULL, 
+  `cId` int(11) NOT NULL,
+  `pJudul` varchar(200) NOT NULL,
+  `pSyarat` varchar(200) NOT NULL,
+  `pKondisi` text NOT NULL, 
+  `pTujuan` text NOT NULL, > pInstruksi
+  `pRoot` text NOT NULL,
+  `pCa` text NOT NULL,
+  `pPa` text NOT NULL,
+  `pSifat` enum('A','B','C') NOT NULL,
+  `psACC` enum('Y','N') NOT NULL,
+  `psTglbaca` date NOT NULL,
+  `psTglselesai` date NOT NULL,
+  `vId` int(11) NOT NULL,
+  `psTglverifikasi` date NOT NULL,
+  `psTglpjg1` date NOT NULL,
+  `psTglpjg2` date NOT NULL,
+  `psTglpjg3` date NOT NULL,
+  `sccid` int(11) NOT NULL,
+  `icid` int(11) NOT NULL,
+  `jawabcapa` varchar(50) NOT NULL,
+  `kode` varchar(50) NOT NULL,
+  `jawab` enum('Y','N') NOT NULL,
+  `capafile` varchar(100) NOT NULL,
+  `jwbfile` varchar(100) NOT NULL,
+  PRIMARY KEY (`pcid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `jeniscapa` ( > jenisms
+  `id_jcp` int(11) NOT NULL AUTO_INCREMENT, > jms
+  `kode_jcp` varchar(10) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `nama_jcp` varchar(200) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  PRIMARY KEY (`id_jcp`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
+
+--
+-- Dumping data for table `jenisms`
+--
+
+	INSERT INTO `jeniscapa` (`id_jcp`, `kode_jcp`, `nama_jcp`) VALUES
+	(1, '1', 'SARAN/MASUKAN'),
+	(2, '2', 'INOVASI/IMPROVEMENT'),
+	(3, '3', 'TARGET MUTU'),
+	(4, '4', 'RAPAT TINJAUAN MANAJEMEN (RTM)'),
+	(5, '5', 'KEPUASAN PELANGGAN'),
+	(6, '6', 'CHANGE CONTROL'),
+	(7, '7', 'AUDIT INTERNAL'),
+	(8, '8', 'INSPEKSI HARIAN'),
+	(9, '9', 'AUDIT EKSTERNAL'),
+	(10, '10', 'PENGKAJIAN MUTU PRODUK (PMP)'),
+	(11, '11', 'KAJIAN RESIKO'),
+	(12, '12', 'PENYIMPANGAN'),
+	(13, '13', 'KELUHAN PELANGGAN'),
+	(14, '14', 'RENCANA INDUK VALIDASI (RIV)'),
+	(15, '15', 'LAIN-LAIN');

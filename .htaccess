@@ -1,0 +1,5 @@
+# Use PHP74 as default
+# AddHandler application/x-httpd-php56 .php
+# <IfModule mod_suphp.c>
+#     suPHP_ConfigPath /www/server/php/56/lib
+# </IfModule>
