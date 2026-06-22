@@ -791,9 +791,15 @@ $edit = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM dinter WHERE sui
     Nomor Jenis Dokumen : <?php echo isset($r['jenisdok']) ? $r['jenisdok'] : 'Data tidak tersedia'; ?>
 
     <?php
- if (file_exists($pdfFile)) {
+ if (file_exists($pdfFile) && $r['distatus'] != 'N') {
         ?>
         <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
+        <?php
+    } elseif ($r['distatus'] == 'N') {
+        ?>
+        <div class="alert alert-warning">
+            <b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak dapat dilihat.
+        </div>
         <?php
     } else {
         ?>

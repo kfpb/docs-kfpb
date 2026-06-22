@@ -81,8 +81,14 @@ $select2 = mysql_select_db($database2) or die("Database tidak bisa dibuka");
 //     $pdfFile = dirname(__DIR__ ) . "/$r[jenisdok]/$r[difile]";
 //  if (file_exists($pdfFile)) {
      ?>
+<?php if ($e['distatus'] != 'N') { ?>
          <!--<iframe src="dok/<?=$e[jenisdok];?>/<?=$e[difile];?>" width=100% height=500></iframe>-->
         <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
+<?php } else { ?>
+        <div class="alert alert-warning">
+            <b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.
+        </div>
+<?php } ?>
      
 <?
 

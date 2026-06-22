@@ -1205,15 +1205,21 @@ else
     <tr><td align=top><b>Informasi Distribusi :</b></td><td></td></tr><tr><td><?=$e[diket];?></td></tr>
 </table>
 
-    <?php if($e['difile']!=null){?>
+    <?php if($e['difile']!=null){
+        if ($e['distatus'] != 'N') { ?>
         <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
          PDF1 <?=$e[jenisdok];?> <?php echo $e['difile']; ?>
-        <?php
+        <?php } else { ?>
+        <div class="alert alert-warning"><b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.</div>
+        <?php }
     } else {
-        ?>
+        if ($r['distatus'] != 'N') { ?>
          <iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']?>/<?php echo $r['difile'] ?>" width=100% height=500></iframe>
-         PDF <?=$r[jenisdok];?> <?php echo $r['difile']; }
-    ?>
+         PDF <?=$r[jenisdok];?> <?php echo $r['difile']; ?>
+        <?php } else { ?>
+        <div class="alert alert-warning"><b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.</div>
+        <?php }
+    } ?>
  
 <br />
 <legend>Distribusi Ke :</legend>

@@ -511,8 +511,14 @@ else
         
     <tr><td align=top><b>Dokumen PDF :</b></td><td></td></tr>
 </table>
+<?php if ($e['distatus'] != 'N') { ?>
 <!--<iframe src="dok/web/viewer.html?file=index1.php?id=<? //echo $e[suid];?>" width=100% height=500></iframe>-->
 <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
+<?php } else { ?>
+<div class="alert alert-warning">
+    <b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.
+</div>
+<?php } ?>
 <br />
 <legend>Penerima Dokumen :</legend>
 <table class="table table-bordered table-striped" width=100%>

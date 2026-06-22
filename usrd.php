@@ -69,8 +69,14 @@ $get_dinter = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$_
 	?>
 	</td></tr>
 </table>
+<?php if ($r['distatus'] != 'N') { ?>
 <!--<iframe src="dok/web/viewer.html?file=index1.php?id=<?php //echo $r[suid];?>" width=100% height=500></iframe>-->
 <iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']?>/<?php echo $r['difile'] ?>" width=100% height=500></iframe>
+<?php } else { ?>
+<div class="alert alert-warning">
+    <b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.
+</div>
+<?php } ?>
 <?php /*<iframe src="dok/<?=$r[jenisdok];?>/<?=$r[difile];?>" width=100% height=500></iframe> 
 <br><br>
 <b>Informasikan hasil pemusnahan/pengembalian dokumen, hasil sosialisasi dokumen melalui tombol di bawah ini :</b><br>
