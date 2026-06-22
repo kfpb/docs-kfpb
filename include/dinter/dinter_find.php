@@ -515,8 +515,11 @@ else
 <!--<iframe src="dok/web/viewer.html?file=index1.php?id=<? //echo $e[suid];?>" width=100% height=500></iframe>-->
 <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
 <?php } else { ?>
-<div class="alert alert-warning">
-    <b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.
+<div class="card">
+<div class="card-body">
+    <h5 class="card-title">Perhatian</h5>
+    <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
+</div>
 </div>
 <?php } ?>
 <br />

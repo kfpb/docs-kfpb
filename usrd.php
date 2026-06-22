@@ -73,8 +73,11 @@ $get_dinter = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$_
 <!--<iframe src="dok/web/viewer.html?file=index1.php?id=<?php //echo $r[suid];?>" width=100% height=500></iframe>-->
 <iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']?>/<?php echo $r['difile'] ?>" width=100% height=500></iframe>
 <?php } else { ?>
-<div class="alert alert-warning">
-    <b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.
+<div class="card">
+<div class="card-body">
+    <h5 class="card-title">Perhatian</h5>
+    <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
+</div>
 </div>
 <?php } ?>
 <?php /*<iframe src="dok/<?=$r[jenisdok];?>/<?=$r[difile];?>" width=100% height=500></iframe> 

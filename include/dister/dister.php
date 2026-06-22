@@ -1210,14 +1210,24 @@ else
         <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
          PDF1 <?=$e[jenisdok];?> <?php echo $e['difile']; ?>
         <?php } else { ?>
-        <div class="alert alert-warning"><b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.</div>
+        <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Perhatian</h5>
+            <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
+        </div>
+        </div>
         <?php }
     } else {
         if ($r['distatus'] != 'N') { ?>
          <iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']?>/<?php echo $r['difile'] ?>" width=100% height=500></iframe>
          PDF <?=$r[jenisdok];?> <?php echo $r['difile']; ?>
         <?php } else { ?>
-        <div class="alert alert-warning"><b>Perhatian:</b> Dokumen ini sudah obsolete. File PDF tidak ditampilkan.</div>
+        <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Perhatian</h5>
+            <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
+        </div>
+        </div>
         <?php }
     } ?>
  
