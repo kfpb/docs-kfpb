@@ -47,7 +47,8 @@ $newID = sprintf("UD-%04s/$bln", $noUrut);
  $rand = mt_rand(100000,999999);
 //  var_dump($rand);die();
 if (empty($lokasi_file)){
-	 $q=mysql_query("INSERT INTO udokumen(udpengusul,
+	 $q=mysql_query("INSERT INTO udokumen(udtgl,
+                                  udpengusul,
                                   udpengusul2,
                                   udkepada, 
 								   jenisud,
@@ -58,7 +59,8 @@ if (empty($lokasi_file)){
 								   udket,
 								   uccnmr,
 								   kode_aktivitas) 
-	                     VALUES('$_POST[pengusul]',
+	                     VALUES('$_POST[tgl]',
+                                '$_POST[pengusul]',
                                 '$_POST[pengusul2]',
                                 '$_POST[kepada]',
 								'$_POST[jenisud]',
@@ -127,7 +129,8 @@ if (empty($lokasi_file)){
   UploadUdmasuk($nama_file_unik);
 if($_FILES['fupload']['size']<=$maxsize){
 	
-  $q=mysql_query("INSERT INTO udokumen(udpengusul,
+  $q=mysql_query("INSERT INTO udokumen(udtgl,
+                                   udpengusul,
                                    udpengusul2,
                                    udkepada, 
 								   jenisud,
@@ -139,7 +142,8 @@ if($_FILES['fupload']['size']<=$maxsize){
 								   uccnmr,
 								   udfile,
 								   kode_aktivitas) 
-	                     VALUES('$_POST[pengusul]',
+	                     VALUES('$_POST[tgl]',
+                                '$_POST[pengusul]',
                                 '$_POST[pengusul2]',
                                 '$_POST[kepada]',
 								'$_POST[jenisud]',
