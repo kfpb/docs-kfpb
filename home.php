@@ -428,6 +428,8 @@ return (true);
 							include"include/duin/duin2.php";	//admin untuk reg usulan 
 	                    }elseif($_GET[pages]=="usulandok3"){
 							include"include/duin/duin3.php";	//admin untuk reg usulan 
+						}elseif($_GET[pages]=="usulandok_belumcc"){
+							include"include/duin/duin_belumcc.php";	//admin sisdok untuk lihat semua usulan belum kirim cc
 						}elseif($_GET[pages]=="cchl"){
 							include"include/mod_cchl/cchl.php";	//admin untuk kelola CCHL lama
 						}elseif($_GET[pages]=="jendok"){

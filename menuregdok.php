@@ -74,6 +74,17 @@
 		}
 	?>
 	</li>
+	  <li>
+	<?php
+		$sql_belumcc = mysql_query("SELECT * FROM udokumen ORDER BY udtgl DESC");
+		$j = mysql_num_rows($sql_belumcc);
+		if($j > 0){
+			echo"<a href='?pages=usulandok_belumcc'><i class='icon-arrow-right'></i><strong> Semua Usulan Dokumen Masuk<span class='badge badge-info pull-right'>$j</span></strong></a>";
+		} else {
+			echo"<a href='?pages=usulandok_belumcc'><i class='icon-arrow-right'></i> Semua Usulan Dokumen Masuk</a>";
+		}
+	?>
+	</li>
 <?php /*
 	 <li>
 	<?php

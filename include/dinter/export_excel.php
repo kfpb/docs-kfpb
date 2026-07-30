@@ -36,9 +36,9 @@ $dist = mysql_query("SELECT * FROM dinter $where_clause ORDER BY dikodok ASC");
             $ditgl_brlk = tgl_indo($s['ditgl_brlk']);
 
             // Ambil data penanggung jawab
-            $user_query = mysql_query("SELECT cNama, cJabatan, bagian FROM users WHERE cId = '{$s['dipjdok']}'");
+            $user_query = mysql_query("SELECT cNama, cJabatan, cIdjab, bagian FROM users WHERE cId = '{$s['dipjdok']}'");
             $user = mysql_fetch_array($user_query);
-            $penanggung_jawab = $user ? $user['cNama'] : "Tidak Ditemukan";
+            $penanggung_jawab = $user ? $user['cIdjab'] : "Tidak Ditemukan";
             $jabatan = $user ? $user['cJabatan'] : "Tidak Ditemukan";
             $bagian = $user ? $user['bagian'] : "Tidak Ditemukan";
 

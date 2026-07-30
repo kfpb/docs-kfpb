@@ -122,6 +122,7 @@
 		?>
 	</li>	
 	
+	<?php if($_SESSION[cv]!=53){ ?>
 		<li>
 	<?php
 	
@@ -154,6 +155,7 @@
 		}
 		?>
 	</li>
+	<?php } ?>
 	<li>
 	<?php
 	    $sql = mysql_query("SELECT * FROM copydok WHERE okepada='$_SESSION[cv]' AND sstatus='N' OR opengirim='$_SESSION[cv]' AND sstatus='N'");
