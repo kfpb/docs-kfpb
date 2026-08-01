@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 require_once "cek_sesi.php";
-session_start();
+if(!isset($_SESSION)) { session_start(); }
 // error_reporting(E_ALL & ~E_NOTICE);
 ini_set('display_errors', 0); ini_set('display_startup_errors', 0); error_reporting(0);
 include"config/koneksi.php";
@@ -176,7 +176,7 @@ $user = mysql_fetch_array(mysql_query(
 	<link rel="stylesheet" href="ckeditor/toolbarconfigurator/lib/codemirror/neo.css">
 
 
-<script type="text/javascript" src="vendors/jquery-1.9.1.js"></script>
+<!-- <script type="text/javascript" src="vendors/jquery-1.9.1.js"></script> -->
 <link rel="stylesheet" type="text/css" href="vendors/chosen.css"">
 <script type="text/javascript" src="vendors/chosen.jquery.js"></script>
     

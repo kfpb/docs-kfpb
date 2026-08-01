@@ -1,5 +1,6 @@
 <?php
-    session_start();
+    set_time_limit(0);
+    if(!isset($_SESSION)) { session_start(); }
     $userId = $_SESSION[cv]; // Ambil ID user dari session
     // var_dump($userId);
     // Hitung notifikasi yang belum dilihat

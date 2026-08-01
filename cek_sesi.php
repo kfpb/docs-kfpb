@@ -1,7 +1,7 @@
 <?php
-session_start();
-$usr = $_SESSION[namacv];
-$jabatan = $_SESSION[jabatan];
+if(!isset($_SESSION)) { session_start(); }
+$usr = isset($_SESSION['namacv']) ? $_SESSION['namacv'] : '';
+$jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
 if(!isset($_SESSION['loginefile']))
 {
     include "config/koneksi.php";
