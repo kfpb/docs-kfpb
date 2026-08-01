@@ -1,4 +1,4 @@
-<div class="navbar navbar-inner block-header">
+﻿<div class="navbar navbar-inner block-header">
 	<div class="muted pull-left">Daftar Usulan Dokumen (Change Note)</div>
 </div>
 <div class="block-content collapse in">
@@ -110,8 +110,8 @@ $ef = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab, b.bagian, b.
 	<br><table width="100%">
 	   
 	<!--<tr><td><b>Judul Usulan Perubahan :</b><br><?php //echo $e[udket];?></td></tr>-->
-	<tr><td colspan="2"><br>Lampiran : <a target="_blank" href="https://docs.kfpb.kimiafarma.co.id/udmasuk/<?=$e[udfile];?>"> File</a></td></tr>
-<?php /*| <a target=_blank href="https://view.officeapps.live.com/op/view.aspx?src=https://docs.kfpb.kimiafarma.co.id/bnj/udmasuk/<?=$e[udfile];?>">Online</a> */ ?>
+	<tr><td colspan="2"><br>Lampiran : <a target="_blank" href="udmasuk/<?=$e[udfile];?>"> File</a></td></tr>
+<?php /*| <a target=_blank href="https://view.officeapps.live.com/op/view.aspx?src=bnj/udmasuk/<?=$e[udfile];?>">Online</a> */ ?>
 </table>
 
 <br><br>

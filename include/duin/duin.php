@@ -1,4 +1,4 @@
-<div class="navbar navbar-inner block-header">
+﻿<div class="navbar navbar-inner block-header">
 	<div class="muted pull-left">Usulan Dokumen</div>
 </div>
 <div class="block-content collapse in">
@@ -575,16 +575,16 @@ $(document).ready(function () {
       // Maka validasi list penerima dijalankan
       if(jenisUsulan !== "3") {
           if(jumlahPenerima === 0) {
-             // Alert keras
-             alert("PERINGATAN!\n\nAnda belum mengisi List Penerima Dokumen Terkendali.\nKolom ini WAJIB DIISI (Asman/SPV/Manager terkait) agar proses tidak terhambat.");
-             // Scroll ke tabel
-             $('html, body').animate({
-                 scrollTop: $("#tabelPenerima").offset().top - 150
-             }, 500);
+    Â  Â  Â  Â   // Alert keras
+    Â  Â  Â  Â   alert("PERINGATAN!\n\nAnda belum mengisi List Penerima Dokumen Terkendali.\nKolom ini WAJIB DIISI (Asman/SPV/Manager terkait) agar proses tidak terhambat.");
+    Â  Â  Â  Â   // Scroll ke tabel
+    Â  Â  Â  Â   $('html, body').animate({
+    Â  Â  Â  Â  Â  Â   scrollTop: $("#tabelPenerima").offset().top - 150
+    Â  Â  Â  Â   }, 500);
 
-             // Batalkan submit
-             e.preventDefault();
-             return false;
+    Â  Â  Â  Â   // Batalkan submit
+    Â  Â  Â  Â   e.preventDefault();
+    Â  Â  Â  Â   return false;
           }
      }
       // Jika jenisUsulan === "3", maka form akan langsung terkirim meski tabel kosong
@@ -1363,7 +1363,7 @@ mysql_query("UPDATE udokumen SET udstatus1='Y' WHERE uid='$_GET[id]'");
 	else { echo"<b>Tidak Jadi</b>";}
 	?></td></tr>
 	<tr><td>Tgl Selesai</td><td>: <b><?=tgl_indo($e[udtgl_selesai]);?></b></td></tr>
-	<tr><td>Lampiran Usulan</td><td>: 	<a href="https://docs.kfpb.kimiafarma.co.id/udmasuk/<?=$e[udfile];?>" target=_blank>Download</a> </td></tr>
+	<tr><td>Lampiran Usulan</td><td>: 	<a href="udmasuk/<?=$e[udfile];?>" target=_blank>Download</a> </td></tr>
 	</table>
 	<br></b></strong></b></strong>
 
@@ -1371,7 +1371,7 @@ mysql_query("UPDATE udokumen SET udstatus1='Y' WHERE uid='$_GET[id]'");
   <tr><td>Tgl Pembahasan</td><td>: <b><?=tgl_indo($e[udtgl_bahas]);?></b></td></tr>
   <tr><td>Dibahas oleh</td><td>: <b><?=$e[ud_bahas_oleh];?></b></td></tr>
     
-/<a title="Lampiran" href="https://view.officeapps.live.com/op/view.aspx?src=https://docs.kfpb.kimiafarma.co.id/udmasuk/<?=$e[udfile];?>" target=_blank>Buka Online (Jika Ada)</a>
+/<a title="Lampiran" href="https://view.officeapps.live.com/op/view.aspx?src=udmasuk/<?=$e[udfile];?>" target=_blank>Buka Online (Jika Ada)</a>
 
 <!--<table width="100%">-->
 <!--    <tr><td><b>Judul Usulan Perubahan :</b></td><tr>-->
@@ -1468,7 +1468,7 @@ while ($t=mysql_fetch_array($pds)){
 				<td>$tglDis</td>
 				<td>$t[kepada] ($t[kepadajab])</td>
 				<td>$t[pInstruksi]<br>
-				<b>File Usulan untuk dikoreksi :</b> <a href='https://docs.kfpb.kimiafarma.co.id/konsep_kirim/$edf[disfile]' target=_blank>Download</a></td>
+				<b>File Usulan untuk dikoreksi :</b> <a href='konsep_kirim/$edf[disfile]' target=_blank>Download</a></td>
 				<td>$t[info]";
 				if(in_array($_SESSION['cv'], [0, 1, 53, 1000, 1052, 1055, 1054, 1051, 1059, 1058, 1056, 1057])){
 				 echo"<a href='?pages=usulandok2&act=kembali&id=$t[pudid]' class='btn btn-info'>Kembali ke SDDR</i>";
@@ -1486,8 +1486,8 @@ while ($t=mysql_fetch_array($pds)){
 				<td>$tglDis<br></td>
 				<td>$t[kepada] ($t[kepadajab])</td>
 				<td>$t[pInstruksi]<br>
-				<b>File Usulan untuk dikoreksi :</b> <a href='https://docs.kfpb/kimiafarma.co.id/konsep_kirim/$edf[disfile]' target=_blank>Download</a></td>
-				<td>$t[info]<p><b>File koreksi (dari user) :</b> <a href='https://docs.kfpb.kimiafarma.co.id/jwb_usulandok/$t[filedis]' target=_blank>Download</a></td>
+				<b>File Usulan untuk dikoreksi :</b> <a href='konsep_kirim/$edf[disfile]' target=_blank>Download</a></td>
+				<td>$t[info]<p><b>File koreksi (dari user) :</b> <a href='jwb_usulandok/$t[filedis]' target=_blank>Download</a></td>
 				<td><b>Tgl Baca:</b><br> $tglBaca<br><b>Tgl Slesai:<br></b> $tglSelesai</td>
 				<td>
 				<a href='home.php?pages=usulandok2&act=editalur&id=$t[pudid]' class='btn btn-info pull-center' target=_blank><i class='icon-edit'></i> Edit</a>";?>
@@ -1543,7 +1543,7 @@ $ef = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab, b.bagian, b.
 	else { echo"<b>Tidak Jadi</b>";}
 	?></td></tr>
 	<tr><td>Tgl Selesai</td><td>: <b><?=tgl_indo($e[udtgl_selesai]);?></b></td></tr>
-	<tr><td>Dokumen Pendukung Awal</td><td>: 	<a href="https://docs.kfpb.kimiafarma.co.id/udmasuk/<?=$e[udfile];?>" target=_blank>Download</a></td></tr>
+	<tr><td>Dokumen Pendukung Awal</td><td>: 	<a href="udmasuk/<?=$e[udfile];?>" target=_blank>Download</a></td></tr>
 	</table>
 	<br></b></strong></b></strong>
 <table width="100%">

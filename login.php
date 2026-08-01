@@ -1,4 +1,4 @@
-<?php 
+﻿<?php 
 session_start();
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 include"config/koneksi.php";
@@ -13,15 +13,15 @@ if (isset($_SESSION['cv'])) {
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Document Control Assistance System - PT. Kimia Farma (Persero) Tbk. Plant Banjaran</title>
     <!-- Bootstrap -->
-    <link rel="icon" href="https://docs.kfpb.kimiafarma.co.id/files.png" type="image/x-icon">
-    <link href="https://docs.kfpb.kimiafarma.co.id/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="https://docs.kfpb.kimiafarma.co.id/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="https://docs.kfpb.kimiafarma.co.id/assets/styles.css" rel="stylesheet" media="screen">
+    <link rel="icon" href="files.png" type="image/x-icon">
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+    <link href="assets/styles.css" rel="stylesheet" media="screen">
      <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <script src="https://docs.kfpb.kimiafarma.co.id/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <script src="vendors/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 <body id="login">
 	<div class="container">
@@ -29,7 +29,7 @@ if (isset($_SESSION['cv'])) {
         <div class="navbar-inner navbar-inverse">
          <center>
          <!--<h5 align="center">Aplikasi</h5>-->
-		 <img src="https://docs.kfpb.kimiafarma.co.id/images/logo.png" />
+		 <img src="images/logo.png" />
 		 <h4><i></i></h4>
          <h6>Document Control Assistance System</h6>
          </center>
@@ -68,5 +68,5 @@ Rekomendasi Browser : Chrome</strong></h5>
   </body>
 </html>
 
- <script src="https://docs.kfpb.kimiafarma.co.id/vendors/jquery-1.9.1.min.js"></script>
- <script src="https://docs.kfpb.kimiafarma.co.id/bootstrap/js/bootstrap.min.js"></script>
+ <script src="vendors/jquery-1.9.1.min.js"></script>
+ <script src="bootstrap/js/bootstrap.min.js"></script>

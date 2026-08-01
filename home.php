@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once "cek_sesi.php";
 session_start();
 // error_reporting(E_ALL & ~E_NOTICE);
@@ -146,7 +146,7 @@ $user = mysql_fetch_array(mysql_query(
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Document Control Assistance System - PT. Kimia Farma (Persero) Tbk. Plant Banjaran</title>
 <!-- Bootstrap -->
-    <link rel="icon" href="https://docs.kfpb.kimiafarma.co.id/files.png" type="image/x-icon">
+    <link rel="icon" href="files.png" type="image/x-icon">
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
         <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
         <link href="assets/styles.css" rel="stylesheet" media="screen">
@@ -648,7 +648,7 @@ return (true);
 </div><!-- /container-fluid-->
 
 <div id="chatbot-container">
-        <button id="chat-bubble-button">💬</button>
+        <button id="chat-bubble-button">ðŸ’¬</button>
         <div id="chat-panel">
             <div id="chat-header">
                 Chat dengan Asisten AI TIM QA Pengembangan Sistem

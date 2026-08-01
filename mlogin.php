@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
 include"config/koneksi.php";
@@ -43,7 +43,7 @@ function setFormFocus() {
 }
 // -->
 </script>
-    <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <script src="vendors/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 <body text="#000000" bgcolor="#FFFFFF" onload="setFormFocus();">
 <center>

@@ -1,4 +1,4 @@
-<div class="navbar navbar-inner block-header">
+﻿<div class="navbar navbar-inner block-header">
 	<div class="muted pull-left">Alur Usulan Dokumen Kirim-Kembali (Untuk Koreksi/ ACC - NET)</div>
 </div>
 <div class="block-content collapse in">
@@ -87,7 +87,7 @@ else {
 	echo"
 	<tr><td>Detail Usulan Dokumen </td><td>: <strong><a href='home.php?pages=usulandok&act=detail&id=$e[uid]' target=_blank>Klik disini</a></td></tr>
 	<tr><td>Info Kirim Usulan :</td><td>
-	<b>File Konsep (dari SDDR) : <a href='https://docs.kfpb.kimiafarma.co.id/konsep_kirim/$edf[disfile]' target=_blank>Download</a></b><br>
+	<b>File Konsep (dari SDDR) : <a href='konsep_kirim/$edf[disfile]' target=_blank>Download</a></b><br>
 	<b>$e[pInstruksi]</b></td></tr>
 </table>
 </strong>
@@ -200,7 +200,7 @@ while ($t=mysql_fetch_array($pds)){
 				<td>$tglDis<br><b>Target-Slesai:</b><br> $tgltarget</td>
 				<td>$t[kepada]</td>
 				<td>$t[pInstruksi]</td>
-				<td>$t[info] <b><u>File Koreksi : <a href='https://docs.kfpb.kimiafarma.co.id/jwb_usulandok/$t[filedis]' target=_blank>Download</a></u></td>
+				<td>$t[info] <b><u>File Koreksi : <a href='jwb_usulandok/$t[filedis]' target=_blank>Download</a></u></td>
 				<td><b>Tgl Selesai:<br></b> $tglSelesai</td>
 			 </tr>";
 	}
@@ -244,7 +244,7 @@ function UploadJwbud($fupload_name){
 	
 	mysql_query("UPDATE udokumen SET udstatus1='N', udtgl_kembali='$tglhrini' WHERE uid='$_POST[uid]'");
 
-	echo "<script>window.alert('Terkirim');window.location=('https://docs.kfpb.kimiafarma.co.id/home.php?pages=udok')</script>";
+	echo "<script>window.alert('Terkirim');window.location=('home.php?pages=udok')</script>";
 	
 
 }
