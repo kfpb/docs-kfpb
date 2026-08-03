@@ -1,6 +1,6 @@
 <?php
 require_once "cek_sesi.php";
-if(!isset($_SESSION)) { session_start(); }
+if(session_status() == PHP_SESSION_NONE) { session_start(); }
 // DEBUG SEMENTARA - aktifkan error untuk tracing
 ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL);
 include"config/koneksi.php";
