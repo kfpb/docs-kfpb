@@ -1,11 +1,12 @@
 <?php
 error_reporting(E_ERROR);
 $server = "localhost";
-$username = "sql_kfpb_kimiafa";
-$password = "PeGPLkNzBaMz32kH";
+$username = "root";
+$password = "1234";
 $database = "sql_kfpb_kimiafa";
 
 // Koneksi dan memilih database di server
 $database2 = mysql_connect($server,$username,$password) or die("Koneksi gagal");
 $koneksi2 = mysql_select_db($database) or die("Database tidak bisa dibuka");
+mysql_query("SET SESSION sql_mode = ''", $database2);
 ?>
