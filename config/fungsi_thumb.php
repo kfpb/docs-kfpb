@@ -62,6 +62,10 @@ function UploadUdmasuk($fupload_name){
   $vdir_upload = "../../udmasuk/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
