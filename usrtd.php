@@ -1,4 +1,4 @@
-﻿<div class="navbar navbar-inner block-header">
+<div class="navbar navbar-inner block-header">
 	<div class="muted pull-left">Daftar Usulan Dokumen (Change Note)</div>
 </div>
 <div class="block-content collapse in">
@@ -157,7 +157,7 @@ else {}
 // 		$udmasuk = mysql_query("SELECT a.*,b.cNama, b.cIdjab, b.bagian FROM udokumen a LEFT JOIN $database2.users b ON a.udpengusul=b.cId WHERE a.udpengusul='$_SESSION[cv]' OR a.udpengusul2='$_SESSION[cv]' ORDER BY a.udtgl DESC");
 	
 // 		$udmasuk = mysql_query("SELECT a.*,b.cNama, b.cIdjab, b.bagian FROM udokumen a LEFT JOIN $database2.users b ON a.udpengusul=b.cId WHERE a.udpengusul='$_SESSION[cv]' OR a.udpengusul2='$_SESSION[cv]' ORDER BY a.udtgl DESC");
-		$udmasuk = mysql_query("SELECT a.*,b.cNama, b.cIdjab, b.bagian FROM udokumen a LEFT JOIN $database2.users b ON a.udpengusul=b.cId WHERE a.udpengusul='$_SESSION[cv]' OR a.udpengusul2='$_SESSION[cv]' ORDER BY CASE WHEN a.udstatus2 = 'N' THEN 0 ELSE 1 END ASC, a.udtgl DESC");
+		$udmasuk = mysql_query("SELECT a.*,b.cNama, b.cIdjab, b.bagian FROM udokumen a LEFT JOIN users b ON a.udpengusul=b.cId WHERE a.udpengusul='$_SESSION[cv]' OR a.udpengusul2='$_SESSION[cv]' ORDER BY CASE WHEN a.udstatus2 = 'N' THEN 0 ELSE 1 END ASC, a.udtgl DESC");
 				
 		while($s = mysql_fetch_array($udmasuk)) {
 		if ($s[udstatus]==2){
