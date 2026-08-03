@@ -475,8 +475,10 @@ return (true);
 							include"include/dinter/dinter.php";		//admin untuk kelola dokumen internal
 					
 						}elseif($_GET[pages]=="dinterebr"){
-							include"include/copy_ebr/dinter_ebr.php";		//admin untuk kelola dokumen internal
-						}
+						echo "<!-- DEBUG: masuk ke dinterebr -->";
+						include"include/copy_ebr/dinter_ebr.php";		//admin untuk kelola dokumen internal
+						echo "<!-- DEBUG: selesai dinterebr -->";
+					}
 						elseif($_GET[pages]=="tambahpermintaanebr"){
 							include"include/copy_ebr/tambahcopy_ebr.php";		//admin untuk kelola dokumen internal
 						}
