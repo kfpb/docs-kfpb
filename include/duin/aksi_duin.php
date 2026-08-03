@@ -70,7 +70,7 @@ if (empty($lokasi_file)){
 								'$_POST[ujudok]',
 								'$_POST[udket]',
 								'$_POST[uccnmr]',
-								'DOK-$rand')");
+								'DOK-$rand')") or die("ERROR DB INSERT 1: " . mysql_error());
 				$idusulan = mysql_insert_id();
 				
 				
@@ -93,7 +93,7 @@ if (empty($lokasi_file)){
 				if($e['cAudit']=='Y'){
 				    
 				}else{
-				    $q=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
+				    $q_aktivitas=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
 		                            user,
                                    jabatan,
                                    ip_address,
@@ -154,7 +154,7 @@ if($_FILES['fupload']['size']<=$maxsize){
 								'$_POST[udket]',
 								'$_POST[uccnmr]',
 								'$nama_file_unik',
-								'DOK-$rand')");
+								'DOK-$rand')") or die("ERROR DB INSERT 2: " . mysql_error());
 				$idusulan = mysql_insert_id();
 					$cc = mysql_fetch_array(mysql_query("SELECT * FROM dister WHERE suid='$_GET[id]'"));
                     $cd = mysql_num_rows(mysql_query("SELECT * FROM dsin WHERE suid='$cc[suid_dinter]'"));
@@ -176,7 +176,7 @@ if($_FILES['fupload']['size']<=$maxsize){
 				    
 				}else{  
 					
-					$q=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
+					$q_aktivitas=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
 					                user,
                                    jabatan,
                                    ip_address,
