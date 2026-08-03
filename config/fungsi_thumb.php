@@ -53,6 +53,10 @@ function UploadSMasuk($fupload_name){
   $vdir_upload = "../../smasuk/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -61,6 +65,10 @@ function UploadUdmasuk($fupload_name){
   //direktori file
   $vdir_upload = "../../udmasuk/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   if (!is_dir($vdir_upload)) {
       mkdir($vdir_upload, 0777, true);
@@ -75,6 +83,10 @@ function UploadSCopy($fupload_name){
   $vdir_upload = "../../scopy/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -83,6 +95,10 @@ function UploadSinter($fupload_name){
   //direktori file
   $vdir_upload = "../../sinternal/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
@@ -93,6 +109,10 @@ function UploadLinter($fupload_name){
   $vdir_upload = "../../linternal/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -101,6 +121,10 @@ function UploadDinter($fupload_name){
   //direktori file
   $vdir_upload = "../../fdok/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
@@ -111,6 +135,10 @@ function UploadDointer($fupload_name){
   $vdir_upload = "../../sosialisasidok/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -120,6 +148,10 @@ function UploadDisp($fupload_name){
   $vdir_upload = "../../disposisi/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -128,6 +160,10 @@ function UploadDist($fupload_name){
   //direktori file
   $vdir_upload = "../../disposisidok/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
@@ -139,6 +175,10 @@ function Uploadrtcc($fupload_name){
   $vdir_upload = "../../rtcc/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -148,6 +188,10 @@ function UploadDispdok($fupload_name){
   $vdir_upload = "../../infodokumen/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -156,6 +200,10 @@ function UploadAlur($fupload_name){
   //direktori file
   $vdir_upload = "../../konsep_kirim/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
@@ -167,6 +215,10 @@ function UploadDokint($fupload_name){
   $vdir_upload = "../../master_pdf/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -175,6 +227,10 @@ function Uploadcc($fupload_name){
   //direktori file
   $vdir_upload = "../../usulancc/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
@@ -185,6 +241,10 @@ function Uploadrisk($fupload_name){
   $vdir_upload = "../../kajianresiko/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload1"]["tmp_name"], $vfile_upload);
 }
@@ -193,6 +253,10 @@ function UploadSCAPA($fupload_name){
   //direktori file
   $vdir_upload = "../../scapa/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
@@ -203,6 +267,10 @@ function UploadCAPA($fupload_name){
   $vdir_upload = "../../capa/";
   $vfile_upload = $vdir_upload . $fupload_name;
 
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
+
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
 }
@@ -211,6 +279,10 @@ function UploadJCAPA($fupload_name){
   //direktori file
   $vdir_upload = "../../jwb_capa/";
   $vfile_upload = $vdir_upload . $fupload_name;
+
+  if (!is_dir($vdir_upload)) {
+      mkdir($vdir_upload, 0777, true);
+  }
 
   //Simpan file
   move_uploaded_file($_FILES["fupload"]["tmp_name"], $vfile_upload);
