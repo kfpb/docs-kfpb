@@ -171,8 +171,7 @@ $user = mysql_fetch_array(mysql_query(
 	   			});
 	  		});
 	  	</script>
-	<script src="ckeditor/ckeditor.js"></script>
-	<script src="ckeditor/js/sample.js"></script>
+	<!-- CKEditor di-load satu kali di bawah halaman -->
 	<link rel="stylesheet" href="ckeditor/toolbarconfigurator/lib/codemirror/neo.css">
 
 
