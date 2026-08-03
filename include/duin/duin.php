@@ -1,4 +1,4 @@
-﻿<div class="navbar navbar-inner block-header">
+<div class="navbar navbar-inner block-header">
 	<div class="muted pull-left">Usulan Dokumen</div>
 </div>
 <div class="block-content collapse in">
@@ -575,16 +575,16 @@ $(document).ready(function () {
       // Maka validasi list penerima dijalankan
       if(jenisUsulan !== "3") {
           if(jumlahPenerima === 0) {
-    Â  Â  Â  Â   // Alert keras
-    Â  Â  Â  Â   alert("PERINGATAN!\n\nAnda belum mengisi List Penerima Dokumen Terkendali.\nKolom ini WAJIB DIISI (Asman/SPV/Manager terkait) agar proses tidak terhambat.");
-    Â  Â  Â  Â   // Scroll ke tabel
-    Â  Â  Â  Â   $('html, body').animate({
-    Â  Â  Â  Â  Â  Â   scrollTop: $("#tabelPenerima").offset().top - 150
-    Â  Â  Â  Â   }, 500);
+            // Alert keras
+            alert("PERINGATAN!\n\nAnda belum mengisi List Penerima Dokumen Terkendali.\nKolom ini WAJIB DIISI (Asman/SPV/Manager terkait) agar proses tidak terhambat.");
+            // Scroll ke tabel
+            $('html, body').animate({
+                scrollTop: $("#tabelPenerima").offset().top - 150
+            }, 500);
 
-    Â  Â  Â  Â   // Batalkan submit
-    Â  Â  Â  Â   e.preventDefault();
-    Â  Â  Â  Â   return false;
+            // Batalkan submit
+            e.preventDefault();
+            return false;
           }
      }
       // Jika jenisUsulan === "3", maka form akan langsung terkirim meski tabel kosong
@@ -2290,9 +2290,7 @@ if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]=
 ?>
 </div><!--/span12-->
 </div><!--/block-content-->
- <link href="http://code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css" rel="stylesheet" />
-    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+ 
     <script>
         function hapusDokumen(uid) {
             // Prompt untuk alasan penghapusan

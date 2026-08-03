@@ -831,7 +831,9 @@ return (true);
 </script>
 
 <script>
-	initSample(); // Ini adalah fungsi CKEditor, tetap di sini
+	if (document.getElementById('editor')) {
+		initSample();
+	}
 </script>
 
 </body>
