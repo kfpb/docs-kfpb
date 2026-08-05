@@ -13,6 +13,12 @@ if (isset($_GET['id'])) {
         echo "<div class='alert alert-error'>Data Permohonan EBR tidak ditemukan!</div>";
         exit;
     }
+    
+    // Update Tanggal Baca Admin (otgl_admin) jika belum diset
+    $tglhrini = date("Y-m-d");
+    if (isset($_SESSION['cv']) && isset($d['okepada']) && $d['okepada'] == $_SESSION['cv'] && (!isset($d['otgl_admin']) || $d['otgl_admin'] == "0000-00-00" || $d['otgl_admin'] == null)) {
+        @mysql_query("UPDATE copydok_ebr SET otgl_admin='$tglhrini' WHERE oid='$id_ebr'");
+    }
 ?>
 
 <div class="row-fluid">

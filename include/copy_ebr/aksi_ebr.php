@@ -180,4 +180,39 @@ elseif ($act == 'hapus') {
     }
     exit;
 }
+// ===============================================
+// 4. KIRIM PERMOHONAN COPY EBR (act=kirim_permohonan)
+// ===============================================
+elseif ($act == 'kirim_permohonan') {
+    if (isset($_GET['id'])) {
+        $id = mysql_real_escape_string($_GET['id']);
+        $tgl_kirim = date('Y-m-d');
+        $q = mysql_query("UPDATE copydok_ebr SET kirim_status='Y', tgl_kirimajuan='$tgl_kirim' WHERE oid='$id'");
+        
+        if ($q) {
+            echo "<script>alert('Permohonan berhasil dikirim ke Admin!');window.location='../../home.php?pages=copy_ebr';</script>";
+        } else {
+            echo "<script>alert('Gagal mengirim permohonan');window.location='../../home.php?pages=copy_ebr';</script>";
+        }
+    }
+    exit;
+}
+
+// ===============================================
+// 5. ACC / SELESAI PERMOHONAN COPY EBR (act=acc)
+// ===============================================
+elseif ($act == 'acc') {
+    if (isset($_GET['id'])) {
+        $id = mysql_real_escape_string($_GET['id']);
+        $tgl_selesai = date('Y-m-d');
+        $q = mysql_query("UPDATE copydok_ebr SET sstatus='N', otgl_slesai='$tgl_selesai' WHERE oid='$id'");
+        
+        if ($q) {
+            echo "<script>alert('Permohonan berhasil diselesaikan!');window.location='../../home.php?pages=copy_ebr';</script>";
+        } else {
+            echo "<script>alert('Gagal menyelesaikan permohonan');window.location='../../home.php?pages=copy_ebr';</script>";
+        }
+    }
+    exit;
+}
 ?>
