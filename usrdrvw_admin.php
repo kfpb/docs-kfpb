@@ -523,18 +523,10 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 
 //		$smasuk = mysql_query("SELECT a.*,b.*,c.cIdjab FROM dinter a LEFT JOIN dsin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE a.distatus='Y' ORDER BY a.ditgl_review ASC");
 
-    $server2 = "localhost";
-    $username2 = "sql_kfpb_kimiafa";
-    $password2 = "PeGPLkNzBaMz32kH";
-    $database2 = "sql_kfpb_kimiafa";
-    
-    // Koneksi dan memilih database di server
-    $conn2 = mysql_connect($server2,$username2,$password2) or die("Koneksi gagal");
-    $select2 = mysql_select_db($database2) or die("Database tidak bisa dibuka");
 
 		$no=1;
 		while($s = mysql_fetch_array($hasil)) {
-		$pjdok = mysql_query("SELECT * FROM users WHERE cId='$s[dipjdok]'", $conn2);
+		$pjdok = mysql_query("SELECT * FROM users WHERE cId='$s[dipjdok]'");
         $r    = mysql_fetch_array($pjdok);
 		echo"   <tr class=success>
 		        <td>$no</td>
