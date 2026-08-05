@@ -26,6 +26,15 @@ else {
 UploadLinter($nama_file_unik);
 if($_FILES['fupload']['size']<=$maxsize){
 
+  $tgl       = mysql_real_escape_string($_POST['tgl']);
+  $pengirim  = mysql_real_escape_string($_POST['pengirim']);
+  $pengirim1 = mysql_real_escape_string($_POST['pengirim1']);
+  $pengirim3 = isset($_POST['pengirim3']) ? mysql_real_escape_string($_POST['pengirim3']) : '';
+  $perihal   = mysql_real_escape_string($_POST['perihal']);
+  $sikomen   = mysql_real_escape_string($_POST['sikomen']);
+  $sbnjrn    = isset($_POST['sbnjrn']) ? mysql_real_escape_string($_POST['sbnjrn']) : '';
+  $ket       = mysql_real_escape_string($_POST['ket']);
+
 if (empty($lokasi_file)){
   
   $q=mysql_query("INSERT INTO linter(sitgl,
@@ -39,16 +48,16 @@ if (empty($lokasi_file)){
 								   sbnjrn,
                                    siket,
 								   sstatus) 
-	                     VALUES('$_POST[tgl]',
+	                     VALUES('$tgl',
 	                            '$jam',
-                                '$_POST[pengirim]',
-								'$_POST[pengirim1]',
-								'$_POST[pengirim1]',
-								'$_POST[pengirim3]',
-								'$_POST[perihal]',
-								'$_POST[sikomen]',
-								'$_POST[sbnjrn]',
-								'$_POST[ket]',
+                                '$pengirim',
+								'$pengirim1',
+								'$pengirim1',
+								'$pengirim3',
+								'$perihal',
+								'$sikomen',
+								'$sbnjrn',
+								'$ket',
 								'N')");
 }
 else {
@@ -65,16 +74,16 @@ else {
                                    siket,
                                    sifile,
 								   sstatus) 
-	                     VALUES('$_POST[tgl]',
+	                     VALUES('$tgl',
 	                            '$jam',
-                                '$_POST[pengirim]',
-								'$_POST[pengirim1]',
-								'$_POST[pengirim1]',
-								'$_POST[pengirim3]',
-								'$_POST[perihal]',
-								'$_POST[sikomen]',
-								'$_POST[sbnjrn]',
-								'$_POST[ket]',
+                                '$pengirim',
+								'$pengirim1',
+								'$pengirim1',
+								'$pengirim3',
+								'$perihal',
+								'$sikomen',
+								'$sbnjrn',
+								'$ket',
 								'$nama_file_unik',
 								'N')");
 								
@@ -85,8 +94,8 @@ else {
  echo "<script>window.alert('Permohonan ATK tersimpan, Menunggu koreksi/acc atasan');window.location=('../../home.php?pages=linter')</script>";
 
   }else{
-      
-echo "<script>window.alert('Data Gagal Tersimpan');self.history.back();</script>";	 
+      $err = mysql_error();
+echo "<script>window.alert('Data Gagal Tersimpan: " . addslashes($err) . "');self.history.back();</script>";	 
 }
 
   }
@@ -111,19 +120,31 @@ elseif($act=='edit'){
 
 if($_FILES['fupload']['size']<=$maxsize){
 
+  $nomor = mysql_real_escape_string($_POST['nomor']);
+  $tgl = mysql_real_escape_string($_POST['tgl']);
+  $perihal = mysql_real_escape_string($_POST['perihal']);
+  $sikomen = mysql_real_escape_string($_POST['sikomen']);
+  $sikomen2 = isset($_POST['sikomen2']) ? mysql_real_escape_string($_POST['sikomen2']) : '';
+  $pengirim = mysql_real_escape_string($_POST['pengirim']);
+  $pengirim2 = mysql_real_escape_string($_POST['pengirim2']);
+  $pengirim3 = isset($_POST['pengirim3']) ? mysql_real_escape_string($_POST['pengirim3']) : '';
+  $pengirim4 = isset($_POST['pengirim4']) ? mysql_real_escape_string($_POST['pengirim4']) : '';
+  $status = mysql_real_escape_string($_POST['status']);
+  $ket = mysql_real_escape_string($_POST['ket']);
+
 if (empty($lokasi_file)){
     
-     $q=mysql_query("UPDATE linter SET sinmr   = '$_POST[nomor]',
-                                   sitgl 	  = '$_POST[tgl]',
-                                   siperihal = '$_POST[perihal]',
-								   sikomen = '$_POST[sikomen]',
-								   sikomen2 = '$_POST[sikomen2]',
-								   sipengirim ='$_POST[pengirim]',
-								   sipengirim1 ='$_POST[pengirim2]',
-								   sipengirim2 ='$_POST[pengirim3]',
-								   sipengirim3 ='$_POST[pengirim4]',
-								   sstatus ='$_POST[status]',
-								   siket	 = '$_POST[ket]'
+     $q=mysql_query("UPDATE linter SET sinmr   = '$nomor',
+                                   sitgl 	  = '$tgl',
+                                   siperihal = '$perihal',
+								   sikomen = '$sikomen',
+								   sikomen2 = '$sikomen2',
+								   sipengirim ='$pengirim',
+								   sipengirim1 ='$pengirim2',
+								   sipengirim2 ='$pengirim3',
+								   sipengirim3 ='$pengirim4',
+								   sstatus ='$status',
+								   siket	 = '$ket'
 								   WHERE siid = '$_GET[id]'");
 }
 
@@ -132,17 +153,17 @@ else {
 $data=mysql_fetch_array(mysql_query("SELECT sifile,siid FROM linter WHERE siid='$_GET[id]'"));
 unlink("../../linternal/$data[sifile]"); 
 
-  $q=mysql_query("UPDATE linter SET sinmr   = '$_POST[nomor]',
-                                   sitgl 	  = '$_POST[tgl]',
-                                   siperihal = '$_POST[perihal]',
-								   sikomen = '$_POST[sikomen]',
-								   sikomen2 = '$_POST[sikomen2]',
-								   sipengirim ='$_POST[pengirim]',
-								   sipengirim1 ='$_POST[pengirim2]',
-								   sipengirim2 ='$_POST[pengirim3]',
-								   sipengirim3 ='$_POST[pengirim4]',
-								   sstatus ='$_POST[status]',
-								   siket	 = '$_POST[ket]',
+  $q=mysql_query("UPDATE linter SET sinmr   = '$nomor',
+                                   sitgl 	  = '$tgl',
+                                   siperihal = '$perihal',
+								   sikomen = '$sikomen',
+								   sikomen2 = '$sikomen2',
+								   sipengirim ='$pengirim',
+								   sipengirim1 ='$pengirim2',
+								   sipengirim2 ='$pengirim3',
+								   sipengirim3 ='$pengirim4',
+								   sstatus ='$status',
+								   siket	 = '$ket',
 								   sifile    = '$nama_file_unik'
 								   WHERE siid = '$_GET[id]'");
 
@@ -175,24 +196,41 @@ elseif($act=='edit2'){
 
 if($_FILES['fupload']['size']<=$maxsize){
 
+  $nomor = mysql_real_escape_string($_POST['nomor']);
+  $tgl = mysql_real_escape_string($_POST['tgl']);
+  $jenisms = mysql_real_escape_string($_POST['jenisms']);
+  $jenispptek = mysql_real_escape_string($_POST['jenispptek']);
+  $perihal = mysql_real_escape_string($_POST['perihal']);
+  $sikomen = mysql_real_escape_string($_POST['sikomen']);
+  $sikomen2 = isset($_POST['sikomen2']) ? mysql_real_escape_string($_POST['sikomen2']) : '';
+  $pengirim = mysql_real_escape_string($_POST['pengirim']);
+  $pengirim2 = mysql_real_escape_string($_POST['pengirim2']);
+  $pengirim3 = isset($_POST['pengirim3']) ? mysql_real_escape_string($_POST['pengirim3']) : '';
+  $status = mysql_real_escape_string($_POST['status']);
+  $tgl_order = mysql_real_escape_string($_POST['tgl_order']);
+  $tgl_cek = mysql_real_escape_string($_POST['tgl_cek']);
+  $tgl_mulai = mysql_real_escape_string($_POST['tgl_mulai']);
+  $tgl_selesai = mysql_real_escape_string($_POST['tgl_selesai']);
+  $ket = mysql_real_escape_string($_POST['ket']);
+
 if (empty($lokasi_file)){
     
-     $q=mysql_query("UPDATE linter SET sinmr   = '$_POST[nomor]',
-                                   sitgl 	  = '$_POST[tgl]',
-								   jenisms	 = '$_POST[jenisms]',
-								   jenispptek	 = '$_POST[jenispptek]',								   
-                                   siperihal = '$_POST[perihal]',
-								   sikomen = '$_POST[sikomen]',
-								   sikomen2 = '$_POST[sikomen2]',
-								   sipengirim ='$_POST[pengirim]',
-								   sipengirim1 ='$_POST[pengirim2]',
-								   sipengirim2 ='$_POST[pengirim3]',
-								   sstatus ='$_POST[status]',
-								   sitgl_order ='$_POST[tgl_order]',
-								   sitgl_cek ='$_POST[tgl_cek]',
-								   sitgl_mulai ='$_POST[tgl_mulai]',
-								   sitgl_selesai ='$_POST[tgl_selesai]',
-								   siket	 = '$_POST[ket]'
+     $q=mysql_query("UPDATE linter SET sinmr   = '$nomor',
+                                   sitgl 	  = '$tgl',
+								   jenisms	 = '$jenisms',
+								   jenispptek	 = '$jenispptek',								   
+                                   siperihal = '$perihal',
+								   sikomen = '$sikomen',
+								   sikomen2 = '$sikomen2',
+								   sipengirim ='$pengirim',
+								   sipengirim1 ='$pengirim2',
+								   sipengirim2 ='$pengirim3',
+								   sstatus ='$status',
+								   sitgl_order ='$tgl_order',
+								   sitgl_cek ='$tgl_cek',
+								   sitgl_mulai ='$tgl_mulai',
+								   sitgl_selesai ='$tgl_selesai',
+								   siket	 = '$ket'
 								   WHERE siid = '$_GET[id]'");
 }
 
@@ -201,22 +239,22 @@ else {
 $data=mysql_fetch_array(mysql_query("SELECT sifile,siid FROM linter WHERE siid='$_GET[id]'"));
 unlink("../../linternal/$data[sifile]"); 
 
-  $q=mysql_query("UPDATE linter SET sinmr   = '$_POST[nomor]',
-                                   sitgl 	  = '$_POST[tgl]',
-								   jenisms	 = '$_POST[jenisms]',
-								   jenispptek	 = '$_POST[jenispptek]',
-                                   siperihal = '$_POST[perihal]',
-								   sikomen = '$_POST[sikomen]',
-								   sikomen2 = '$_POST[sikomen2]',
-								   sipengirim ='$_POST[pengirim]',
-								   sipengirim1 ='$_POST[pengirim2]',
-								   sipengirim2 ='$_POST[pengirim3]',
-								   sstatus ='$_POST[status]',
-								   sitgl_order ='$_POST[tgl_order]',
-								   sitgl_cek ='$_POST[tgl_cek]',
-								   sitgl_mulai ='$_POST[tgl_mulai]',
-								   sitgl_selesai ='$_POST[tgl_selesai]',
-								   siket	 = '$_POST[ket]',
+  $q=mysql_query("UPDATE linter SET sinmr   = '$nomor',
+                                   sitgl 	  = '$tgl',
+								   jenisms	 = '$jenisms',
+								   jenispptek	 = '$jenispptek',
+                                   siperihal = '$perihal',
+								   sikomen = '$sikomen',
+								   sikomen2 = '$sikomen2',
+								   sipengirim ='$pengirim',
+								   sipengirim1 ='$pengirim2',
+								   sipengirim2 ='$pengirim3',
+								   sstatus ='$status',
+								   sitgl_order ='$tgl_order',
+								   sitgl_cek ='$tgl_cek',
+								   sitgl_mulai ='$tgl_mulai',
+								   sitgl_selesai ='$tgl_selesai',
+								   siket	 = '$ket',
 								   sifile    = '$nama_file_unik'
 								   WHERE siid = '$_GET[id]'");
 
@@ -261,20 +299,33 @@ elseif($act=='edit4'){
 
 if($_FILES['fupload']['size']<=$maxsize){
 
+  $nomor = mysql_real_escape_string($_POST['nomor']);
+  $tgl = mysql_real_escape_string($_POST['tgl']);
+  $jenisms = mysql_real_escape_string($_POST['jenisms']);
+  $jenispptek = mysql_real_escape_string($_POST['jenispptek']);
+  $perihal = mysql_real_escape_string($_POST['perihal']);
+  $sikomen = mysql_real_escape_string($_POST['sikomen']);
+  $sikomen2 = isset($_POST['sikomen2']) ? mysql_real_escape_string($_POST['sikomen2']) : '';
+  $pengirim = mysql_real_escape_string($_POST['pengirim']);
+  $pengirim2 = mysql_real_escape_string($_POST['pengirim2']);
+  $pengirim3 = isset($_POST['pengirim3']) ? mysql_real_escape_string($_POST['pengirim3']) : '';
+  $status = mysql_real_escape_string($_POST['status']);
+  $ket = mysql_real_escape_string($_POST['ket']);
+
 if (empty($lokasi_file)){
     
-     $q=mysql_query("UPDATE linter SET sinmr   = '$_POST[nomor]',
-                                   sitgl 	  = '$_POST[tgl]',
-								   jenisms	 = '$_POST[jenisms]',
-								   jenispptek	 = '$_POST[jenispptek]',
-                                   siperihal = '$_POST[perihal]',
-								   sikomen = '$_POST[sikomen]',
-								   sikomen2 = '$_POST[sikomen2]',
-								   sipengirim ='$_POST[pengirim]',
-								   sipengirim1 ='$_POST[pengirim2]',
-								   sipengirim2 ='$_POST[pengirim3]',
-								   sstatus ='$_POST[status]',
-								   siket	 = '$_POST[ket]'
+     $q=mysql_query("UPDATE linter SET sinmr   = '$nomor',
+                                   sitgl 	  = '$tgl',
+								   jenisms	 = '$jenisms',
+								   jenispptek	 = '$jenispptek',
+                                   siperihal = '$perihal',
+								   sikomen = '$sikomen',
+								   sikomen2 = '$sikomen2',
+								   sipengirim ='$pengirim',
+								   sipengirim1 ='$pengirim2',
+								   sipengirim2 ='$pengirim3',
+								   sstatus ='$status',
+								   siket	 = '$ket'
 								   WHERE siid = '$_GET[id]'");
 }
 
@@ -283,18 +334,18 @@ else {
 $data=mysql_fetch_array(mysql_query("SELECT sifile,siid FROM linter WHERE siid='$_GET[id]'"));
 unlink("../../linternal/$data[sifile]"); 
 
-  $q=mysql_query("UPDATE linter SET sinmr   = '$_POST[nomor]',
-                                   sitgl 	  = '$_POST[tgl]',
-								   jenisms	 = '$_POST[jenisms]',
-								   jenispptek	 = '$_POST[jenispptek]',
-                                   siperihal = '$_POST[perihal]',
-								   sikomen = '$_POST[sikomen]',
-								   sikomen2 = '$_POST[sikomen2]',
-								   sipengirim ='$_POST[pengirim]',
-								   sipengirim1 ='$_POST[pengirim2]',
-								   sipengirim2 ='$_POST[pengirim3]',
-								   sstatus ='$_POST[status]',
-								   siket	 = '$_POST[ket]',
+  $q=mysql_query("UPDATE linter SET sinmr   = '$nomor',
+                                   sitgl 	  = '$tgl',
+								   jenisms	 = '$jenisms',
+								   jenispptek	 = '$jenispptek',
+                                   siperihal = '$perihal',
+								   sikomen = '$sikomen',
+								   sikomen2 = '$sikomen2',
+								   sipengirim ='$pengirim',
+								   sipengirim1 ='$pengirim2',
+								   sipengirim2 ='$pengirim3',
+								   sstatus ='$status',
+								   siket	 = '$ket',
 								   sifile    = '$nama_file_unik'
 								   WHERE siid = '$_GET[id]'");
 
