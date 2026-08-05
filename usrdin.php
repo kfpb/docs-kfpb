@@ -24,16 +24,7 @@ if ($e[cFoto]==""){
     $dok2 = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$e[dok_terkait2]'"));
     $dok3 = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$e[dok_terkait3]'"));
     
-$server2 = "localhost";
-$username2 = "sql_kfpb_kimiafa";
-$password2 = "PeGPLkNzBaMz32kH";
-$database2 = "sql_kfpb_kimiafa";
-
-// Koneksi dan memilih database di server
-$conn2 = mysql_connect($server2,$username2,$password2) or die("Koneksi gagal");
-$select2 = mysql_select_db($database2) or die("Database tidak bisa dibuka");
-
-  $pjdok = mysql_query("SELECT * FROM users WHERE cId='$e[dipjdok]'", $conn2);
+  $pjdok = mysql_query("SELECT * FROM users WHERE cId='$e[dipjdok]'");
   $r    = mysql_fetch_array($pjdok);
 ?>
     <tr><td>Penanggung Jawab Dokumen</td><td>: <?=$r[cNama];?></td></tr>
