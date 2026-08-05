@@ -485,6 +485,9 @@ return (true);
 						elseif($_GET[pages]=="detailpermintaanebr"){
 							include"include/copy_ebr/detail_ebr.php";		//admin untuk kelola dokumen internal
 						}
+						elseif($_GET[pages]=="copy_ebr"){
+							include"include/copy_ebr/copy_ebr.php";		//daftar permohonan EBR
+						}
 						elseif($_GET[pages]=="dintercari"){
 							include"include/dinter/dinter_cari.php";		//admin untuk kelola dokumen internal cari	
 						}elseif($_GET[pages]=="dinterfind"){

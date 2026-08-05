@@ -34,7 +34,7 @@
                     <div class='muted pull-left'><strong><font color=black>Notifikasi</font></strong></div>
                 </div>
                 <li>";
-        echo "<a href='?pages=dinterebr'><i class='icon-list-alt'></i><strong> Permintaan Copy Batch Record<span class='badge badge-info pull-right'>$notifCount</span></strong></a>";
+        echo "<a href='?pages=copy_ebr'><i class='icon-list-alt'></i><strong> Permintaan Copy Batch Record<span class='badge badge-info pull-right'>$notifCount</span></strong></a>";
     } 
     elseif($notifCountCetak > 0) {
          echo "<ul class='nav nav-list bs-docs-sidenav nav-collapse collapse'>
@@ -42,7 +42,7 @@
                     <div class='muted pull-left'><strong><font color=black>Notifikasi</font></strong></div>
                 </div>
                 <li>";
-        echo "<a href='?pages=dinterebr'><i class='icon-list-alt'></i><strong> Permintaan Copy Batch Record Dicetak<span class='badge badge-info pull-right'>$notifCountCetak</span></strong></a>";
+        echo "<a href='?pages=copy_ebr'><i class='icon-list-alt'></i><strong> Permintaan Copy Batch Record Dicetak<span class='badge badge-info pull-right'>$notifCountCetak</span></strong></a>";
     }
     echo "</li></ul>";
 ?>
@@ -100,9 +100,9 @@
 	    <?php
 	
 			if(in_array($_SESSION['cv'], [71, 78, 76, 72])){
-			        echo"<a href='?pages=dinterebr'><i class='icon-arrow-right'></i> Permintaan Copy Batch Record</a>";
+			        echo"<a href='?pages=copy_ebr'><i class='icon-arrow-right'></i> Permintaan Copy Batch Record</a>";
 			}elseif(in_array($_SESSION['cv'], [92, 90, 71, 35, 27, 26, 38, 39, 40, 58, 57, 49, 48, 47, 46, 45, 44, 40, 39, 36, 33, 32, 30, 28, 7, 37, 34, 29, 31])){
-			        echo"<a href='?pages=dinterebr'><i class='icon-arrow-right'></i> Permintaan Copy Batch Record</a>";
+			        echo"<a href='?pages=copy_ebr'><i class='icon-arrow-right'></i> Permintaan Copy Batch Record</a>";
 			    
 			}
 		?>
@@ -190,7 +190,7 @@
     ])) {
 	?>
 	<li>
-		<a href="?pages=dinterebr"><i class="icon-list-alt"></i> Permintaan Copy Batch Record</a>
+		<a href="?pages=copy_ebr"><i class="icon-list-alt"></i> Permintaan Copy Batch Record</a>
 	</li>
 	<?php  }?>
 	

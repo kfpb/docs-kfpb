@@ -16,6 +16,9 @@
 	</li>
 	<?php } ?>
 	<li>
+		<a href="?pages=dinterebr"><i class="icon-list-alt"></i> Master Data Dokumen EBR</a>
+	</li>
+	<li>
 	<?php
 	
 			if(in_array($_SESSION['cv'], [0, 1, 53, 51, 1000, 1052, 1055, 1054, 1051, 1059, 1058, 1056, 1057])){
@@ -25,9 +28,9 @@
 		$sb = mysql_num_rows($copybatch);
 		
 		if($sb > 0){
-			echo"<a href='?pages=dinterebr'><i class='icon-arrow-right'></i><strong> Permintaan Copy Batch Record<span class='badge badge-info pull-right'>$sb</span></strong></a>";
+			echo"<a href='?pages=copy_ebr'><i class='icon-arrow-right'></i><strong> Permintaan Copy Batch Record<span class='badge badge-info pull-right'>$sb</span></strong></a>";
 		}else{
-			echo"<a href='?pages=dinterebr'><i class='icon-arrow-right'></i> Permintaan Copy Batch Record</a>";
+			echo"<a href='?pages=copy_ebr'><i class='icon-arrow-right'></i> Permintaan Copy Batch Record</a>";
 		    
 		}?>
 	</li>
