@@ -1205,31 +1205,22 @@ else
     <tr><td align=top><b>Informasi Distribusi :</b></td><td></td></tr><tr><td><?=$e[diket];?></td></tr>
 </table>
 
-    <?php if($e['difile']!=null){
-        if ($e['distatus'] != 'N') { ?>
-        <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
-         PDF1 <?=$e[jenisdok];?> <?php echo $e['difile']; ?>
-        <?php } else { ?>
-        <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Perhatian</h5>
-            <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
-        </div>
-        </div>
+    <?php 
+    $is_obsolete = ($e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false || (isset($r) && ($r['distatus'] == 'N' || stripos($r['dijudok'], 'OBSOLETE') !== false || stripos($r['dikodok'], 'OBSOLETE') !== false)));
+    if (!$is_obsolete) {
+        if(!empty($e['difile'])){
+        ?>
+            <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']; ?>/<?php echo $e['difile']; ?>" width="100%" height="500"></iframe>
+        <?php } else if(isset($r) && !empty($r['difile'])) { ?>
+            <iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']; ?>/<?php echo $r['difile']; ?>" width="100%" height="500"></iframe>
         <?php }
-    } else {
-        if ($r['distatus'] != 'N') { ?>
-         <iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']?>/<?php echo $r['difile'] ?>" width=100% height=500></iframe>
-         PDF <?=$r[jenisdok];?> <?php echo $r['difile']; ?>
-        <?php } else { ?>
-        <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Perhatian</h5>
-            <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
+    } else { ?>
+        <div class="alert alert-block alert-error" style="margin-top: 15px; margin-bottom: 20px; padding: 15px; font-size: 14px; line-height: 1.6;">
+            <h4 class="alert-heading" style="margin-bottom: 8px;"><i class="icon-ban-circle"></i> Informasi: Dokumen Obsolete</h4>
+            Dokumen ini telah berstatus <strong>OBSOLETE (Tidak Berlaku / Dihilangkan)</strong>.<br />
+            File dokumen PDF <strong>tidak ditampilkan</strong> pada sistem.
         </div>
-        </div>
-        <?php }
-    } ?>
+    <?php } ?>
  
 <br />
 <legend>Distribusi Ke :</legend>

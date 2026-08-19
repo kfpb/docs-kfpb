@@ -68,16 +68,15 @@ $get_dinter = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$_
 	
 	?>
 	</td></tr>
-</table>
-<?php if ($r['distatus'] != 'N') { ?>
-<!--<iframe src="dok/web/viewer.html?file=index1.php?id=<?php //echo $r[suid];?>" width=100% height=500></iframe>-->
-<iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']?>/<?php echo $r['difile'] ?>" width=100% height=500></iframe>
+<?php 
+$is_obsolete = ($r['distatus'] == 'N' || stripos($r['dijudok'], 'OBSOLETE') !== false || stripos($r['dikodok'], 'OBSOLETE') !== false || $e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false);
+if (!$is_obsolete) { ?>
+<iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']; ?>/<?php echo $r['difile']; ?>" width=100% height=500></iframe>
 <?php } else { ?>
-<div class="card">
-<div class="card-body">
-    <h5 class="card-title">Perhatian</h5>
-    <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
-</div>
+<div class="alert alert-block alert-error" style="margin-top: 15px; margin-bottom: 20px; padding: 15px; font-size: 14px; line-height: 1.6;">
+    <h4 class="alert-heading" style="margin-bottom: 8px;"><i class="icon-ban-circle"></i> Informasi: Dokumen Obsolete</h4>
+    Dokumen ini telah berstatus <strong>OBSOLETE (Tidak Berlaku / Dihilangkan)</strong>.<br />
+    File dokumen PDF <strong>tidak ditampilkan</strong> pada sistem.
 </div>
 <?php } ?>
 <?php /*<iframe src="dok/<?=$r[jenisdok];?>/<?=$r[difile];?>" width=100% height=500></iframe> 

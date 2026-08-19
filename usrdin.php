@@ -66,22 +66,15 @@ if ($e[cFoto]==""){
 <?php /*<iframe src="dok/<?=$e[jenisdok];?>/<?=$e[difile];?>" width=100% height=500></iframe>*/ ?>
 
 <?php
-// $edit = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM dinter WHERE suid='%$_GET[id]%'");
-//     $r = mysqli_fetch_array($edit);
-
-//     $pdfFile = dirname(__DIR__ ) . "/$r[jenisdok]/$r[difile]";
-//  if (file_exists($pdfFile)) {
-     ?>
-<?php if ($e['distatus'] != 'N') { ?>
-         <!--<iframe src="dok/<?=$e[jenisdok];?>/<?=$e[difile];?>" width=100% height=500></iframe>-->
-        <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
+$is_obsolete = ($e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false);
+if (!$is_obsolete) { ?>
+    <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']; ?>/<?php echo $e['difile']; ?>" width="100%" height="500"></iframe>
 <?php } else { ?>
-        <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Perhatian</h5>
-            <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
-        </div>
-        </div>
+    <div class="alert alert-block alert-error" style="margin-top: 15px; margin-bottom: 20px; padding: 15px; font-size: 14px; line-height: 1.6;">
+        <h4 class="alert-heading" style="margin-bottom: 8px;"><i class="icon-ban-circle"></i> Informasi: Dokumen Obsolete</h4>
+        Dokumen ini telah berstatus <strong>OBSOLETE (Tidak Berlaku / Dihilangkan)</strong>.<br />
+        File dokumen PDF <strong>tidak ditampilkan</strong> pada sistem.
+    </div>
 <?php } ?>
      
 <?

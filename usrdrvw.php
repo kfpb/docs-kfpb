@@ -46,8 +46,12 @@ if ($e[cFoto]==""){
     <tr><td>Tanggal Review 1 </td><td>: <?=tgl_indo($e[ditgl_review1]);?></td></tr>
     <tr><td>Tanggal Review 2 </td><td>: <?=tgl_indo($e[ditgl_review2]);?></td></tr>
     <tr><td>Tanggal Review 3 </td><td>: <?=tgl_indo($e[ditgl_review3]);?></td></tr>
+<?php 
+$is_obsolete = ($e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false);
+if (!$is_obsolete) { ?>
     <tr><td>File Dokumen </td><td>: <a title='File Dokumen' href='fdok/index1.php?id=<?=$e[suid];?>' target='_blank'>Klik Disini </a></td></tr>
     <tr><td><font color=red>Password PDF</font></td><td>: <font color=red><?=$e[pass];?></font></td></tr>
+<?php } ?>
 	<tr><td>Dokumen Terkait 1</td><td>: Kode :<?=$dok1[dikodok];?>- Judul :<?=$dok1[dijudok];?> </td></tr>
 	<tr><td>Dokumen Terkait 2</td><td>: Kode :<?=$dok2[dikodok];?>- Judul :<?=$dok2[dijudok];?> </td></tr>
 	<tr><td>Dokumen Terkait 3</td><td>: Kode :<?=$dok3[dikodok];?>- Judul :<?=$dok3[dijudok];?> </td></tr>
@@ -59,7 +63,15 @@ if ($e[cFoto]==""){
 	</table>
 	<a href='?pages=dinter&act=detail&id=<?=$e[suid];?>' class='btn btn-info' target=_blank>Daftar Penerima Dokumen</a>
 	<br>
+<?php if (!$is_obsolete) { ?>
 <iframe src="fdok/index1.php?id=<?=$e[suid];?>" width=100% height=400></iframe>
+<?php } else { ?>
+<div class="alert alert-block alert-error" style="margin-top: 15px; margin-bottom: 20px; padding: 15px; font-size: 14px; line-height: 1.6;">
+    <h4 class="alert-heading" style="margin-bottom: 8px;"><i class="icon-ban-circle"></i> Informasi: Dokumen Obsolete</h4>
+    Dokumen ini telah berstatus <strong>OBSOLETE (Tidak Berlaku / Dihilangkan)</strong>.<br />
+    File dokumen PDF <strong>tidak ditampilkan</strong> pada sistem.
+</div>
+<?php } ?>
 <?
 
 	$ds = mysql_query("SELECT * FROM disposisidok WHERE suid='$e[suid]' AND dPendisposisi='$_SESSION[cv]'");

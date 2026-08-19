@@ -706,8 +706,8 @@ Dokumen Level 4 : Catatan/Dokumen Mutu<br>
     </div>
 </div>
 <? }elseif($_GET['act']=="detail"){
-	$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dinter a,users b WHERE a.dipengirim=b.cId AND a.suid='$_GET[id]'"));
-	$ef = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dinter a,users b WHERE a.dipengirim=b.cId AND a.suid='$_GET[id]'"));
+	$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dinter a LEFT JOIN users b ON a.dipengirim=b.cId WHERE a.suid='$_GET[id]'"));
+	$ef = $e;
 	$efg = mysql_fetch_array(mysql_query("SELECT nama_jendok FROM jendok WHERE id_jendok='$ef[jenisdok]'"));
     $dok = mysql_query("SELECT * FROM dinter WHERE suid='$e[dikodok]'");
     $dok1 = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$e[dok_terkait1]'"));
@@ -764,60 +764,55 @@ if($_SESSION[cv]==0 OR $_SESSION[cv]==1) { ?>
 	<tr><td>Dokumen Terkait 3</td><td>: Kode :<?=$dok3[dikodok];?>- Judul :<?=$dok3[dijudok];?> </td></tr>
 	<tr><td>Status</td><td>: <strong>
 <?
-if ($e[distatus]=='N')
+$is_obsolete = ($e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false);
+if ($is_obsolete)
 {
-	echo"Obsolete/ Dihilangkan";
+	echo "<font color='red'>Obsolete/ Dihilangkan</font>";
 }
 else
 {
-	echo"Masih Berlaku";
+	echo "<font color='green'>Masih Berlaku</font>";
 }
-/*<iframe src="fdok/index1.php?id=<?=$e[suid];?>" width=100% height=500></iframe>*/
 ?>
 	</strong></td></tr>
 	</table>
 	<br></strong>
-	<table>
-    <tr><td align=top><b>Dokumen PDF :</b></td><td></td></tr>
-</table>
 
-<!--<iframe src="dok/web/viewer.html?file=/dok/<?php //echo $e['jenisdok']?>/<?php //echo $e['difile'] ?>" width=100% height=500></iframe>-->
 <?php
-$edit = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM dinter WHERE suid='$_GET[id]'");
-    $r = mysqli_fetch_array($edit);
-
-    $pdfFile = dirname(__DIR__ ) . "/$r[jenisdok]/$r[difile]";
-    ?>
-    Nomor Jenis Dokumen : <?php echo isset($r['jenisdok']) ? $r['jenisdok'] : 'Data tidak tersedia'; ?>
-
-    <?php
- if (file_exists($pdfFile) && $e['distatus'] != 'N') {
+if (!$is_obsolete) {
+    $pdfPath = "dok/" . $e['jenisdok'] . "/" . $e['difile'];
+    if (!empty($e['difile']) && file_exists($pdfPath)) {
         ?>
-        <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
+        <table>
+            <tr><td align="top"><b>Dokumen PDF :</b></td><td></td></tr>
+        </table>
+        <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']; ?>/<?php echo $e['difile']; ?>" width="100%" height="500"></iframe>
         <?php
-    } elseif ($e['distatus'] == 'N') {
+    } else if (!empty($e['difile']) && file_exists("fdok/" . $e['difile'])) {
         ?>
-        <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Perhatian</h5>
-            <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
-        </div>
-        </div>
+        <table>
+            <tr><td align="top"><b>Dokumen PDF :</b></td><td></td></tr>
+        </table>
+        <iframe src="dok/web/viewer.html?file=/fdok/<?php echo $e['difile']; ?>" width="100%" height="500"></iframe>
         <?php
     } else {
         ?>
-        <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Maaf</h5>
-            <p class="card-text">Tidak dapat menampilkan PDF <?=$e[jenisdok];?> <?php echo $e['difile']; ?> karena data tidak ada pada sistem.</p>
+        <div class="alert alert-block alert-info" style="margin-top: 15px; margin-bottom: 20px;">
+            <h4 class="alert-heading"><i class="icon-info-sign"></i> Informasi File PDF</h4>
+            <p style="margin-top: 5px;">File PDF (<?=$e['difile'];?>) belum diupload atau tidak ditemukan pada sistem.</p>
         </div>
-    </div><?
-        // echo "<center>Tidak dapat menampilkan PDF ".$e['jenisdok']." ".$e['difile']." karena data tidak ada Pada sistem.</center>";
-    }?>
-<!--<iframe src="dok/web/viewer.html?file=old_index1.php?id=<?php //echo $e[suid];?>" width="100%" height="500"></iframe>-->
-<!--<iframe src="dok/web/viewerDownload.html?file=/dok/<?php //echo $e['jenisdok']?>/<?php //echo $e['difile'] ?>" width=100% height=500></iframe>-->
-
-<?php /*<iframe src="dok/<?=$e[jenisdok];?>/<?=$e[difile];?>" width=100% height=500></iframe> */ ?>
+        <?php
+    }
+} else {
+    ?>
+    <div class="alert alert-block alert-error" style="margin-top: 15px; margin-bottom: 20px; padding: 15px; font-size: 14px; line-height: 1.6;">
+        <h4 class="alert-heading" style="margin-bottom: 8px;"><i class="icon-ban-circle"></i> Informasi: Dokumen Obsolete</h4>
+        Dokumen ini telah berstatus <strong>OBSOLETE (Tidak Berlaku / Dihilangkan)</strong>.<br />
+        File dokumen PDF <strong>tidak ditampilkan</strong> pada sistem.
+    </div>
+    <?php
+}
+?>
 
 
 <br />

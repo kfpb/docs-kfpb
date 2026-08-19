@@ -477,8 +477,11 @@ Dokumen Level 4 : Catatan/Dokumen Mutu<br>
     <tr><td>Tanggal Review 2 </td><td>: <?=tgl_indo($e[ditgl_review2]);?></td></tr>
     <tr><td>Tanggal Review 3 </td><td>: <?=tgl_indo($e[ditgl_review3]);?></td></tr>
     <?php /*<tr><td>File Dokumen </td><td>: <a title='File Dokumen' href='dok/<?=$e[jenisdok];?>/<?=$e[difile];?>' target='_blank'>Klik Disini </a></td></tr>
-    <tr><td><font color=red>Password PDF</font></td><td>: <font color=red><?=$e[pass];?></font></td></tr> */ ?>
-<? 	if($_SESSION[levelcv]==0 OR $_SESSION[levelcv]==1) { ?>
+<?
+$is_obsolete = ($e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false);
+?>
+    <?php /*<tr><td><font color=red>Password PDF</font></td><td>: <font color=red><?=$e[pass];?></font></td></tr> */ ?>
+<? 	if((!$is_obsolete) && ($_SESSION[levelcv]==0 OR $_SESSION[levelcv]==1)) { ?>
     <tr><td>File Khusus MR </td><td>: <a title='File Dokumen' href='dok/<?=$e[jenisdok];?>/<?=$e[difile];?>' target='_blank'>File Revisi Terbaru </a></td></tr>
 <? } ?>    
 	<tr><td>Dokumen Terkait 1</td><td>: Kode :<?=$dok1[dikodok];?>- Judul :<?=$dok1[dijudok];?> </td></tr>
@@ -486,42 +489,54 @@ Dokumen Level 4 : Catatan/Dokumen Mutu<br>
 	<tr><td>Dokumen Terkait 3</td><td>: Kode :<?=$dok3[dikodok];?>- Judul :<?=$dok3[dijudok];?> </td></tr>
 	<tr><td>Status</td><td>: <strong>
 <?
-if ($e[distatus]=='N')
+if ($is_obsolete)
 {
-	echo"Obsolete/ Dihilangkan";
+	echo "<font color='red'>Obsolete/ Dihilangkan</font>";
 }
 else
 {
-	echo"Masih Berlaku";
+	echo "<font color='green'>Masih Berlaku</font>";
 }
 ?>
 	</strong></td></tr>
 	</table>
 	<br></strong>
-	<table>
-	    <?php
-	    //ga kepake
-        // $dataDitemukan = true; 
-        // if ($dataDitemukan) {
-        //     $src = "dok/web/viewer.html?file=index1.php?id={$e['suid']}";
-        // } else {
-        //     $src = "dok/web/viewer.html?file=/dok/{$e['jenisdok']}/{$e['difile']}";
-        // }
+
+<?php
+if (!$is_obsolete) {
+    $pdfPath = "dok/" . $e['jenisdok'] . "/" . $e['difile'];
+    if (!empty($e['difile']) && file_exists($pdfPath)) {
         ?>
-        
-    <tr><td align=top><b>Dokumen PDF :</b></td><td></td></tr>
-</table>
-<?php if ($e['distatus'] != 'N') { ?>
-<!--<iframe src="dok/web/viewer.html?file=index1.php?id=<? //echo $e[suid];?>" width=100% height=500></iframe>-->
-<iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']?>/<?php echo $e['difile'] ?>" width=100% height=500></iframe>
-<?php } else { ?>
-<div class="card">
-<div class="card-body">
-    <h5 class="card-title">Perhatian</h5>
-    <p class="card-text">Dokumen ini sudah obsolete. File PDF tidak dapat ditampilkan.</p>
-</div>
-</div>
-<?php } ?>
+        <table>
+            <tr><td align="top"><b>Dokumen PDF :</b></td><td></td></tr>
+        </table>
+        <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']; ?>/<?php echo $e['difile']; ?>" width="100%" height="500"></iframe>
+        <?php
+    } else if (!empty($e['difile']) && file_exists("fdok/" . $e['difile'])) {
+        ?>
+        <table>
+            <tr><td align="top"><b>Dokumen PDF :</b></td><td></td></tr>
+        </table>
+        <iframe src="dok/web/viewer.html?file=/fdok/<?php echo $e['difile']; ?>" width="100%" height="500"></iframe>
+        <?php
+    } else {
+        ?>
+        <table>
+            <tr><td align="top"><b>Dokumen PDF :</b></td><td></td></tr>
+        </table>
+        <iframe src="dok/web/viewer.html?file=/dok/<?php echo $e['jenisdok']; ?>/<?php echo $e['difile']; ?>" width="100%" height="500"></iframe>
+        <?php
+    }
+} else {
+    ?>
+    <div class="alert alert-block alert-error" style="margin-top: 15px; margin-bottom: 20px; padding: 15px; font-size: 14px; line-height: 1.6;">
+        <h4 class="alert-heading" style="margin-bottom: 8px;"><i class="icon-ban-circle"></i> Informasi: Dokumen Obsolete</h4>
+        Dokumen ini telah berstatus <strong>OBSOLETE (Tidak Berlaku / Dihilangkan)</strong>.<br />
+        File dokumen PDF <strong>tidak ditampilkan</strong> pada sistem.
+    </div>
+    <?php
+}
+?>
 <br />
 <legend>Penerima Dokumen :</legend>
 <table class="table table-bordered table-striped" width=100%>
