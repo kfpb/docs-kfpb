@@ -259,7 +259,7 @@ const batchText = "<?= isset($detailpermintaan['nomor_batch']) ? addslashes($det
             const errorMsg = document.getElementById('errorMsg');
         
             try {
-                const response = await fetch(`include/copy_ebr/data_ebr.php?kodedokumen=${kodeDokumen}`);
+                const response = await fetch(`include/copy_ebr/data_ebr.php?kodedokumen=${encodeURIComponent(kodeDokumen)}`);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const files = await response.json();
         
