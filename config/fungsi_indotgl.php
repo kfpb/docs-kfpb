@@ -370,6 +370,20 @@ function catat_audit($kode_aktivitas, $user, $jabatan, $kode_dokumen, $dokumen, 
         }
     }
 
+    // Jika $user dikirim sebagai numeric ID (misal cId = 72), cari nama lengkapnya (cNama)
+    if (is_numeric($user) && (int)$user > 0) {
+        $q_u_id = mysql_query("SELECT cNama, cJabatan, cAudit FROM users WHERE cId = '" . (int)$user . "'");
+        if ($q_u_id && $u_row = mysql_fetch_array($q_u_id)) {
+            $user = $u_row['cNama'];
+            if (empty($jabatan) || $jabatan == '-') {
+                $jabatan = $u_row['cJabatan'];
+            }
+            if ($cAudit == 'N' && !empty($u_row['cAudit'])) {
+                $cAudit = $u_row['cAudit'];
+            }
+        }
+    }
+
     // Guard: jika user dalam mode audit aktif, tidak dicatat
     if ($cAudit == 'Y') {
         return false;

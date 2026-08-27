@@ -18,6 +18,18 @@ $page   = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $limit  = isset($_GET['limit']) ? max(10, min(500, (int)$_GET['limit'])) : 50; // default 50 baris per halaman
 $offset = ($page - 1) * $limit;
 
+// Pre-fetch mapping user ID (cId) ke Nama User (cNama) untuk lookup instan
+$user_map = array();
+$user_name_to_id = array();
+$q_users_all = mysql_query("SELECT cId, cNama FROM users WHERE cNama != ''");
+if ($q_users_all) {
+    while ($ur = mysql_fetch_array($q_users_all)) {
+        $user_map[$ur['cId']] = $ur['cNama'];
+        $user_map[(string)$ur['cId']] = $ur['cNama'];
+        $user_name_to_id[$ur['cNama']] = $ur['cId'];
+    }
+}
+
 // Bangun query WHERE dinamis
 $where_clauses = array("hide_data = 0");
 
@@ -35,7 +47,12 @@ if (!empty($f_action)) {
 }
 if (!empty($f_user)) {
     $safe_user = mysql_real_escape_string($f_user);
-    $where_clauses[] = "user = '$safe_user'";
+    if (isset($user_name_to_id[$f_user])) {
+        $user_cid = (int)$user_name_to_id[$f_user];
+        $where_clauses[] = "(user = '$safe_user' OR user = '$user_cid')";
+    } else {
+        $where_clauses[] = "user = '$safe_user'";
+    }
 }
 if (!empty($f_keyword)) {
     $safe_keyword = mysql_real_escape_string($f_keyword);
@@ -60,8 +77,8 @@ if ($page > $total_pages) {
 $query_sql = "SELECT dokumen, kode_dokumen, user, jabatan, action, deskripsi, created_at FROM aktivitas_dokumen WHERE $where_sql ORDER BY created_at DESC LIMIT $offset, $limit";
 $udmasuk   = mysql_query($query_sql);
 
-// Query user dari tabel users (Instan & Tidak melakukan full table scan pada aktivitas_dokumen)
-$q_users = mysql_query("SELECT cNama FROM users WHERE cNama != '' AND cBlock = 'N' ORDER BY cNama ASC");
+// Query user dari tabel users untuk filter dropdown
+$q_users = mysql_query("SELECT DISTINCT cNama FROM users WHERE cNama != '' ORDER BY cNama ASC");
 
 // Helper untuk generate URL pagination dengan tetap mempertahankan filter
 function build_page_url($p, $lim, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) {
@@ -201,8 +218,16 @@ function build_page_url($p, $lim, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_
 			elseif($s['action'] == 'reject') $badge_class = "label label-warning";
 			elseif($s['action'] == 'print') $badge_class = "label label-inverse";
 
-			// 2. Fallback jika user atau jabatan kosong
-			$tampil_user = !empty($s['user']) && $s['user'] != '-' ? htmlspecialchars($s['user']) : "<span class='muted' style='color:#999;'><i>(Tidak tercatat)</i></span>";
+			// 2. Fallback jika user atau jabatan kosong (jika user berupa ID, resolve ke Nama Pengguna)
+			$user_raw = trim($s['user']);
+			if (is_numeric($user_raw) && isset($user_map[$user_raw])) {
+				$nama_user_tampil = $user_map[$user_raw];
+			} elseif (!empty($user_raw) && $user_raw != '-') {
+				$nama_user_tampil = $user_raw;
+			} else {
+				$nama_user_tampil = '';
+			}
+			$tampil_user = !empty($nama_user_tampil) ? htmlspecialchars($nama_user_tampil) : "<span class='muted' style='color:#999;'><i>(Tidak tercatat)</i></span>";
 			$tampil_jabatan = !empty($s['jabatan']) && $s['jabatan'] != '-' ? htmlspecialchars($s['jabatan']) : "<span class='muted' style='color:#999;'>-</span>";
 
 			// 3. Fallback jika nama dokumen kosong atau hanya bertuliskan 'Dokumen '

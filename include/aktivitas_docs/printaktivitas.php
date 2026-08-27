@@ -10,6 +10,18 @@ $f_user    = isset($_REQUEST['user']) ? trim($_REQUEST['user']) : '';
 $f_keyword = isset($_REQUEST['keyword']) ? trim($_REQUEST['keyword']) : '';
 $f_akt     = isset($_REQUEST['aktivitas']) ? trim($_REQUEST['aktivitas']) : '';
 
+// Pre-fetch mapping user ID (cId) ke Nama User (cNama) untuk lookup instan
+$user_map = array();
+$user_name_to_id = array();
+$q_users_all = mysql_query("SELECT cId, cNama FROM users WHERE cNama != ''");
+if ($q_users_all) {
+    while ($ur = mysql_fetch_array($q_users_all)) {
+        $user_map[$ur['cId']] = $ur['cNama'];
+        $user_map[(string)$ur['cId']] = $ur['cNama'];
+        $user_name_to_id[$ur['cNama']] = $ur['cId'];
+    }
+}
+
 $where_clauses = array("hide_data = 0");
 
 if (!empty($tgl_awal)) {
@@ -26,7 +38,12 @@ if (!empty($f_action)) {
 }
 if (!empty($f_user)) {
     $safe_user = mysql_real_escape_string($f_user);
-    $where_clauses[] = "user = '$safe_user'";
+    if (isset($user_name_to_id[$f_user])) {
+        $user_cid = (int)$user_name_to_id[$f_user];
+        $where_clauses[] = "(user = '$safe_user' OR user = '$user_cid')";
+    } else {
+        $where_clauses[] = "user = '$safe_user'";
+    }
 }
 if (!empty($f_keyword)) {
     $safe_keyword = mysql_real_escape_string($f_keyword);
@@ -59,12 +76,21 @@ $aktivitas = mysql_query("SELECT * FROM aktivitas_dokumen WHERE $where_sql ORDER
 	<?php
 	$i = 1;
     while($s = mysql_fetch_array($aktivitas)) {
+		// Resolve user ID to name if numeric
+		$user_raw = trim($s['user']);
+		if (is_numeric($user_raw) && isset($user_map[$user_raw])) {
+			$tampil_user = $user_map[$user_raw];
+		} elseif (!empty($user_raw) && $user_raw != '-') {
+			$tampil_user = $user_raw;
+		} else {
+			$tampil_user = '-';
+		}
 	?>
 		<tr>
 		    <td><?php echo $i; ?></td>
 		    <td><?php echo htmlspecialchars($s['dokumen']); ?></td>
 		    <td><?php echo htmlspecialchars($s['kode_dokumen']); ?></td>
-		    <td><?php echo htmlspecialchars($s['user']); ?></td>
+		    <td><?php echo htmlspecialchars($tampil_user); ?></td>
 		    <td><?php echo htmlspecialchars($s['jabatan']); ?></td>
 		    <td><?php echo htmlspecialchars($s['action']); ?></td>
 		    <td><?php echo htmlspecialchars($s['deskripsi']); ?></td>
