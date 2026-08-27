@@ -116,6 +116,8 @@ include"config/fungsi_indotgl.php";
 							include"include/duin/printduin.php";						//other untuk download excel spptek	
 						}elseif($_GET[pages]=="printaktivitas"){
 							include"include/aktivitas_docs/printaktivitas.php";						//other untuk download excel aktivitas dokumen	
+						}elseif($_GET[pages]=="pdfaktivitas"){
+							include"include/aktivitas_docs/pdfaktivitas.php";						//other untuk cetak PDF riwayat audit dokumen	
 						}elseif($_GET[pages]=="printsout"){
 							include"include/copy/printsout.php";						//other untuk download excel spptek	
 						}elseif($_GET[pages]=="printdister"){

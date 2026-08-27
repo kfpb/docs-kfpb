@@ -147,11 +147,15 @@ function build_page_url($p, $lim, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_
 					<button type="submit" class="btn btn-primary"><i class="icon-search icon-white"></i> Filter Data</button>
 					<a href="home.php?pages=aktivitas_dokumen" class="btn"><i class="icon-refresh"></i> Reset</a>
 					
-					<!-- Tombol Export Excel membawa parameter filter saat ini -->
+					<!-- Tombol Export Excel & Cetak PDF membawa parameter filter saat ini -->
 					<?php
 					$export_url = "home1.php?pages=printaktivitas&tgl_awal=".urlencode($tgl_awal)."&tgl_akhir=".urlencode($tgl_akhir)."&action=".urlencode($f_action)."&user=".urlencode($f_user)."&keyword=".urlencode($f_keyword);
+					$pdf_url    = "home1.php?pages=pdfaktivitas&tgl_awal=".urlencode($tgl_awal)."&tgl_akhir=".urlencode($tgl_akhir)."&action=".urlencode($f_action)."&user=".urlencode($f_user)."&keyword=".urlencode($f_keyword);
 					?>
-					<a href="<?php echo $export_url; ?>" target="_blank" class="btn btn-success pull-right"><i class="icon-download-alt icon-white"></i> Export Excel</a>
+					<div class="pull-right">
+						<a href="<?php echo $pdf_url; ?>" target="_blank" class="btn btn-danger" style="margin-right: 5px;"><i class="icon-print icon-white"></i> Cetak PDF</a>
+						<a href="<?php echo $export_url; ?>" target="_blank" class="btn btn-success"><i class="icon-download-alt icon-white"></i> Export Excel</a>
+					</div>
 				</div>
 			</div>
 		</form>
