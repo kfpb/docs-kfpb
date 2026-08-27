@@ -360,9 +360,36 @@ return $bulan;
  * @return bool|resource          Hasil mysql_query, atau false jika di-skip karena cAudit
  */
 function catat_audit($kode_aktivitas, $user, $jabatan, $kode_dokumen, $dokumen, $action, $deskripsi, $cAudit = 'N') {
+    // Fallback otomatis: jika $user atau $jabatan kosong, coba ambil dari session login aktif
+    if (empty($user) && isset($_SESSION['cv']) && !empty($_SESSION['cv'])) {
+        $q_u = mysql_query("SELECT cNama, cJabatan, cAudit FROM users WHERE cId = '" . mysql_real_escape_string($_SESSION['cv']) . "'");
+        if ($q_u && $u_row = mysql_fetch_array($q_u)) {
+            $user    = $u_row['cNama'];
+            $jabatan = !empty($jabatan) ? $jabatan : $u_row['cJabatan'];
+            $cAudit  = (!empty($cAudit) && $cAudit != 'N') ? $cAudit : $u_row['cAudit'];
+        }
+    }
+
     // Guard: jika user dalam mode audit aktif, tidak dicatat
     if ($cAudit == 'Y') {
         return false;
+    }
+
+    // Fallback nilai user default jika tetap kosong
+    if (empty($user)) {
+        $user = 'System';
+    }
+    if (empty($jabatan)) {
+        $jabatan = '-';
+    }
+
+    // Perbaiki jika $dokumen hanya 'Dokumen ' atau kosong
+    if (empty($dokumen) || trim($dokumen) == 'Dokumen' || trim($dokumen) == '-') {
+        if (!empty($kode_dokumen) && $kode_dokumen != '-') {
+            $dokumen = $kode_dokumen;
+        } else {
+            $dokumen = '-';
+        }
     }
 
     // Ambil IP address client (handle proxy)

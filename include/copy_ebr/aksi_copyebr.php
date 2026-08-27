@@ -102,16 +102,16 @@ if($act=='storebatch'){
                     ") or die(mysql_error());
                 }
             
-                // [FIX] Refactor ke catat_audit(): user diisi cNama (sebelumnya salah pakai cId/angka)
-                // [FIX] ip_address & user_agent kini diisi otomatis
+                // [FIX] Gunakan nama produk atau nomor batch yang jelas, bukan hanya 'Dokumen '
+                $judul_dokumen = !empty($nama_produk) ? $nama_produk : (!empty($kode_dokumen) ? 'Dokumen ' . $kode_dokumen : 'Permintaan Batch Record ' . $nomor_batch);
                 catat_audit(
                     '',
                     $user['cNama'],
                     $user['cJabatan'],
                     $kode_dokumen,
-                    'Dokumen ' . $kode_dokumen,
+                    $judul_dokumen,
                     'create',
-                    'Membuat permintaan dokumen dengan nomor batch ' . $nomor_batch,
+                    'Membuat permintaan dokumen ' . $judul_dokumen . ' dengan nomor batch ' . $nomor_batch,
                     $user['cAudit']
                 );
             
@@ -154,18 +154,18 @@ if($act=='storebatch'){
 				    
 				}else{
                         // [FIX] user diubah dari cId (angka) → cNama (nama user)
-                        // [FIX] ip_address & user_agent kini diisi otomatis via catat_audit()
-                        // Ambil kode_dokumen dari tabel permintaan terlebih dahulu
-                        $perm_row = mysql_fetch_array(mysql_query("SELECT dikodok FROM permintaan_dokumen_batch WHERE id_permintaan = '$id_permintaan'"));
-                        $kode_dok_ebr = $perm_row ? $perm_row['dikodok'] : '-';
+                        // [FIX] Mengambil judul dokumen/nama produk yang spesifik
+                        $perm_row = mysql_fetch_array(mysql_query("SELECT dikodok, nama_produk, nomor_batch FROM permintaan_dokumen_batch WHERE id_permintaan = '$id_permintaan'"));
+                        $kode_dok_ebr = ($perm_row && !empty($perm_row['dikodok'])) ? $perm_row['dikodok'] : '-';
+                        $nama_prod_ebr = ($perm_row && !empty($perm_row['nama_produk'])) ? $perm_row['nama_produk'] : (($perm_row && !empty($perm_row['dikodok'])) ? 'Dokumen ' . $perm_row['dikodok'] : 'Batch Record ' . $id_permintaan);
                         catat_audit(
                             '',
                             $user['cNama'],
                             $user['cJabatan'],
                             $kode_dok_ebr,
-                            'Dokumen dengan ID Permintaan ' . $id_permintaan,
+                            $nama_prod_ebr,
                             'update',
-                            'Dokumen dengan ID Permintaan ' . $id_permintaan . ' telah selesai dicetak oleh ' . $user['cNama'],
+                            'Dokumen ' . $nama_prod_ebr . ' (ID: ' . $id_permintaan . ') telah selesai dicetak oleh ' . $user['cNama'],
                             $user['cAudit']
                         );
 				}

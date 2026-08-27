@@ -13,6 +13,11 @@ $f_action  = isset($_REQUEST['action']) ? trim($_REQUEST['action']) : '';
 $f_user    = isset($_REQUEST['user']) ? trim($_REQUEST['user']) : '';
 $f_keyword = isset($_REQUEST['keyword']) ? trim($_REQUEST['keyword']) : '';
 
+// Parameter Pagination
+$page   = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$limit  = isset($_GET['limit']) ? max(10, min(500, (int)$_GET['limit'])) : 50; // default 50 baris per halaman
+$offset = ($page - 1) * $limit;
+
 // Bangun query WHERE dinamis
 $where_clauses = array("hide_data = 0");
 
@@ -38,17 +43,47 @@ if (!empty($f_keyword)) {
 }
 
 $where_sql = implode(" AND ", $where_clauses);
-$query_sql = "SELECT * FROM aktivitas_dokumen WHERE $where_sql ORDER BY created_at DESC";
-$udmasuk = mysql_query($query_sql);
 
-// Query distinct user untuk filter dropdown
-$q_users = mysql_query("SELECT DISTINCT user FROM aktivitas_dokumen WHERE user != '' AND user != '-' ORDER BY user ASC");
+// 1. Hitung total data untuk pagination (Cepat)
+$count_query = mysql_query("SELECT COUNT(*) as total FROM aktivitas_dokumen WHERE $where_sql");
+$count_row   = mysql_fetch_array($count_query);
+$total_rows  = (int)$count_row['total'];
+$total_pages = max(1, ceil($total_rows / $limit));
+
+// Pastikan halaman tidak melebihi total halaman
+if ($page > $total_pages) {
+    $page = $total_pages;
+    $offset = ($page - 1) * $limit;
+}
+
+// 2. Query data dengan LIMIT dan OFFSET (Hanya ambil kolom yang ditampilkan agar sangat ringan)
+$query_sql = "SELECT dokumen, kode_dokumen, user, jabatan, action, deskripsi, created_at FROM aktivitas_dokumen WHERE $where_sql ORDER BY created_at DESC LIMIT $offset, $limit";
+$udmasuk   = mysql_query($query_sql);
+
+// Query user dari tabel users (Instan & Tidak melakukan full table scan pada aktivitas_dokumen)
+$q_users = mysql_query("SELECT cNama FROM users WHERE cNama != '' AND cBlock = 'N' ORDER BY cNama ASC");
+
+// Helper untuk generate URL pagination dengan tetap mempertahankan filter
+function build_page_url($p, $lim, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) {
+    $params = array(
+        'pages'     => 'aktivitas_dokumen',
+        'page'      => $p,
+        'limit'     => $lim,
+        'tgl_awal'  => $tgl_awal,
+        'tgl_akhir' => $tgl_akhir,
+        'action'    => $f_action,
+        'user'      => $f_user,
+        'keyword'   => $f_keyword
+    );
+    return 'home.php?' . http_build_query($params);
+}
 ?>
 
 	<!-- Form Filter Data Audit Trail -->
-	<div class="well well-small" style="background-color: #fcfcfc; border: 1px solid #e3e3e3; padding: 15px; margin-bottom: 20px;">
+	<div class="well well-small" style="background-color: #fcfcfc; border: 1px solid #e3e3e3; padding: 15px; margin-bottom: 15px;">
 		<form method="GET" action="home.php" class="form-inline" style="margin-bottom: 0;">
 			<input type="hidden" name="pages" value="aktivitas_dokumen">
+			<input type="hidden" name="limit" value="<?php echo $limit; ?>">
 			
 			<div class="row-fluid" style="margin-bottom: 10px;">
 				<div class="span3">
@@ -78,8 +113,8 @@ $q_users = mysql_query("SELECT DISTINCT user FROM aktivitas_dokumen WHERE user !
 						<option value="">-- Semua User --</option>
 						<?php
 						while($u = mysql_fetch_array($q_users)){
-							$selected = ($f_user == $u['user']) ? 'selected' : '';
-							echo "<option value='".htmlspecialchars($u['user'])."' $selected>".htmlspecialchars($u['user'])."</option>";
+							$selected = ($f_user == $u['cNama']) ? 'selected' : '';
+							echo "<option value='".htmlspecialchars($u['cNama'])."' $selected>".htmlspecialchars($u['cNama'])."</option>";
 						}
 						?>
 					</select>
@@ -105,61 +140,152 @@ $q_users = mysql_query("SELECT DISTINCT user FROM aktivitas_dokumen WHERE user !
 		</form>
 	</div>
 
-	<?php
-	// Indikator filter aktif
-	$filter_active = (!empty($tgl_awal) || !empty($tgl_akhir) || !empty($f_action) || !empty($f_user) || !empty($f_keyword));
-	if ($filter_active) {
-		$count_rows = mysql_num_rows($udmasuk);
-		echo "<div class='alert alert-info' style='margin-bottom: 15px;'>
-				<i class='icon-filter'></i> <strong>Filter Aktif:</strong> Menampilkan <strong>$count_rows</strong> data sesuai kriteria pencarian.
-			  </div>";
-	}
-	?>
+	<!-- Baris Info & Limit Paging -->
+	<div class="row-fluid" style="margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+		<div class="span6">
+			<?php
+			$start_record = ($total_rows > 0) ? ($offset + 1) : 0;
+			$end_record   = min($offset + $limit, $total_rows);
+			?>
+			<span style="font-size: 13px; color: #555;">
+				Menampilkan data ke-<strong><?php echo number_format($start_record); ?></strong> s/d <strong><?php echo number_format($end_record); ?></strong> dari <strong><?php echo number_format($total_rows); ?></strong> total data
+				<?php if ($total_pages > 1) echo "(Halaman $page dari $total_pages)"; ?>
+			</span>
+		</div>
+		<div class="span6 text-right" style="text-align: right;">
+			<form method="GET" action="home.php" style="margin: 0; display: inline-block;">
+				<input type="hidden" name="pages" value="aktivitas_dokumen">
+				<input type="hidden" name="page" value="1">
+				<input type="hidden" name="tgl_awal" value="<?php echo htmlspecialchars($tgl_awal); ?>">
+				<input type="hidden" name="tgl_akhir" value="<?php echo htmlspecialchars($tgl_akhir); ?>">
+				<input type="hidden" name="action" value="<?php echo htmlspecialchars($f_action); ?>">
+				<input type="hidden" name="user" value="<?php echo htmlspecialchars($f_user); ?>">
+				<input type="hidden" name="keyword" value="<?php echo htmlspecialchars($f_keyword); ?>">
+				<label style="display: inline-block; font-size: 12px; margin-right: 5px;">Tampilkan per halaman:</label>
+				<select name="limit" onchange="this.form.submit()" style="width: 80px; margin-bottom: 0;">
+					<option value="25" <?php if($limit==25) echo 'selected'; ?>>25</option>
+					<option value="50" <?php if($limit==50) echo 'selected'; ?>>50</option>
+					<option value="100" <?php if($limit==100) echo 'selected'; ?>>100</option>
+					<option value="250" <?php if($limit==250) echo 'selected'; ?>>250</option>
+				</select>
+			</form>
+		</div>
+	</div>
 
-	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="Tb14" width="100%">
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" width="100%">
 	<thead>
-		<tr>
-			<th style="display: none;"></th>
+		<tr style="background-color: #f7f7f7;">
 			<th width="4%">No</th>
 			<th width="18%">Dokumen</th>
 			<th width="12%">Kode Dokumen</th>
-			<th width="12%">User</th>
+			<th width="13%">User</th>
 			<th width="12%">Jabatan</th>
 			<th width="8%">Action</th>
 			<th width="20%">Deskripsi</th>
-			<th width="14%">Tanggal & Waktu</th>
+			<th width="13%">Tanggal & Waktu</th>
 		</tr>
 	</thead>
 	<tbody>
 	<?php
-	$i = 1;
-	while($s = mysql_fetch_array($udmasuk)) {
-		// Warna label badge action
-		$badge_class = "label";
-		if($s['action'] == 'create') $badge_class = "label label-success";
-		elseif($s['action'] == 'update') $badge_class = "label label-info";
-		elseif($s['action'] == 'delete' || $s['action'] == 'delete all') $badge_class = "label label-important";
-		elseif($s['action'] == 'approve') $badge_class = "label label-primary";
-		elseif($s['action'] == 'reject') $badge_class = "label label-warning";
-		elseif($s['action'] == 'print') $badge_class = "label label-inverse";
-		?>
-		<tr>
-			<td style='display: none;'></td>
-			<td><?php echo $i; ?></td>
-			<td><strong><?php echo htmlspecialchars($s['dokumen']); ?></strong></td>
-			<td><?php echo htmlspecialchars($s['kode_dokumen']); ?></td>
-			<td><?php echo htmlspecialchars($s['user']); ?></td>
-			<td><?php echo htmlspecialchars($s['jabatan']); ?></td>
-			<td><span class="<?php echo $badge_class; ?>"><?php echo htmlspecialchars($s['action']); ?></span></td>
-			<td><?php echo htmlspecialchars($s['deskripsi']); ?></td>
-			<td><?php echo tgl_indojam($s['created_at']); ?></td>
-		</tr> 
-	<?php
-		$i++;
+	if ($total_rows == 0) {
+		echo "<tr><td colspan='8' class='text-center' style='text-align: center; padding: 30px; color: #888;'>Tidak ada data aktivitas dokumen yang ditemukan.</td></tr>";
+	} else {
+		$i = $offset + 1;
+		while($s = mysql_fetch_array($udmasuk)) {
+			// 1. Format label badge action
+			$badge_class = "label";
+			if($s['action'] == 'create') $badge_class = "label label-success";
+			elseif($s['action'] == 'update') $badge_class = "label label-info";
+			elseif($s['action'] == 'delete' || $s['action'] == 'delete all') $badge_class = "label label-important";
+			elseif($s['action'] == 'approve') $badge_class = "label label-primary";
+			elseif($s['action'] == 'reject') $badge_class = "label label-warning";
+			elseif($s['action'] == 'print') $badge_class = "label label-inverse";
+
+			// 2. Fallback jika user atau jabatan kosong
+			$tampil_user = !empty($s['user']) && $s['user'] != '-' ? htmlspecialchars($s['user']) : "<span class='muted' style='color:#999;'><i>(Tidak tercatat)</i></span>";
+			$tampil_jabatan = !empty($s['jabatan']) && $s['jabatan'] != '-' ? htmlspecialchars($s['jabatan']) : "<span class='muted' style='color:#999;'>-</span>";
+
+			// 3. Fallback jika nama dokumen kosong atau hanya bertuliskan 'Dokumen '
+			$dok_raw = trim($s['dokumen']);
+			if (empty($dok_raw) || $dok_raw == 'Dokumen' || $dok_raw == '-') {
+				if (!empty($s['kode_dokumen']) && $s['kode_dokumen'] != '-') {
+					$tampil_dokumen = "<strong>" . htmlspecialchars($s['kode_dokumen']) . "</strong>";
+				} else {
+					$tampil_dokumen = "<span class='muted' style='color:#999;'><i>(Tanpa Judul)</i></span>";
+				}
+			} else {
+				$tampil_dokumen = "<strong>" . htmlspecialchars($dok_raw) . "</strong>";
+			}
+
+			// 4. Fallback kode dokumen
+			$tampil_kodedok = !empty($s['kode_dokumen']) && $s['kode_dokumen'] != '-' ? htmlspecialchars($s['kode_dokumen']) : "<span class='muted' style='color:#999;'>-</span>";
+			?>
+			<tr>
+				<td><?php echo $i; ?></td>
+				<td><?php echo $tampil_dokumen; ?></td>
+				<td><?php echo $tampil_kodedok; ?></td>
+				<td><?php echo $tampil_user; ?></td>
+				<td><?php echo $tampil_jabatan; ?></td>
+				<td><span class="<?php echo $badge_class; ?>"><?php echo htmlspecialchars($s['action']); ?></span></td>
+				<td><?php echo htmlspecialchars($s['deskripsi']); ?></td>
+				<td><?php echo tgl_indojam($s['created_at']); ?></td>
+			</tr> 
+		<?php
+			$i++;
+		}
 	}
 	?>
 	</tbody>
 	</table>
+
+	<!-- Navigasi Pagination -->
+	<?php if ($total_pages > 1): ?>
+	<div class="pagination pagination-centered" style="margin-top: 15px;">
+		<ul>
+			<?php
+			// Tombol First & Prev
+			if ($page > 1) {
+				echo "<li><a href='" . build_page_url(1, $limit, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) . "' title='Halaman Pertama'>&laquo; Pertama</a></li>";
+				echo "<li><a href='" . build_page_url($page - 1, $limit, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) . "' title='Halaman Sebelumnya'>&lsaquo; Prev</a></li>";
+			} else {
+				echo "<li class='disabled'><a href='javascript:void(0)'>&laquo; Pertama</a></li>";
+				echo "<li class='disabled'><a href='javascript:void(0)'>&lsaquo; Prev</a></li>";
+			}
+
+			// Rentang nomor halaman (sliding window +/- 3)
+			$start_page = max(1, $page - 3);
+			$end_page   = min($total_pages, $page + 3);
+
+			if ($start_page > 1) {
+				echo "<li><a href='" . build_page_url(1, $limit, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) . "'>1</a></li>";
+				if ($start_page > 2) echo "<li class='disabled'><a href='javascript:void(0)'>...</a></li>";
+			}
+
+			for ($p = $start_page; $p <= $end_page; $p++) {
+				if ($p == $page) {
+					echo "<li class='active'><a href='javascript:void(0)'><strong>$p</strong></a></li>";
+				} else {
+					echo "<li><a href='" . build_page_url($p, $limit, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) . "'>$p</a></li>";
+				}
+			}
+
+			if ($end_page < $total_pages) {
+				if ($end_page < $total_pages - 1) echo "<li class='disabled'><a href='javascript:void(0)'>...</a></li>";
+				echo "<li><a href='" . build_page_url($total_pages, $limit, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) . "'>$total_pages</a></li>";
+			}
+
+			// Tombol Next & Last
+			if ($page < $total_pages) {
+				echo "<li><a href='" . build_page_url($page + 1, $limit, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) . "' title='Halaman Berikutnya'>Next &rsaquo;</a></li>";
+				echo "<li><a href='" . build_page_url($total_pages, $limit, $tgl_awal, $tgl_akhir, $f_action, $f_user, $f_keyword) . "' title='Halaman Terakhir'>Terakhir &raquo;</a></li>";
+			} else {
+				echo "<li class='disabled'><a href='javascript:void(0)'>Next &rsaquo;</a></li>";
+				echo "<li class='disabled'><a href='javascript:void(0)'>Terakhir &raquo;</a></li>";
+			}
+			?>
+		</ul>
+	</div>
+	<?php endif; ?>
 
 </div>
 </div>
