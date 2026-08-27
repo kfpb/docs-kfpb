@@ -6,6 +6,7 @@ if(!isset($_SESSION))
     }
 include "../../config/koneksi.php";
 include "../../config/fungsi_thumb.php";
+include "../../config/fungsi_indotgl.php";
 $act=$_GET['act'];
 
 // Input
@@ -95,32 +96,17 @@ if (empty($lokasi_file)){
             
     //             $updateDisin =mysql_query("UPDATE disin SET suid='$idusulan' WHERE suid='$data[suid]' ");			
   
-				if($e['cAudit']=='Y'){
-				    
-				}else{
-							
-		            $q=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
-		                            user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$get_kodeaktivitas[kode_aktivitas]',
-	                            '$e[cNama]',
-	                            '$e[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$_POST[dikodok]',
-	                            '$get_kodeaktivitas[ujudok]',
-	                            'create',
-	                            'Menambahkan distribusi dokumen dengan judul $_POST[dijudok]'
-	                     )");
-	                     
-				}
-		}
+			catat_audit(
+			    $get_kodeaktivitas['kode_aktivitas'],
+			    $e['cNama'],
+			    $e['cJabatan'],
+			    $_POST['dikodok'],
+			    $get_kodeaktivitas['ujudok'],
+			    'create',
+			    'Menambahkan distribusi dokumen dengan judul ' . $_POST['dijudok'],
+			    $e['cAudit']
+			);
+	}
 		else {
 		UploadDinter2($nama_file_unik);
         $data=mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='$_POST[dikodok]'"));
@@ -164,30 +150,16 @@ if (empty($lokasi_file)){
             
     //             $updateDisin =mysql_query("UPDATE disin SET suid='$idusulan' WHERE suid='$data[suid]' ");	
 		
-				if($e['cAudit']=='Y'){
-				    
-				}else{					
-								
-		                $q=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
-		                            user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$get_kodeaktivitas[kode_aktivitas]',
-	                            '$e[cNama]',
-	                            '$e[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$_POST[dikodok]',
-	                            '$get_kodeaktivitas[ujudok]',
-	                            'create',
-	                            'Menambahkan distribusi dokumen dengan judul $_POST[dijudok]'
-	                     )");
-				}
+				catat_audit(
+				    $get_kodeaktivitas['kode_aktivitas'],
+				    $e['cNama'],
+				    $e['cJabatan'],
+				    $_POST['dikodok'],
+				    $get_kodeaktivitas['ujudok'],
+				    'create',
+				    'Menambahkan distribusi dokumen dengan judul ' . $_POST['dijudok'],
+				    $e['cAudit']
+				);
 		}
 	
 							
@@ -254,28 +226,21 @@ if (empty($lokasi_file)){
 								   
 					
 				if($e['cAudit']=='Y'){
-				    
-				}else{			   
-	                $audit=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
-		                            user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$data[kode_aktivitas]',
-	                            '$e[cNama]',
-	                            '$e[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$data[dikodok]',
-	                            '$data[dijudok]',
-	                            'create',
-	                            'Menambahkan distribusi dokumen dengan judul $data[dijudok]'
-	                     )");
-				}
+			    
+			}else{	   
+			// [FIX] action diubah 'create' → 'update' (ini operasi edit, bukan tambah baru)
+			// [FIX] ip_address & user_agent kini diisi otomatis via catat_audit()
+            catat_audit(
+                $data['kode_aktivitas'],
+                $e['cNama'],
+                $e['cJabatan'],
+                $data['dikodok'],
+                $data['dijudok'],
+                'update',
+                'Mengubah distribusi dokumen dengan judul ' . $data['dijudok'],
+                $e['cAudit']
+            );
+			}
     
 }else {
  UploadDinter2($nama_file_unik);
@@ -303,28 +268,21 @@ if (empty($lokasi_file)){
 								   WHERE suid = '$_GET[id]'");
 					
 				if($e['cAudit']=='Y'){
-				    
-				}else{
-                        $audit=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
-		                            user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$data[kode_aktivitas]',
-	                            '$e[cNama]',
-	                            '$e[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$data[dikodok]',
-	                            '$data[dijudok]',
-	                            'create',
-	                            'Menambahkan distribusi dokumen dengan judul $data[dijudok]'
-	                     )");
-				}
+			    
+			}else{
+                // [FIX] action diubah 'create' → 'update' (ini operasi edit dengan ganti file)
+                // [FIX] ip_address & user_agent kini diisi otomatis via catat_audit()
+                catat_audit(
+                    $data['kode_aktivitas'],
+                    $e['cNama'],
+                    $e['cJabatan'],
+                    $data['dikodok'],
+                    $data['dijudok'],
+                    'update',
+                    'Mengubah distribusi dokumen (ganti file) dengan judul ' . $data['dijudok'],
+                    $e['cAudit']
+                );
+			}
 }
 								   
 								   
@@ -430,31 +388,18 @@ elseif ($act=='acc'){
             mysql_query("SELECT * FROM udokumen WHERE ukodok = '$get_dokumeninternal[dikodok]'")
         );
 
-        // kalau bukan mode audit, catat ke aktivitas_dokumen
-        if ($e['cAudit'] != 'Y') {
-            $kode_aktivitas = isset($get_kodeaktivitas['kode_aktivitas']) ? $get_kodeaktivitas['kode_aktivitas'] : '';
-
-            $q_aktivitas = mysql_query("
-                INSERT INTO aktivitas_dokumen
-                    (kode_aktivitas, user, jabatan, ip_address, user_agent, kode_dokumen, dokumen, action, deskripsi)
-                VALUES
-                    (
-                        '$kode_aktivitas',
-                        '$e[cNama]',
-                        '$e[cJabatan]',
-                        '-',
-                        '-',
-                        '$get_dokumeninternal[dikodok]',
-                        '$get_dokumeninternal[dijudok]',
-                        'create',
-                        'Melakukan ACC distribusi dokumen dengan judul $get_dokumeninternal[dijudok]'
-                    )
-            ");
-
-            if (!$q_aktivitas) {
-                error_log("Gagal insert aktivitas dokumen suid=$suid : " . mysql_error());
-            }
-        }
+        // catat ke aktivitas_dokumen via helper catat_audit()
+        $kode_aktivitas = isset($get_kodeaktivitas['kode_aktivitas']) ? $get_kodeaktivitas['kode_aktivitas'] : '';
+        catat_audit(
+            $kode_aktivitas,
+            $e['cNama'],
+            $e['cJabatan'],
+            $get_dokumeninternal['dikodok'],
+            $get_dokumeninternal['dijudok'],
+            'approve',
+            'Melakukan ACC distribusi dokumen dengan judul ' . $get_dokumeninternal['dijudok'],
+            $e['cAudit']
+        );
 
     } else {
         error_log("Data dinter tidak ditemukan untuk suid=$suid");
@@ -568,32 +513,17 @@ elseif ($act=='acc_all'){
             mysql_query("SELECT * FROM udokumen WHERE ukodok = '$get_dokumeninternal[dikodok]'")
         );
 
-        if ($e['cAudit'] != 'Y') {
-            $kode_aktivitas = isset($get_kodeaktivitas['kode_aktivitas']) ? $get_kodeaktivitas['kode_aktivitas'] : '';
-
-            $q_aktivitas = mysql_query("
-                INSERT INTO aktivitas_dokumen
-                    (kode_aktivitas, user, jabatan, ip_address, user_agent, kode_dokumen, dokumen, action, deskripsi)
-                VALUES
-                    (
-                        '$kode_aktivitas',
-                        '$e[cNama]',
-                        '$e[cJabatan]',
-                        '-',
-                        '-',
-                        '$get_dokumeninternal[dikodok]',
-                        '$get_dokumeninternal[dijudok]',
-                        'create',
-                        'Melakukan ACC distribusi dokumen dengan judul $get_dokumeninternal[dijudok]'
-                    )
-            ");
-
-            if (!$q_aktivitas) {
-                echo "OK (UPDATE, aktivitas GAGAL: ".mysql_error().")\n";
-                $ok++;
-                continue;
-            }
-        }
+        $kode_aktivitas = isset($get_kodeaktivitas['kode_aktivitas']) ? $get_kodeaktivitas['kode_aktivitas'] : '';
+        catat_audit(
+            $kode_aktivitas,
+            $e['cNama'],
+            $e['cJabatan'],
+            $get_dokumeninternal['dikodok'],
+            $get_dokumeninternal['dijudok'],
+            'approve',
+            'Melakukan ACC distribusi dokumen dengan judul ' . $get_dokumeninternal['dijudok'],
+            $e['cAudit']
+        );
 
         echo "OK\n";
         $ok++;
@@ -679,11 +609,18 @@ elseif ($act=='hapus'){
         }
     
         // Logging aktivitas dokumen
-        $e = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='{$_SESSION['cId']}'"));
-        if ($e['cAudit'] != 'Y') {
-            mysql_query("INSERT INTO aktivitas_dokumen (user, jabatan, ip_address, user_agent, kode_dokumen, dokumen, action, deskripsi) 
-                         VALUES ('$e[cNama]', '$e[cJabatan]', '-', '-', '$id', '$cId', '$action', '$description')");
-        }
+        $u_id = isset($_SESSION['cv']) ? $_SESSION['cv'] : (isset($_SESSION['cId']) ? $_SESSION['cId'] : '');
+        $e = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$u_id'"));
+        catat_audit(
+            '',
+            $e['cNama'],
+            $e['cJabatan'],
+            $id,
+            $cId,
+            $action,
+            $description,
+            $e['cAudit']
+        );
     
         // Jika sukses, beri notifikasi dan kembali
         echo "<script>alert('Data berhasil disimpan!'); window.location.href=document.referrer;</script>";
@@ -717,13 +654,18 @@ elseif ($act=='lp1'){
     mysql_query("DELETE FROM disin WHERE suid='$id'");
     
     // Logging aktivitas dokumen (hapus semua penerima)
-    $e = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cId]'"));
-    if($e['cAudit']=='Y'){
-      
-    }else{
-      $audit=mysql_query("INSERT INTO aktivitas_dokumen(user, jabatan, ip_address, user_agent, kode_dokumen, dokumen, action, deskripsi) 
-                          VALUES('$e[cNama]', '$e[cJabatan]', '-', '-', '$id', '-', 'delete all', 'Menghapus semua penerima salinan')");
-    }
+    $u_id = isset($_SESSION['cv']) ? $_SESSION['cv'] : (isset($_SESSION['cId']) ? $_SESSION['cId'] : '');
+    $e = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$u_id'"));
+    catat_audit(
+        '',
+        $e['cNama'],
+        $e['cJabatan'],
+        $id,
+        '-',
+        'delete',
+        'Menghapus semua penerima salinan',
+        $e['cAudit']
+    );
 
     header('location:../../dister.php?id='.$id.'');
 }
@@ -798,14 +740,20 @@ elseif ($act=='lp2'){
             }
           
     $user = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'")); // Ambil data user
-            if ($insert_dsin && $insert_dsin) {  // Pastikan query $r berhasil sebelum mencatat aktivitas
-                if($user['cAudit']!='Y'){ // Cek apakah audit tidak aktif
-                $q_aktivitas = mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas, user, jabatan, ip_address, user_agent, kode_dokumen, dokumen, action, deskripsi)
-                    VALUES('$_POST[kode_aktivitas]','{$user['cNama']}','{$user['cJabatan']}','-','-','$cc[dikodok]','$cc[dijudok]','update','Membuat List Penerima Distribusi Dokumen untuk $cc[dijudok]')");
-                  if(!$q_aktivitas) {
-                    error_log("Gagal insert aktivitas dokumen jenis 2: " . mysql_error());
-                  }
-              }
+            // [FIX] Kondisi diperbaiki: sebelumnya if($insert_dsin && $insert_dsin) — variabel sama & tidak terdefinisi
+            // Sekarang memakai $q & $t yang merupakan hasil INSERT disin dan dsin di loop sebelumnya
+            if ($q && $t) {
+                // [FIX] Refactor ke catat_audit() agar ip_address & user_agent terisi otomatis
+                catat_audit(
+                    $_POST['kode_aktivitas'],
+                    $user['cNama'],
+                    $user['cJabatan'],
+                    $cc['dikodok'],
+                    $cc['dijudok'],
+                    'update',
+                    'Membuat List Penerima Distribusi Dokumen untuk ' . $cc['dijudok'],
+                    $user['cAudit']
+                );
             }
             
            

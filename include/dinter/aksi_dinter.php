@@ -6,6 +6,7 @@ if(!isset($_SESSION))
     }
 include "../../config/koneksi.php";
 include "../../config/fungsi_thumb.php";
+include "../../config/fungsi_indotgl.php";
 $act=$_GET['act'];
 
 // Input
@@ -264,28 +265,16 @@ elseif ($act=='hapus'){
 	 unlink("../../fdok/$data[difile]"); 
 	 
      $alasan = isset($_GET['alasan']) ? mysql_real_escape_string($_GET['alasan']) : 'Tanpa alasan';
-     
-				if($e['cAudit']=='Y'){
-				    
-				}else{
-	                    $audit=mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-								   kode_dokumen,
-								   dokumen,
-								   action,
-								   deskripsi) 
-	                     VALUES('$e[cNama]',
-	                            '$e[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$data[dikodok]',
-	                            '$data[dijudok]',
-	                            'delete',
-	                            'Menghapus usulan dokumen $data[dijudok] dengan alasan: $alasan'
-	                     )");
-				}
+     catat_audit(
+         '',
+         $e['cNama'],
+         $e['cJabatan'],
+         $data['dikodok'],
+         $data['dijudok'],
+         'delete',
+         'Menghapus usulan dokumen ' . $data['dijudok'] . ' dengan alasan: ' . $alasan,
+         $e['cAudit']
+     );
   
   }
   else{
@@ -293,27 +282,16 @@ elseif ($act=='hapus'){
  	 mysql_query("DELETE FROM dsin WHERE suid='$_GET[id]'");
  	   $alasan = isset($_GET['alasan']) ? mysql_real_escape_string($_GET['alasan']) : 'Tanpa alasan';
  	   
-				if($e['cAudit']=='Y'){
-				    
-				}else{
-	        $audit=mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-								   kode_dokumen,
-								   dokumen,
-								   action,
-								   deskripsi) 
-	                       VALUES('$e[cNama]',
-	                            '$e[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$data[dikodok]',
-	                            '$data[dijudok]',
-	                            'delete',
-	                            'Menghapus usulan dokumen $data[dijudok] dengan alasan: $alasan'
-	                     )");
-				}
+     catat_audit(
+         '',
+         $e['cNama'],
+         $e['cJabatan'],
+         $data['dikodok'],
+         $data['dijudok'],
+         'delete',
+         'Menghapus usulan dokumen ' . $data['dijudok'] . ' dengan alasan: ' . $alasan,
+         $e['cAudit']
+     );
   }
 	 echo "<script>window.alert('Dokumen Terhapus');window.location=('../../home.php?pages=dinter')</script>";
 
@@ -434,27 +412,16 @@ elseif ($act=='tambahdisp'){
 				
         $user = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
 
-				if($user['cAudit']=='Y'){
-				    
-				}else{
-		                $aktivitas=mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$user[cNama]',
-	                            '$user[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$geddatausulan[ukodok]',
-	                            '$geddatausulan[ujudok]',
-	                            'create',
-	                            'Menambahkan usulan perubahan melalui review dokumen dengan judul $geddatausulan[ujudok]'
-	                     )");
-				}
+		catat_audit(
+		    '',
+		    $user['cNama'],
+		    $user['cJabatan'],
+		    $geddatausulan['ukodok'],
+		    $geddatausulan['ujudok'],
+		    'create',
+		    'Menambahkan usulan perubahan melalui review dokumen dengan judul ' . $geddatausulan['ujudok'],
+		    $user['cAudit']
+		);
         }elseif($_POST["perubahan"] == "penghapusan"){
             
              $q=mysql_query("INSERT INTO udokumen(udtgl,
@@ -487,27 +454,16 @@ elseif ($act=='tambahdisp'){
 				
         $user = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
  
-				if($user['cAudit']=='Y'){
-				    
-				}else{
-		                $q=mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$user[cNama]',
-	                            '$user[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$geddatausulan[ukodok]',
-	                            '$geddatausulan[ujudok]',
-	                            'create',
-	                            'Menambahkan usulan Penghapusan melalui review dokumen dengan judul $geddatausulan[ujudok]'
-	                     )");
-				}
+		catat_audit(
+		    '',
+		    $user['cNama'],
+		    $user['cJabatan'],
+		    $geddatausulan['ukodok'],
+		    $geddatausulan['ujudok'],
+		    'create',
+		    'Menambahkan usulan Penghapusan melalui review dokumen dengan judul ' . $geddatausulan['ujudok'],
+		    $user['cAudit']
+		);
         
         }elseif($_POST["perubahan"] == "tidakberubah"){
             
@@ -541,27 +497,16 @@ elseif ($act=='tambahdisp'){
 				
         $user = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
   
-				if($user['cAudit']=='Y'){
-				    
-				}else{
-		                $q=mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$user[cNama]',
-	                            '$user[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$geddatausulan[ukodok]',
-	                            '$geddatausulan[ujudok]',
-	                            'create',
-	                            'Menambahkan usulan Tidak Ada Perubahan melalui review dokumen dengan judul $geddatausulan[ujudok]'
-	                     )");
-				}
+		catat_audit(
+		    '',
+		    $user['cNama'],
+		    $user['cJabatan'],
+		    $geddatausulan['ukodok'],
+		    $geddatausulan['ujudok'],
+		    'create',
+		    'Menambahkan usulan Tidak Ada Perubahan melalui review dokumen dengan judul ' . $geddatausulan['ujudok'],
+		    $user['cAudit']
+		);
         
         }
 	
@@ -576,27 +521,16 @@ $e = mysql_fetch_array(mysql_query("SELECT * FROM udokumen WHERE ukodok LIKE '%$
 
  
  
-				if($user['cAudit']=='Y'){
-				    
-				}else{			
-                		$q=mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                                   jabatan,
-                                                   ip_address,
-                                                   user_agent, 
-                                				   kode_dokumen,
-                                				   dokumen,
-                                				   action,
-                                				   deskripsi) 
-                	                     VALUES('$user[cNama]',
-                	                            '$user[cJabatan]',
-                	                            '-',
-                	                            '-',
-                	                            '$geddatausulan[ukodok]',
-                	                            '$geddatausulan[ujudok]',
-                	                            'create',
-                	                            'Melakukan Review Dokumen dengan judul $geddatausulan[ujudok]'
-                	                     )");
-                }
+		catat_audit(
+		    '',
+		    $user['cNama'],
+		    $user['cJabatan'],
+		    $geddatausulan['ukodok'],
+		    $geddatausulan['ujudok'],
+		    'create',
+		    'Melakukan Review Dokumen dengan judul ' . $geddatausulan['ujudok'],
+		    $user['cAudit']
+		);
 /*
 $tgl			 = date("Y-m-d");
 $tglthn          = date("Y")+3;

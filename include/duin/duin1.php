@@ -13,24 +13,17 @@ $e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM udokumen 
      
      $kalimat = "Usulan Penghapusan Dokumen";
  }
-							
-		$q=mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-                				   kode_dokumen,
-                				   dokumen,
-                				   action,
-                				   deskripsi) 
-	                     VALUES('$ueser[cNama]',
-	                            '$user[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$e[ukodok]',
-	                            '$e[ujudok]',
-	                            'create',
-	                            'Mencetak $kalimat dengan judul $e[ujudok]'
-	                     )");
+// [FIX] Bug: typo $ueser → $user, action diubah 'create' → 'print', ip & ua kini diisi dari server
+catat_audit(
+    '',
+    $user['cNama'],
+    $user['cJabatan'],
+    $e['ukodok'],
+    $e['ujudok'],
+    'print',
+    'Mencetak ' . $kalimat . ' dengan judul ' . $e['ujudok'],
+    $user['cAudit']
+);
 }
 ?>
 <script type="text/javascript">

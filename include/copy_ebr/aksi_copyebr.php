@@ -12,6 +12,7 @@ if(!isset($_SESSION))
     }
 include "../../config/koneksi.php";
 include "../../config/fungsi_thumb.php";
+include "../../config/fungsi_indotgl.php"; // [ADD] untuk fungsi catat_audit()
 $act=$_GET['act'];
 
 
@@ -101,30 +102,18 @@ if($act=='storebatch'){
                     ") or die(mysql_error());
                 }
             
-                // Catat aktivitas pengguna ke tabel `aktivitas_dokumen`
-                if ($user['cAudit'] != 'Y') {
-                    $query_aktivitas = mysql_query("
-                        INSERT INTO aktivitas_dokumen (
-                            user,
-                            jabatan,
-                            ip_address,
-                            user_agent,
-                            kode_dokumen,
-                            dokumen,
-                            action,
-                            deskripsi
-                        ) VALUES (
-                            '$user[cId]',
-                            '$user[cJabatan]',
-                            '-', 
-                            '-',
-                            '$kode_dokumen',
-                            'Dokumen $kode_dokumen',
-                            'create',
-                            'Membuat permintaan dokumen dengan nomor batch $nomor_batch'
-                        )
-                    ") or die(mysql_error());
-                }
+                // [FIX] Refactor ke catat_audit(): user diisi cNama (sebelumnya salah pakai cId/angka)
+                // [FIX] ip_address & user_agent kini diisi otomatis
+                catat_audit(
+                    '',
+                    $user['cNama'],
+                    $user['cJabatan'],
+                    $kode_dokumen,
+                    'Dokumen ' . $kode_dokumen,
+                    'create',
+                    'Membuat permintaan dokumen dengan nomor batch ' . $nomor_batch,
+                    $user['cAudit']
+                );
             
                 // Jika aktivitas berhasil dicatat
                 echo "<script>
@@ -164,33 +153,25 @@ if($act=='storebatch'){
 				if($user['cAudit']=='Y'){
 				    
 				}else{
-                        // Catat aktivitas pengguna ke tabel aktivitas_dokumen
-                        $query_aktivitas = mysql_query("
-                            INSERT INTO aktivitas_dokumen (
-                                user,
-                                jabatan,
-                                ip_address,
-                                user_agent,
-                                kode_dokumen,
-                                dokumen,
-                                action,
-                                deskripsi
-                            ) VALUES (
-                                '$user[cId]',
-                                '$user[cJabatan]',
-                                '-', 
-                                '-', 
-                                (SELECT dikodok FROM permintaan_dokumen_batch WHERE id_permintaan = '$id_permintaan'),
-                                'Dokumen dengan ID Permintaan $id_permintaan',
-                                'update',
-                                'Dokumen dengan ID Permintaan $id_permintaan telah selesai dicetak oleh $user[cNama]'
-                            )
-                        ");
-            
+                        // [FIX] user diubah dari cId (angka) → cNama (nama user)
+                        // [FIX] ip_address & user_agent kini diisi otomatis via catat_audit()
+                        // Ambil kode_dokumen dari tabel permintaan terlebih dahulu
+                        $perm_row = mysql_fetch_array(mysql_query("SELECT dikodok FROM permintaan_dokumen_batch WHERE id_permintaan = '$id_permintaan'"));
+                        $kode_dok_ebr = $perm_row ? $perm_row['dikodok'] : '-';
+                        catat_audit(
+                            '',
+                            $user['cNama'],
+                            $user['cJabatan'],
+                            $kode_dok_ebr,
+                            'Dokumen dengan ID Permintaan ' . $id_permintaan,
+                            'update',
+                            'Dokumen dengan ID Permintaan ' . $id_permintaan . ' telah selesai dicetak oleh ' . $user['cNama'],
+                            $user['cAudit']
+                        );
 				}
         
             // Periksa apakah aktivitas berhasil dicatat
-            if ($query_aktivitas) {
+            if ($query_update) {
                 echo "<script>
                     alert('Permintaan Copy Batch Record telah Diselesaikan!.');
                     window.location=('../../home.php?pages=dinterebr');

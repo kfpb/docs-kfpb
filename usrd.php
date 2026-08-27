@@ -14,28 +14,21 @@ if ($e[cFoto]==""){
 }
 
 $get_dinter = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$_GET[id]'"));
-//fungsi untuk post audit trail
+//fungsi untuk post audit trail — [FIX] ditambah guard cAudit agar user mode audit tidak dicatat
  $session = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
 
-		$q = mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
-		                            user,
-                                   jabatan,
-                                   ip_address,
-                                   user_agent, 
-				   kode_dokumen,
-				   dokumen,
-				   action,
-				   deskripsi) 
-	                     VALUES('$get_dinter[kode_aktivitas]',
-	                            '$session[cNama]',
-	                            '$session[cJabatan]',
-	                            '-',
-	                            '-',
-	                            '$get_dinter[dikodok]',
-	                            '$e[dijudok]',
-	                            'read',
-	                            'Membaca Distribusi Dokumen dengan judul $e[dijudok]'
-	                     )");
+// [FIX] Guard cAudit: sebelumnya tidak ada, semua user selalu dicatat walau cAudit='Y'
+// [FIX] Refactor ke catat_audit() agar ip_address & user_agent terisi otomatis
+catat_audit(
+    $get_dinter['kode_aktivitas'],
+    $session['cNama'],
+    $session['cJabatan'],
+    $get_dinter['dikodok'],
+    $e['dijudok'],
+    'read',
+    'Membaca Distribusi Dokumen dengan judul ' . $e['dijudok'],
+    $session['cAudit']
+);
 
 ?>
 <? echo"<a href='home1.php?pages=usrd&act=detail&id=$_GET[id]' class='btn btn-info pull-right'><i class='icon-print'></i> Cetak</a>";?>

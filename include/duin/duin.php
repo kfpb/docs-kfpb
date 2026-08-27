@@ -1281,25 +1281,16 @@ mysql_query("UPDATE udokumen SET udstatus1='Y' WHERE uid='$_GET[id]'")or die(mys
     	            if($user['cAudit']=='Y'){
     				    
     				}else{		
-                    	$q=mysql_query("INSERT INTO aktivitas_dokumen(kode_aktivitas,
-                    		                            user,
-                                                       jabatan,
-                                                       ip_address,
-                                                       user_agent, 
-                    								   kode_dokumen,
-                    								   dokumen,
-                    								   action,
-                    								   deskripsi) 
-                    	                     VALUES('$get_kodeaktifitas[kode_aktivitas]',
-                    	                            '$_SESSION[cNama]',
-                    	                            '$_SESSION[cJabatan]',
-                    	                            '-',
-                    	                            '-',
-                    	                            '$get_kodeaktifitas[ukodok]',
-                    	                            '$get_kodeaktifitas[ujudok]',
-                    	                            'create',
-                    	                            'Melakukan Penerimaan Usulan Dokumen dengan judul $_POST[ujudok]'
-                    	                     )");
+                        catat_audit(
+                            $get_kodeaktifitas['kode_aktivitas'],
+                            $user['cNama'],
+                            $user['cJabatan'],
+                            $get_kodeaktifitas['ukodok'],
+                            $get_kodeaktifitas['ujudok'],
+                            'approve',
+                            'Melakukan Penerimaan Usulan Dokumen dengan judul ' . $get_kodeaktifitas['ujudok'],
+                            $user['cAudit']
+                        );
     				}
     
     }

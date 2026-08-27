@@ -1,4 +1,4 @@
-﻿<div class="navbar navbar-inner block-header">
+<div class="navbar navbar-inner block-header">
 	<div class="muted pull-left">Usulan Dokumen</div>
 </div>
 <div class="block-content collapse in">
@@ -881,39 +881,16 @@ if ($e['udstatus1'] == 'N' && in_array($_SESSION['cv'], [0, 1, 53, 1000, 1052, 1
  
     mysql_query("UPDATE udokumen SET udstatus1='Y' WHERE uid='$_GET[id]'");
 
-    if ($user['cAudit'] == 'Y') {
-        // Jika audit aktif, tidak ada pencatatan aktivitas
-    } else {
-        $q = mysql_query("INSERT INTO aktivitas_dokumen(
-            kode_aktivitas,
-            user,
-            jabatan,
-            ip_address,
-            user_agent,
-            kode_dokumen,
-            dokumen,
-            action,
-            deskripsi
-        ) VALUES(
-            '{$e['kode_aktivitas']}',
-            '{$user['cNama']}',
-            '{$user['cJabatan']}',
-            '-',
-            '-',
-            '{$e['ukodok']}',
-            '{$e['ujudok']}',
-            'approve',
-            '{$user[cNama]} telah membaca detail kirim kembali user, dengan judul Dokumen {$e['ujudok']}. dan nomor CC {$e['uccnmr']}.' 
-        )");
-
-        // Tambahkan penanganan error untuk query INSERT
-        if (!$q) {
-            error_log("Gagal insert aktivitas dokumen: ". mysql_error());
-            // Tambahkan penanganan kesalahan yang sesuai, misalnya menampilkan pesan kesalahan kepada pengguna
-            echo "<script>alert('Gagal menyimpan aktivitas dokumen. Silakan coba lagi.');window.location.href=window.location.href;</script>"; // Contoh: menampilkan alert dan reload halaman
-            exit; // Hentikan eksekusi script jika terjadi kesalahan
-        }
-    }
+    catat_audit(
+        $e['kode_aktivitas'],
+        $user['cNama'],
+        $user['cJabatan'],
+        $e['ukodok'],
+        $e['ujudok'],
+        'approve',
+        $user['cNama'] . ' telah membaca detail kirim kembali user, dengan judul Dokumen ' . $e['ujudok'] . '. dan nomor CC ' . $e['uccnmr'] . '.',
+        $user['cAudit']
+    );
 }
 ?>
 

@@ -3,6 +3,7 @@ require_once "../cek_sesi.php";
 session_start();
 include "../../config/koneksi.php";
 include "../../config/fungsi_thumb.php";
+include "../../config/fungsi_indotgl.php";
 $act=$_GET[act];
 
 // Input
@@ -151,31 +152,16 @@ $newID = sprintf("C-%04s/$_SESSION[nppcv]/$bln", $noUrut);
             $current_dinmr = $dinmr[$i];
             $current_dijudok = $dijudok[$i];
         
-            $q_activity = mysql_query("INSERT INTO aktivitas_dokumen(
-                                           user,
-                                           jabatan,
-                                           ip_address,
-                                           user_agent, 
-                                           kode_dokumen,
-                                           dokumen,
-                                           action,
-                                           deskripsi
-                                       ) 
-                                       VALUES(
-                                           '$user[cNama]',
-                                           '$user[cJabatan]',
-                                           '-',
-                                           '-',
-                                           '$current_dinmr',
-                                           '$current_dijudok',
-                                           'create',
-                                           'Menambahkan Permintaan Copy Dokumen dengan judul $current_dijudok'
-                                       )");
-        
-            if (!$q_activity) {
-                echo "<script>window.alert('Log aktivitas gagal disimpan');self.history.back();</script>";
-                exit;
-            }
+            catat_audit(
+                '',
+                $user['cNama'],
+                $user['cJabatan'],
+                $current_dinmr,
+                $current_dijudok,
+                'create',
+                'Menambahkan Permintaan Copy Dokumen dengan judul ' . $current_dijudok,
+                $user['cAudit']
+            );
         }
 if ($q){
 	 echo "<script>window.alert('Permohonan Copy Terkirim ke SPD-MR');window.location=('../../home.php?pages=copy')</script>";
@@ -307,26 +293,16 @@ $q=mysql_query("UPDATE copydok SET tgl_kirimajuan	 = '$tgl_sekarang',
 								  WHERE oid = '$_GET[id]'");
 	
         
-            $q_activity = mysql_query("INSERT INTO aktivitas_dokumen(
-                                           user,
-                                           jabatan,
-                                           ip_address,
-                                           user_agent, 
-                                           kode_dokumen,
-                                           dokumen,
-                                           action,
-                                           deskripsi
-                                       ) 
-                                       VALUES(
-                                           '$user[cNama]',
-                                           '$user[cJabatan]',
-                                           '-',
-                                           '-',
-                                           'Kode ajuan $copydok[onmr]',
-                                           '$copydok[onmr]',
-                                           'create',
-                                           'Mengirimkan permintaan Copy Dokumen dengan kode $copydok[onmr]'
-                                       )");						  
+            catat_audit(
+                '',
+                $user['cNama'],
+                $user['cJabatan'],
+                'Kode ajuan ' . $copydok['onmr'],
+                $copydok['onmr'],
+                'create',
+                'Mengirimkan permintaan Copy Dokumen dengan kode ' . $copydok['onmr'],
+                $user['cAudit']
+            );
 							
   if ($q){
 	  echo "<script>window.alert('Permohonan Copy Telah Dikirimkan Ke MR');window.location=('../../home.php?pages=copy')</script>";
@@ -385,7 +361,7 @@ elseif ($act=='hapus'){
  $id = $_POST['id']; // Get the ID from the POST data
     $alasan = $_POST['alasan']; // Get the reason from the POST data
 
-    $data = mysql_fetch_array(mysql_query("SELECT dikodok, dijudok, ofile, oid FROM copydok WHERE oid='$id'"));
+    $data = mysql_fetch_array(mysql_query("SELECT dikodok, dijudok, ofile, oid, onmr FROM copydok WHERE oid='$id'"));
 
     if ($data['ofile'] != '') {
         mysql_query("DELETE FROM copydok WHERE oid='$id'");
@@ -394,37 +370,17 @@ elseif ($act=='hapus'){
         mysql_query("DELETE FROM copydok WHERE oid='$id'");
     }
 
-    // Assuming $e is already defined from your user session/login data
-    // You need to make sure $e is populated with current user's data (cNama, cJabatan, cAudit)
-    // For demonstration, let's assume you fetch it from a session or database
-    // Example:
-    // session_start();
-    // $e['cNama'] = $_SESSION['user_name'];
-    // $e['cJabatan'] = $_SESSION['user_jabatan'];
-    // $e['cAudit'] = 'N'; // Or 'Y' based on your logic
-
  $e = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
-    if (isset($e['cAudit']) && $e['cAudit'] == 'Y') {
-        // Do nothing if cAudit is 'Y'
-    } else {
-        $audit = mysql_query("INSERT INTO aktivitas_dokumen(user,
-                                        jabatan,
-                                        ip_address,
-                                        user_agent,
-                                        kode_dokumen,
-                                        dokumen,
-                                        action,
-                                        deskripsi)
-                                VALUES('$e[cNama]',
-                                        '$e[cJabatan]',
-                                        '-',
-                                        '-',
-                                        '$data[onmr]',
-                                        'Kode usulan : $data[onmr]',
-                                        'delete',
-                                        'Menghapus usulan permintaan copy dokumen $data[onmr] dengan alasan: $alasan'
-                                )");
-    }
+    catat_audit(
+        '',
+        $e['cNama'],
+        $e['cJabatan'],
+        $data['onmr'],
+        'Kode usulan : ' . $data['onmr'],
+        'delete',
+        'Menghapus usulan permintaan copy dokumen ' . $data['onmr'] . ' dengan alasan: ' . $alasan,
+        $e['cAudit']
+    );
 
     echo "<script>window.location=('../../home.php?pages=copy')</script>";
 }

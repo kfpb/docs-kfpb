@@ -299,32 +299,32 @@ return $bulan;
 	    }	
 	    
 	    function getBulanfilter($bln){
-				switch ($bln){
-					case 01: 
+				switch ((int)$bln){
+					case 1: 
 						return "01";
 						break;
-					case 02:
+					case 2:
 						return "02";
 						break;
-					case 03:
+					case 3:
 						return "03";
 						break;
-					case 04:
+					case 4:
 						return "04";
 						break;
-					case 05:
+					case 5:
 						return "05";
 						break;
-					case 06:
+					case 6:
 						return "06";
 						break;
-					case 07:
+					case 7:
 						return "07";
 						break;
-					case 08:
+					case 8:
 						return "08";
 						break;
-					case 09:
+					case 9:
 						return "09";
 						break;
 					case 10:
@@ -346,6 +346,61 @@ return $bulan;
             return $bulan;			 
 	    }
 		
+/**
+ * catat_audit() — Helper terpusat untuk INSERT ke tabel aktivitas_dokumen.
+ *
+ * @param string $kode_aktivitas  Kode unik aktivitas (dari kolom kode_aktivitas udokumen)
+ * @param string $user            Nama user (cNama)
+ * @param string $jabatan         Jabatan user (cJabatan)
+ * @param string $kode_dokumen    Kode dokumen yang diakses
+ * @param string $dokumen         Judul dokumen
+ * @param string $action          Jenis aksi: create | update | delete | read | approve | reject
+ * @param string $deskripsi       Deskripsi detail aksi
+ * @param string $cAudit          Flag audit dari user ('Y' = skip, selain itu = catat)
+ * @return bool|resource          Hasil mysql_query, atau false jika di-skip karena cAudit
+ */
+function catat_audit($kode_aktivitas, $user, $jabatan, $kode_dokumen, $dokumen, $action, $deskripsi, $cAudit = 'N') {
+    // Guard: jika user dalam mode audit aktif, tidak dicatat
+    if ($cAudit == 'Y') {
+        return false;
+    }
 
+    // Ambil IP address client (handle proxy)
+    $ip = '-';
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+
+    // Ambil User-Agent browser, potong maks 500 karakter
+    $ua = '-';
+    if (!empty($_SERVER['HTTP_USER_AGENT'])) {
+        $ua = substr($_SERVER['HTTP_USER_AGENT'], 0, 500);
+    }
+
+    // Escape semua input untuk keamanan
+    $kode_aktivitas = mysql_real_escape_string($kode_aktivitas);
+    $user           = mysql_real_escape_string($user);
+    $jabatan        = mysql_real_escape_string($jabatan);
+    $ip             = mysql_real_escape_string($ip);
+    $ua             = mysql_real_escape_string($ua);
+    $kode_dokumen   = mysql_real_escape_string($kode_dokumen);
+    $dokumen        = mysql_real_escape_string($dokumen);
+    $action         = mysql_real_escape_string($action);
+    $deskripsi      = mysql_real_escape_string($deskripsi);
+
+    $result = mysql_query("INSERT INTO aktivitas_dokumen
+        (kode_aktivitas, user, jabatan, ip_address, user_agent, kode_dokumen, dokumen, action, deskripsi)
+        VALUES
+        ('$kode_aktivitas', '$user', '$jabatan', '$ip', '$ua', '$kode_dokumen', '$dokumen', '$action', '$deskripsi')");
+
+    if (!$result) {
+        error_log('[catat_audit] Gagal INSERT aktivitas_dokumen: ' . mysql_error()
+            . ' | action=' . $action . ' | user=' . $user . ' | dok=' . $dokumen);
+    }
+
+    return $result;
+}
 
 ?>
