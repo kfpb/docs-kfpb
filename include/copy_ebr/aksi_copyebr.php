@@ -102,16 +102,27 @@ if($act=='storebatch'){
                     ") or die(mysql_error());
                 }
             
-                // [FIX] Gunakan nama produk atau nomor batch yang jelas, bukan hanya 'Dokumen '
-                $judul_dokumen = !empty($nama_produk) ? $nama_produk : (!empty($kode_dokumen) ? 'Dokumen ' . $kode_dokumen : 'Permintaan Batch Record ' . $nomor_batch);
+                // Format label jenis dokumen untuk keterangan yang lebih informatif
+                $jenis_dok_label = ($jenis_dokumen == 'PPI') ? 'PPI (Prosedur Pengolahan Induk)' 
+                                 : (($jenis_dokumen == 'PGI') ? 'PGI (Prosedur Pengemasan Induk)' : (!empty($jenis_dokumen) ? $jenis_dokumen : '-'));
+
+                $kode_dok_audit = !empty($kode_dokumen) ? $kode_dokumen : (!empty($jenis_dokumen) ? $jenis_dokumen : '-');
+                $judul_dokumen  = !empty($jenis_dokumen) ? '[' . $jenis_dokumen . '] ' . $nama_produk : (!empty($nama_produk) ? $nama_produk : 'Permintaan Batch Record ' . $nomor_batch);
+
+                $deskripsi_audit = 'Membuat permintaan copy Batch Record - Jenis Dokumen: ' . $jenis_dok_label 
+                                 . ', Nama Produk: ' . $nama_produk 
+                                 . ', No. Bets: ' . $nomor_batch 
+                                 . (!empty($besaran_bets) ? ', Besar Bets: ' . $besaran_bets : '')
+                                 . (!empty($catatan) ? ', Catatan: ' . strip_tags($catatan) : '');
+
                 catat_audit(
-                    '',
+                    'EBR-' . $id_permintaan,
                     $user['cNama'],
                     $user['cJabatan'],
-                    $kode_dokumen,
+                    $kode_dok_audit,
                     $judul_dokumen,
                     'create',
-                    'Membuat permintaan dokumen ' . $judul_dokumen . ' dengan nomor batch ' . $nomor_batch,
+                    $deskripsi_audit,
                     $user['cAudit']
                 );
             
