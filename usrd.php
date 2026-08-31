@@ -36,7 +36,11 @@ catat_audit(
 <legend>Detail Distribusi Dokumen Terkendali</legend>
 <table width="100%" border=1>
 <? 
-  $dok = mysql_query("SELECT * FROM dinter WHERE dikodok='$e[dikodok]'");
+  if (!empty($e['suid_dinter'])) {
+      $dok = mysql_query("SELECT * FROM dinter WHERE suid='$e[suid_dinter]'");
+  } else {
+      $dok = mysql_query("SELECT * FROM dinter WHERE dikodok='$e[dikodok]' ORDER BY suid DESC LIMIT 1");
+  }
   $r    = mysql_fetch_array($dok);
 ?>
 	<tr><td width="24%">Nomor </td><td>: <?=$e[dinmr];?></td></tr>
@@ -62,7 +66,7 @@ catat_audit(
 	?>
 	</td></tr>
 <?php 
-$is_obsolete = ($r['distatus'] == 'N' || stripos($r['dijudok'], 'OBSOLETE') !== false || stripos($r['dikodok'], 'OBSOLETE') !== false || $e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false);
+$is_obsolete = (stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false || (!empty($r) && ($r['distatus'] == 'N' || stripos($r['dijudok'], 'OBSOLETE') !== false || stripos($r['dikodok'], 'OBSOLETE') !== false)));
 if (!$is_obsolete) { ?>
 <iframe src="dok/web/viewer.html?file=/dok/<?php echo $r['jenisdok']; ?>/<?php echo $r['difile']; ?>" width=100% height=500></iframe>
 <?php } else { ?>

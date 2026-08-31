@@ -1169,7 +1169,11 @@ $q=mysql_query("UPDATE dister SET ditgl_slesai = '$tgl'
 	$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a,users b WHERE a.dipengirim=b.cId AND a.suid='$_GET[id]'"));
 	$ef = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a,users b WHERE a.dipengirim=b.cId AND a.suid='$_GET[id]'"));
 	$efg = mysql_fetch_array(mysql_query("SELECT nama_jendok FROM jendok WHERE id_jendok='$ef[jenisdok]'"));
-    $dok = mysql_query("SELECT * FROM dinter WHERE dikodok='$e[dikodok]'");
+    if (!empty($e['suid_dinter'])) {
+        $dok = mysql_query("SELECT * FROM dinter WHERE suid='$e[suid_dinter]'");
+    } else {
+        $dok = mysql_query("SELECT * FROM dinter WHERE dikodok='$e[dikodok]' ORDER BY suid DESC LIMIT 1");
+    }
     $r    = mysql_fetch_array($dok);
 	?>
 <strong>
@@ -1206,7 +1210,7 @@ else
 </table>
 
     <?php 
-    $is_obsolete = ($e['distatus'] == 'N' || stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false || (isset($r) && ($r['distatus'] == 'N' || stripos($r['dijudok'], 'OBSOLETE') !== false || stripos($r['dikodok'], 'OBSOLETE') !== false)));
+    $is_obsolete = (stripos($e['dijudok'], 'OBSOLETE') !== false || stripos($e['dikodok'], 'OBSOLETE') !== false || (isset($r) && !empty($r) && ($r['distatus'] == 'N' || stripos($r['dijudok'], 'OBSOLETE') !== false || stripos($r['dikodok'], 'OBSOLETE') !== false)));
     if (!$is_obsolete) {
         if(!empty($e['difile'])){
         ?>
