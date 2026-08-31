@@ -35,6 +35,7 @@ $blackRules = "
 $whiteRules = "
     (
       (LOWER(cNama) LIKE '%dewi%' AND (LOWER(cNama) LIKE '%kurniasih%' OR LOWER(cNama) LIKE '%sari%'))
+      OR (LOWER(cNama) LIKE '%yayu%' AND LOWER(cNama) LIKE '%wahyuhadini%')
       OR (LOWER(cJabatan) LIKE '%pengawasan proses%' AND LOWER(cJabatan) LIKE '%pengemasan%')
     )
 ";
