@@ -153,23 +153,53 @@
     </button>
 </form>
 
+<style>
+    .table-responsive-ebr {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 20px;
+    }
+    .dataTables_wrapper {
+        width: 100% !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    #Tb14 {
+        width: 100% !important;
+        font-size: 12px;
+        margin-bottom: 0;
+    }
+    #Tb14 th, #Tb14 td {
+        vertical-align: middle !important;
+    }
+    .nowrap {
+        white-space: nowrap;
+    }
+    .waktu-badge {
+        display: inline-block;
+        margin-top: 2px;
+        font-size: 11px;
+        color: #555;
+    }
+</style>
+
 <br>
 
+<div class="table-responsive-ebr">
     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="Tb14">
         <thead>
             <tr>
-                <th>No</th>
-                <th>No Batch</th>
+                <th class="nowrap center">No</th>
+                <th class="nowrap">No Batch</th>
                 <th>Nama Produk</th>
-                <th>Besar Bets</th>
-                <th>Jenis Dokumen</th>
-                <th>Tanggal Permintaan</th>
-                <th>Jam Masuk</th>
-                <th>Tanggal Cetak</th>
-                <th>Jam Cetak</th>
+                <th class="nowrap">Besar Bets</th>
+                <th class="nowrap">Jenis Dokumen</th>
+                <th class="nowrap">Waktu Permintaan</th>
+                <th class="nowrap">Waktu Dicetak</th>
                 <th>Catatan</th>
-                <th>Status</th>
-                <th class='center' width=15%>Aksi</th>
+                <th class="nowrap center">Status</th>
+                <th class="center nowrap" width="10%">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -186,6 +216,7 @@
                 // Format tanggal dan jam permintaan
                 $tanggal_permintaan = formatTanggalIndonesia($s['dibuat_pada']);
                 $jam_masuk = formatJamIndonesia($s['dibuat_pada']);
+                $waktu_permintaan = "<span class='nowrap'>" . $tanggal_permintaan . "</span><br><span class='waktu-badge nowrap'><i class='icon-time'></i> " . $jam_masuk . "</span>";
 
                 // Format tanggal dan jam cetak
                 $tanggal_cetak = (!empty($s['dicetak_pada']) && $s['dicetak_pada'] != '0000-00-00 00:00:00')
@@ -194,6 +225,10 @@
                 $jam_cetak = (!empty($s['dicetak_pada']) && $s['dicetak_pada'] != '0000-00-00 00:00:00')
                     ? formatJamIndonesia($s['dicetak_pada'])
                     : '-';
+
+                $waktu_cetak = (!empty($s['dicetak_pada']) && $s['dicetak_pada'] != '0000-00-00 00:00:00')
+                    ? "<span class='nowrap'>" . $tanggal_cetak . "</span><br><span class='waktu-badge nowrap text-success'><i class='icon-time'></i> " . $jam_cetak . "</span>"
+                    : "<span class='text-muted'>-</span>";
 
                 // Tentukan label status
                 $status_label = ($s['status'] == 'diminta') 
@@ -209,18 +244,16 @@
                 }
 
                 echo "
-                    <td>$no</td>
-                    <td>{$s['nomor_batch']}</td>
+                    <td class='center'>$no</td>
+                    <td class='nowrap'>{$s['nomor_batch']}</td>
                     <td>{$s['nama_produk']}</td>
-                    <td>{$s['besaran_bets']}</td>
-                    <td>{$s['jenis_dokumen']}</td>
-                    <td>$tanggal_permintaan</td>
-                    <td>$jam_masuk</td>
-                    <td>$tanggal_cetak</td>
-                    <td>$jam_cetak</td>
+                    <td class='nowrap'>{$s['besaran_bets']}</td>
+                    <td class='nowrap'>{$s['jenis_dokumen']}</td>
+                    <td class='nowrap'>$waktu_permintaan</td>
+                    <td class='nowrap'>$waktu_cetak</td>
                     <td>{$s['catatan']}</td>
-                    <td>$status_label</td>
-                    <td class='center'>
+                    <td class='center nowrap'>$status_label</td>
+                    <td class='center nowrap'>
                         <a href='?pages=detailpermintaanebr&kodedokumen={$s['dikodok']}&permintaanId={$s['id_permintaan']}' class='btn-small btn-info'>
                             <i class='icon-edit'></i> Detail
                         </a>
@@ -232,7 +265,6 @@
         </tbody>
     </table>
 </div>
-
 
         </div>
     </div>
