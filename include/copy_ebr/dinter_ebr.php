@@ -21,13 +21,28 @@
         $newID = sprintf("DD-%04s/$bln", $noUrut);
 
         // Fungsi untuk format tanggal Indonesia
-        function formatTanggalIndonesia($tanggal) {
-            $bulan = [
-                1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-            ];
-            $pecahkan = explode('-', date('Y-m-d', strtotime($tanggal)));
-            return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+        if (!function_exists('formatTanggalIndonesia')) {
+            function formatTanggalIndonesia($tanggal) {
+                if (empty($tanggal) || $tanggal == '0000-00-00' || $tanggal == '0000-00-00 00:00:00') {
+                    return '-';
+                }
+                $bulan = [
+                    1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+                $pecahkan = explode('-', date('Y-m-d', strtotime($tanggal)));
+                return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+            }
+        }
+
+        // Fungsi untuk format jam Indonesia
+        if (!function_exists('formatJamIndonesia')) {
+            function formatJamIndonesia($tanggal) {
+                if (empty($tanggal) || $tanggal == '0000-00-00' || $tanggal == '0000-00-00 00:00:00') {
+                    return '-';
+                }
+                return date('H:i', strtotime($tanggal)) . ' WIB';
+            }
         }
         ?>
 
@@ -149,9 +164,12 @@
                 <th>Besar Bets</th>
                 <th>Jenis Dokumen</th>
                 <th>Tanggal Permintaan</th>
+                <th>Jam Masuk</th>
+                <th>Tanggal Cetak</th>
+                <th>Jam Cetak</th>
                 <th>Catatan</th>
                 <th>Status</th>
-                <th class='center' width=25%>Aksi</th>
+                <th class='center' width=15%>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -165,8 +183,17 @@
                 // Tentukan gaya baris berdasarkan status notifikasi
                 $row_style = '';
             
-                // Format tanggal permintaan
+                // Format tanggal dan jam permintaan
                 $tanggal_permintaan = formatTanggalIndonesia($s['dibuat_pada']);
+                $jam_masuk = formatJamIndonesia($s['dibuat_pada']);
+
+                // Format tanggal dan jam cetak
+                $tanggal_cetak = (!empty($s['dicetak_pada']) && $s['dicetak_pada'] != '0000-00-00 00:00:00')
+                    ? formatTanggalIndonesia($s['dicetak_pada'])
+                    : '-';
+                $jam_cetak = (!empty($s['dicetak_pada']) && $s['dicetak_pada'] != '0000-00-00 00:00:00')
+                    ? formatJamIndonesia($s['dicetak_pada'])
+                    : '-';
 
                 // Tentukan label status
                 $status_label = ($s['status'] == 'diminta') 
@@ -188,6 +215,9 @@
                     <td>{$s['besaran_bets']}</td>
                     <td>{$s['jenis_dokumen']}</td>
                     <td>$tanggal_permintaan</td>
+                    <td>$jam_masuk</td>
+                    <td>$tanggal_cetak</td>
+                    <td>$jam_cetak</td>
                     <td>{$s['catatan']}</td>
                     <td>$status_label</td>
                     <td class='center'>

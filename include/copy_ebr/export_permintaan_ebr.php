@@ -27,13 +27,28 @@ if ($jenis_dokumen != '') {
 }
 
 // Fungsi format tanggal
-function formatTanggalIndonesia($tanggal) {
-    $bulan = [
-        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ];
-    $pecah = explode('-', date('Y-m-d', strtotime($tanggal)));
-    return $pecah[2] . ' ' . $bulan[(int)$pecah[1]] . ' ' . $pecah[0];
+if (!function_exists('formatTanggalIndonesia')) {
+    function formatTanggalIndonesia($tanggal) {
+        if (empty($tanggal) || $tanggal == '0000-00-00' || $tanggal == '0000-00-00 00:00:00') {
+            return '-';
+        }
+        $bulan = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        $pecah = explode('-', date('Y-m-d', strtotime($tanggal)));
+        return $pecah[2] . ' ' . $bulan[(int)$pecah[1]] . ' ' . $pecah[0];
+    }
+}
+
+// Fungsi format jam
+if (!function_exists('formatJamIndonesia')) {
+    function formatJamIndonesia($tanggal) {
+        if (empty($tanggal) || $tanggal == '0000-00-00' || $tanggal == '0000-00-00 00:00:00') {
+            return '-';
+        }
+        return date('H:i', strtotime($tanggal)) . ' WIB';
+    }
 }
 
 // Cek role akses penuh
@@ -77,6 +92,9 @@ $data = array_values($data);
 echo "<table border='1'>
 <tr>
     <th>Tgl. SPK Turun</th>
+    <th>Jam Masuk</th>
+    <th>Tanggal Cetak</th>
+    <th>Jam Cetak</th>
     <th>Nama Produk</th>
     <th>No Batch</th>
     <th>Besar Batch</th>
@@ -86,6 +104,9 @@ echo "<table border='1'>
 
 foreach ($data as $row) {
     $tgl_spk_turun = formatTanggalIndonesia($row['dibuat_pada']);
+    $jam_masuk     = formatJamIndonesia($row['dibuat_pada']);
+    $tgl_cetak     = (!empty($row['dicetak_pada']) && $row['dicetak_pada'] != '0000-00-00 00:00:00') ? formatTanggalIndonesia($row['dicetak_pada']) : '-';
+    $jam_cetak     = (!empty($row['dicetak_pada']) && $row['dicetak_pada'] != '0000-00-00 00:00:00') ? formatJamIndonesia($row['dicetak_pada']) : '-';
     $nama_produk   = $row['nama_produk'];
     $no_batch      = $row['nomor_batch'];
     $besar_batch   = $row['besaran_bets'];
@@ -94,6 +115,9 @@ foreach ($data as $row) {
 
     echo "<tr>
         <td>$tgl_spk_turun</td>
+        <td>$jam_masuk</td>
+        <td>$tgl_cetak</td>
+        <td>$jam_cetak</td>
         <td>$nama_produk</td>
         <td>$no_batch</td>
         <td>$besar_batch</td>

@@ -80,6 +80,29 @@
             if($detailpermintaan[dikodok] != null) {
                 $detaildokumen = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='$detailpermintaan[dikodok]'"));
             }
+
+            if (!function_exists('formatTanggalIndonesia')) {
+                function formatTanggalIndonesia($tanggal) {
+                    if (empty($tanggal) || $tanggal == '0000-00-00' || $tanggal == '0000-00-00 00:00:00') {
+                        return '-';
+                    }
+                    $bulan = [
+                        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                    ];
+                    $pecahkan = explode('-', date('Y-m-d', strtotime($tanggal)));
+                    return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+                }
+            }
+
+            if (!function_exists('formatJamIndonesia')) {
+                function formatJamIndonesia($tanggal) {
+                    if (empty($tanggal) || $tanggal == '0000-00-00' || $tanggal == '0000-00-00 00:00:00') {
+                        return '-';
+                    }
+                    return date('H:i', strtotime($tanggal)) . ' WIB';
+                }
+            }
             ?>
 
             <!-- Detail Permintaan -->
@@ -110,6 +133,22 @@
                         <tr>
                             <th>Jenis Dokumen</th>
                             <td><?= $detailpermintaan['jenis_dokumen']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal Permintaan</th>
+                            <td><?= formatTanggalIndonesia($detailpermintaan['dibuat_pada']); ?></td>
+                        </tr>
+                        <tr>
+                            <th>Jam Masuk</th>
+                            <td><?= formatJamIndonesia($detailpermintaan['dibuat_pada']); ?></td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal Dicetak</th>
+                            <td><?= (!empty($detailpermintaan['dicetak_pada']) && $detailpermintaan['dicetak_pada'] != '0000-00-00 00:00:00') ? formatTanggalIndonesia($detailpermintaan['dicetak_pada']) : '-'; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Jam Dicetak</th>
+                            <td><?= (!empty($detailpermintaan['dicetak_pada']) && $detailpermintaan['dicetak_pada'] != '0000-00-00 00:00:00') ? formatJamIndonesia($detailpermintaan['dicetak_pada']) : '-'; ?></td>
                         </tr>
                         <tr>
                             <th>Catatan</th>
