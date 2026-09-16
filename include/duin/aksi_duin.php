@@ -677,7 +677,8 @@ elseif ($act=='selesai2'){
         }
     
     } elseif ($_POST['jenisud'] == 3) {
-        $r = mysql_query("UPDATE dinter SET distatus = 'N', dijudok = '$_POST[judul_dok] (OBSOLETE)' WHERE dikodok = '$_POST[kode_dok]'");
+        $row_dinter = mysql_fetch_array(mysql_query("SELECT suid FROM dinter WHERE dikodok = '$_POST[kode_dok]' ORDER BY suid DESC LIMIT 1"));
+        $target_suid = isset($row_dinter['suid']) ? $row_dinter['suid'] : '';
           
         // Tambahkan aktivitas dokumen untuk jenisud == 3
         if ($r) {
@@ -695,7 +696,9 @@ elseif ($act=='selesai2'){
     }
     
     if ($r) {
-        echo "<script>window.alert('Usulan Dokumen Selesai & Tersimpan, Silahkan Buat Distribusi Dokumen !');window.location=('../../home.php?pages=dister&act=tambah2&id=$_POST[kode_dok]')</script>";
+        $suid_dinter_val = ($_POST['jenisud'] == 1) ? $idusulan : $target_suid;
+        $uid_usulan = isset($_GET['id']) ? $_GET['id'] : '';
+        echo "<script>window.alert('Usulan Dokumen Selesai & Tersimpan, Silahkan Buat Distribusi Dokumen !');window.location=('../../home.php?pages=dister&act=tambah2&id=$_POST[kode_dok]&suid=$suid_dinter_val&uid=$uid_usulan')</script>";
     } else {
         echo "<script>window.alert('Data Gagal Tersimpan');self.history.back();</script>";
     }

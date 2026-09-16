@@ -51,12 +51,22 @@ function UploadDinter2($fupload_name){
              $kalimat = "Usulan Penghapusan Dokumen";
          }
          
-    $get_kodeaktivitas = mysql_fetch_array(mysql_query("SELECT * FROM udokumen WHERE ukodok='$_POST[dikodok]'"));
+    if (!empty($_POST['uid_udokumen'])) {
+        $get_kodeaktivitas = mysql_fetch_array(mysql_query("SELECT * FROM udokumen WHERE uid='" . mysql_real_escape_string($_POST['uid_udokumen']) . "'"));
+    }
+    if (empty($get_kodeaktivitas)) {
+        $get_kodeaktivitas = mysql_fetch_array(mysql_query("SELECT * FROM udokumen WHERE ukodok='" . mysql_real_escape_string($_POST['dikodok']) . "' ORDER BY uid DESC LIMIT 1"));
+    }
 
 UploadDinter2($nama_file_unik);
 if($_FILES['fupload']['size']<=$maxsize){
 if (empty($lokasi_file)){
-    $data=mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='$_POST[dikodok]'"));
+    if (!empty($_POST['suid_dinter'])) {
+        $data = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='" . mysql_real_escape_string($_POST['suid_dinter']) . "'"));
+    }
+    if (empty($data)) {
+        $data = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='" . mysql_real_escape_string($_POST['dikodok']) . "' ORDER BY suid DESC LIMIT 1"));
+    }
     
     
                 $t=mysql_query("UPDATE dinter SET direv        = '$_POST[revisi]', 
@@ -79,7 +89,7 @@ if (empty($lokasi_file)){
 								   distatus) 
 	                     VALUES('$data[suid]',
 	                            '$_POST[tgl]',
-                                '$_POST[pengirim]',
+	                            '$_POST[pengirim]',
 								'$_POST[dikodok]',
 								'$_POST[revisi]',
 								'$_POST[dikodok1]',
@@ -109,7 +119,12 @@ if (empty($lokasi_file)){
 	}
 		else {
 		UploadDinter2($nama_file_unik);
-        $data=mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='$_POST[dikodok]'"));
+        if (!empty($_POST['suid_dinter'])) {
+            $data = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='" . mysql_real_escape_string($_POST['suid_dinter']) . "'"));
+        }
+        if (empty($data)) {
+            $data = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='" . mysql_real_escape_string($_POST['dikodok']) . "' ORDER BY suid DESC LIMIT 1"));
+        }
             $t=mysql_query("UPDATE dinter SET pass = '$acak2',
                                    direv        = '$_POST[revisi]', 
                                    ditgl_brlk   = '$_POST[tgl_brlk]', 

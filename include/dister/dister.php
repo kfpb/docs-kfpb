@@ -283,70 +283,75 @@ $tglthn = date("Y") + 3; // Tahun saat ini ditambah 3
 $tglbln = date("-m-d"); // Bagian bulan dan tanggal
 $tgl1 = $tglthn . $tglbln; // Kombinasi tahun + bulan + tanggal
 
-// Query untuk mengambil data awal
-if (empty($_GET['suid'])) {
+// Query untuk mengambil data dokumen dari RDT (dinter)
+if (!empty($_GET['suid'])) {
+    $e = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='" . mysql_real_escape_string($_GET['suid']) . "'"));
+}
+if (empty($e) && !empty($_GET['id'])) {
     $e = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='" . mysql_real_escape_string($_GET['id']) . "' ORDER BY suid DESC LIMIT 1"));
-
-} else {
-    $e = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE dikodok='" . mysql_real_escape_string($_GET['id']) . "' AND suid='" . mysql_real_escape_string($_GET['suid']) . "' ORDER BY suid DESC LIMIT 1"));
 }
 
-// Cek data revisi sebelumnya
-$direv = isset($e['direv']) ? (int)$e['direv'] : 0; // Pastikan nilai direv sebagai integer
-$rev_before = $direv - 1; // Hitung revisi sebelumnya
+// Query untuk mendapatkan data usulan dokumen terkait
+$ez = null;
+if (!empty($_GET['uid'])) {
+    $ez = mysql_fetch_array(mysql_query("SELECT * FROM udokumen WHERE uid='" . mysql_real_escape_string($_GET['uid']) . "'"));
+}
+if (empty($ez) && !empty($_GET['id'])) {
+    $ez = mysql_fetch_array(mysql_query("SELECT * FROM udokumen WHERE ukodok='" . mysql_real_escape_string($_GET['id']) . "' ORDER BY uid DESC LIMIT 1"));
+}
 
-// Query untuk mendapatkan revisi sebelumnya, memastikan kesesuaian format angka atau dua digit
-$query = sprintf(
-    "SELECT * FROM udokumen WHERE ukodok='%s'",
-    mysql_real_escape_string($_GET['id']) // Pastikan ID aman dari injeksi
-);
+// Cek data revisi saat ini
+$direv = isset($e['direv']) ? trim($e['direv']) : '0';
+$jenisud = isset($ez['jenisud']) ? (int)$ez['jenisud'] : 0;
 
-$ez = mysql_fetch_array(mysql_query($query));
-// var_dump($direv);
-
-// Validasi hasil query revisi
-if (!$ez) {
-    // Data tidak ditemukan
-    $rev = '-';
+// Logika penentuan Kode Dokumen Sebelum & Revisi Sebelum
+if ($jenisud === 1 || ($jenisud === 0 && ($direv === '0' || $direv === '00'))) {
+    // Dokumen Baru (belum ada revisi sebelumnya)
     $kodok = '-';
-    $revv = '-'; // Revisi tidak ada, nilai dimulai dari 0
-} elseif (empty($ez['udrev']) || $ez['udrev'] === '-' || !is_numeric($ez['udrev'])) {
-    // Data ditemukan tetapi udrev tidak valid
-    if (isset($ez['udrev']) OR $ez['udrev'] === '0') {
-        // Jika udrev bernilai 0
-        $rev = '0';
-        $kodok = isset($e['dikodok']) ? $e['dikodok'] : '-';
-        $revv = 1; // Revisi dimulai dari 1 jika diperlukan
-        // var_dump(1);
+    $revv = '-';
+} elseif ($jenisud === 2) {
+    // Usulan Perubahan Dokumen
+    $kodok = !empty($e['dikodok']) ? $e['dikodok'] : (isset($ez['ukodok']) ? $ez['ukodok'] : $_GET['id']);
+    // Pada usulan perubahan, udrev di udokumen adalah revisi sebelum perubahan yang diinput user
+    if (isset($ez['udrev']) && $ez['udrev'] !== '' && $ez['udrev'] !== '-') {
+        $revv = $ez['udrev'];
     } else {
-        // Jika udrev tidak valid
-        $rev = '-';
-        $kodok = '-';
-        $revv = '-'; // Tetap 0 karena tidak ada revisi valid
-        // var_dump(2);
+        $rev_int = is_numeric($direv) ? (int)$direv : 0;
+        $revv = ($rev_int > 0) ? (string)($rev_int - 1) : '0';
     }
+} elseif ($jenisud === 3) {
+    // Usulan Penghapusan Dokumen
+    $kodok = !empty($e['dikodok']) ? $e['dikodok'] : (isset($ez['ukodok']) ? $ez['ukodok'] : $_GET['id']);
+    $revv = (isset($ez['udrev']) && $ez['udrev'] !== '') ? $ez['udrev'] : $direv;
 } else {
-    // Data valid ditemukan dan udrev bernilai numerik
-    $rev = (int)$ez['udrev']; // Pastikan nilai udrev sebagai integer
-    $revv = $rev; // Tambahkan 1 untuk revisi berikutnya
-    $kodok = isset($e['dikodok']) ? $e['dikodok'] : '-';
+    // Fallback umum
+    $rev_int = is_numeric($direv) ? (int)$direv : 0;
+    if ($rev_int <= 0) {
+        $kodok = '-';
+        $revv = '-';
+    } else {
+        $kodok = !empty($e['dikodok']) ? $e['dikodok'] : $_GET['id'];
+        $revv = (string)($rev_int - 1);
+    }
 }
 
-        $ditgl = "ditgl_rev";
-        $dipost = $e['direv'];
-        $tglrev = $ditgl . $dipost;
-        
-        
-    $tglthnreview = date("Y", strtotime($e[$tglrev])) + 3; // Tahun saat ini ditambah 3
-    $tglblnreview = date("-m-d", strtotime($e[$tglrev])); // Bagian bulan dan tanggal
-    $tglmaxreview = $tglthnreview . $tglblnreview; // Kombinasi tahun + bulan + tanggal
+$ditgl = "ditgl_rev";
+$dipost = $e['direv'];
+$tglrev = $ditgl . $dipost;
 
-// var_dump($tglblnreview);
-        
-    
+$tgl_efektif_val = (!empty($e[$tglrev]) && $e[$tglrev] != '0000-00-00') ? $e[$tglrev] : $e['ditgl_brlk'];
+if (empty($tgl_efektif_val) || $tgl_efektif_val == '0000-00-00') {
+    $tgl_efektif_val = $tgl;
+}
+$tglthnreview = date("Y", strtotime($tgl_efektif_val)) + 3;
+$tglblnreview = date("-m-d", strtotime($tgl_efektif_val));
+$tglmaxreview = $tglthnreview . $tglblnreview;
 ?>
 
 <form method="post" action="include/dister/aksi_dister.php?act=tambah" enctype="multipart/form-data" class="form-horizontal">
+<input type="hidden" name="suid_dinter" value="<?=(isset($e['suid']) ? $e['suid'] : '');?>">
+<input type="hidden" name="uid_udokumen" value="<?=(isset($ez['uid']) ? $ez['uid'] : '');?>">
+<input type="hidden" name="jenisud" value="<?=$jenisud;?>">
 <fieldset>
 <legend>Buat Distribusi Dokumen</legend>
 
@@ -410,7 +415,7 @@ if (!$ez) {
 	<div class="control-group">
 		<label class="control-label" for="tgl_brlk">Tanggal Efektif</label>
         <!--<div class="controls"><input class="input-large datepicker" id="tgl_brlk" type="hidden" name="tgl_brlk" required="required" value="<?php //echo $e[ditgl_brlk];?>" ><?php //echo tgl_indo($e[ditgl_brlk])?></div>-->
-        <div class="controls"><input class="input-large datepicker" id="tgl_brlk" type="hidden" name="tgl_brlk" required="required" value="<?=$e[$tglrev];?>" ><?php echo tgl_indo($e[$tglrev])?></div>
+        <div class="controls"><input class="input-large datepicker" id="tgl_brlk" type="hidden" name="tgl_brlk" required="required" value="<?=$tgl_efektif_val;?>" ><?php echo tgl_indo($tgl_efektif_val)?></div>
     </div>
 	<div class="control-group">
 		<label class="control-label" for="tgl_review">Tanggal Maks Review</label>
