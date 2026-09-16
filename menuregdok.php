@@ -219,25 +219,27 @@
 		
 		
 </ul><?php
-	}elseif($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000){?>
+	}elseif($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas')){
+		$is_pmp = ($_SESSION['cv'] == 1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv'] == 'pmp_stabilitas'));
+	?>
 				<ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
     <div class="navbar navbar-inner block-header">
-	<div class="muted pull-left"><strong><font color=black>Menu Admin CC</font></strong></div>
+	<div class="muted pull-left"><strong><font color=black><?php echo $is_pmp ? 'Menu Pelaksana PMP - Stabilitas' : 'Menu Admin CC'; ?></font></strong></div>
 	</div>
 
+	<li>
+		<a href="?pages=dinter"><i class="icon-list-alt"></i> Daftar Dokumen Internal</a>
+	</li>
 	<li>
 		<a href="home.php?pages=dinter&act=rdtcc"><i class="icon-list-alt"></i> Registrasi Dokumen Terkendali CC</a>
 	</li>
 			  <li>
 	<?php
-	if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==81 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000){
-	    $sql = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND ccstatus='N'");
-		
-	}else{
-	    $sql = mysql_query("SELECT * FROM udokumen WHERE udtgl_terima='0000-00-00' OR udtgl_selesai='0000-00-00' OR udtgl_terima IS NULL OR udtgl_selesai IS NULL");
-		
-	}
+	$sql = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND ccstatus='N'");
 	$j = mysql_num_rows($sql);
+	$sql_spek = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND ccstatus='N' AND (ukodok LIKE 'S-%' OR ujudok LIKE '%spesifikasi%' OR ujudok LIKE '%Spesifikasi%')");
+	$j_spek = mysql_num_rows($sql_spek);
+
 		if($j > 0){
 			echo"<a href='?pages=usulandok'><i class='icon-arrow-right'></i><strong> Usulan Dokumen Masuk<span class='badge badge-info pull-right'>$j</span></strong></a>";
 		} else {
@@ -245,6 +247,17 @@
 		}
 	?>
 	</li>
+	<?php if($is_pmp){ ?>
+	<li>
+	<?php
+		if($j_spek > 0){
+			echo"<a href='?pages=usulandok'><i class='icon-file'></i><strong> Usulan Spesifikasi Baru<span class='badge badge-success pull-right'>$j_spek</span></strong></a>";
+		} else {
+			echo"<a href='?pages=usulandok'><i class='icon-file'></i> Usulan Spesifikasi Baru</a>";
+		}
+	?>
+	</li>
+	<?php } ?>
 			
 	
 </ul>

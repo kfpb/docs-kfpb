@@ -186,7 +186,7 @@
         //itsupport
          75,
         //cc
-        51, 55, 81, 99, 1060
+        51, 55, 81, 99, 1060, 1109
     ])) {
 	?>
 	<li>
@@ -267,7 +267,7 @@
         //IT Support
         75,
         //cc
-        51, 55, 81, 99, 1060
+        51, 55, 81, 99, 1060, 1109
     ])) {
 	if($_SESSION[cv]!=1000){
 	  $sql = mysql_query("SELECT a.*,b.*,c.cNama FROM dister a LEFT JOIN disin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' && b.distatus = 'N'");

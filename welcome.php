@@ -186,10 +186,12 @@ if($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]
         </div>
        
     </div>
-<?php }elseif(in_array($_SESSION['cv'], [55, 81, 99, 1060])){?>
+<?php }elseif(in_array($_SESSION['cv'], [55, 81, 99, 1060, 1109]) || (isset($_SESSION['nppcv']) && $_SESSION['nppcv'] == 'pmp_stabilitas')){?>
 <?php 
     $sql = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND ccstatus='N'");
     $j = mysql_num_rows($sql);
+    $sql_spek = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND ccstatus='N' AND (ukodok LIKE 'S-%' OR ujudok LIKE '%spesifikasi%' OR ujudok LIKE '%Spesifikasi%')");
+    $j_spek = mysql_num_rows($sql_spek);
 ?>
 <div class="card-container">
         <div class="card">
@@ -206,7 +208,21 @@ if($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]
                 <a class="card-options-button" href='?pages=usulandok'><i class="fas fa-arrow-right"></i> Detail</a>
             </div>
         </div>
+        <div class="card">
+            <div class="card-icon" style="background-color: #e0f2fe;">
+                <i class="fas fa-file-alt" style="color: #0284c7;"></i>
+            </div>
+            <div class="card-title">Usulan Spesifikasi Baru</div>
+            <?php if($j_spek > 0){ ?>
+                <div class="card-value"><?php echo $j_spek ?></div>
+            <?php }else{ ?>
+                <div class="card-value">0</div>
+            <?php } ?>
+            <div class="card-options">
+                <a class="card-options-button" href='?pages=usulandok'><i class="fas fa-arrow-right"></i> Detail</a>
+            </div>
         </div>
-<? } ?>
+</div>
+<?php } ?>
 </body>
 </html>
