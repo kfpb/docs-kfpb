@@ -257,6 +257,23 @@
 		}
 	?>
 	</li>
+	<li>
+	<?php
+		$smasuk_pmp = mysql_query("
+			SELECT a.suid 
+			FROM dister a 
+			LEFT JOIN disin b ON a.suid_dinter = b.suid 
+			WHERE b.cId = '$_SESSION[cv]' 
+			AND a.distatus = 'Y' AND b.distatus = 'N'
+		");
+		$j_dist = @mysql_num_rows($smasuk_pmp);
+		if($j_dist > 0){
+			echo"<a href='?pages=usrd'><i class='icon-list-alt'></i><strong> Distribusi Dokumen Masuk<span class='badge badge-warning pull-right'>$j_dist</span></strong></a>";
+		} else {
+			echo"<a href='?pages=usrd'><i class='icon-list-alt'></i> Distribusi Dokumen Masuk</a>";
+		}
+	?>
+	</li>
 	<?php } ?>
 			
 	

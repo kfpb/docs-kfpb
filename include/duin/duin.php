@@ -396,6 +396,19 @@ function forceAddMustHave(users, selectedJabatan){
   if (jae && !idsNow.has(String(jae.cId))) {
     tambahPenerima(jae.cId, jae.cJabatan, jae.cNama);
   }
+
+  // Auto-tambah Pelaksana PMP - Stabilitas jika dokumen adalah Spesifikasi
+  const kd = norm($("#kodedok").val() || $("input[name='ukodok']").val() || $("input[name='kode_dok']").val() || "");
+  const jd = norm($("textarea[name='ujudok']").val() || $("input[name='ujudok']").val() || $("input[name='judul_dok']").val() || "");
+  if (kd.startsWith("s-") || jd.includes("spesifikasi")) {
+    const pmps1 = users.find(u => {
+      const n = norm(u.cNama), j = norm(u.cJabatan);
+      return n.includes("stabilitas") || j.includes("stabilitas") || n.includes("pmps1");
+    });
+    if (pmps1 && !idsNow.has(String(pmps1.cId))) {
+      tambahPenerima(pmps1.cId, pmps1.cJabatan, pmps1.cNama);
+    }
+  }
 }
 
 
@@ -405,6 +418,25 @@ function forceAddMustHave(users, selectedJabatan){
 $(document).ready(function () {
   // Inisialisasi chosen untuk elemen yang sudah ada (jika ada)
   $(".chzn-select").chosen({ width: "100%" });
+
+  // Deteksi otomatis jika user mengisi kode/judul spesifikasi
+  $(document).on("input change blur", "#kodedok, input[name='ukodok'], input[name='kode_dok'], input[name='ujudok'], textarea[name='ujudok']", function(){
+    const kd = norm($("#kodedok").val() || $("input[name='ukodok']").val() || $("input[name='kode_dok']").val() || "");
+    const jd = norm($("textarea[name='ujudok']").val() || $("input[name='ujudok']").val() || $("input[name='judul_dok']").val() || "");
+    if (kd.startsWith("s-") || jd.includes("spesifikasi")) {
+      const idsNow = currentIdsSet();
+      fetchUsers("", function(users){
+        const pmps1 = users.find(u => {
+          const n = norm(u.cNama), j = norm(u.cJabatan);
+          return n.includes("stabilitas") || j.includes("stabilitas") || n.includes("pmps1");
+        });
+        if (pmps1 && !idsNow.has(String(pmps1.cId))) {
+          tambahPenerima(pmps1.cId, pmps1.cJabatan, pmps1.cNama);
+          updateNomorUrut();
+        }
+      });
+    }
+  });
 
   // Hapus baris
   $("#bodyTabelPenerima").on('click', '.hapusPenerimalp', function () {

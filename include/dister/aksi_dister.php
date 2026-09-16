@@ -685,8 +685,23 @@ elseif ($act=='lp2'){
             $cd = mysql_num_rows(mysql_query("SELECT * FROM dsin WHERE suid='$cc[suid_dinter]'"));
             
             if ($cd!=0) {
-                $disin = $_POST['disin'];
-                $dsin = $_POST["disin"];
+                $disin = isset($_POST['disin']) && is_array($_POST['disin']) ? $_POST['disin'] : array();
+                $dsin = $disin;
+                
+                // Auto-insert Pelaksana PMP - Stabilitas jika dokumen bertipe Spesifikasi
+                $kd_spek = isset($cc['dikodok']) ? trim($cc['dikodok']) : '';
+                $jd_spek = isset($cc['dijudok']) ? trim($cc['dijudok']) : '';
+                if (stripos($kd_spek, 'S-') === 0 || stripos($jd_spek, 'spesifikasi') !== false) {
+                    $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
+                    if ($rPmp = mysql_fetch_array($qPmp)) {
+                        $cidPmp = $rPmp['cId'];
+                        if (!in_array($cidPmp, $disin)) {
+                            $disin[] = $cidPmp;
+                            $dsin[] = $cidPmp;
+                        }
+                    }
+                }
+
                 $delete_result = mysql_query("DELETE FROM dsin WHERE suid='$cc[suid_dinter]'");
                 if (!$delete_result) {
                     echo "<script>window.alert('Error deleting from dsin: ". mysql_error(). "'); self.history.back();</script>";
@@ -699,7 +714,6 @@ elseif ($act=='lp2'){
                         exit;
                     }	
                 }   
-                $disin = $_POST["disin"];
                 $no=1;
                 foreach ($disin as $x=>$cid1) {
                     $q=mysql_query("INSERT INTO disin(copyke,cId,suid) VALUES ('$no','$cid1','$cc[suid_dinter]')");	
@@ -710,8 +724,23 @@ elseif ($act=='lp2'){
                     $no++;
                 }
             } else {
-                $disin = $_POST['disin'];
-                $dsin = $_POST["disin"];
+                $disin = isset($_POST['disin']) && is_array($_POST['disin']) ? $_POST['disin'] : array();
+                $dsin = $disin;
+                
+                // Auto-insert Pelaksana PMP - Stabilitas jika dokumen bertipe Spesifikasi
+                $kd_spek = isset($cc['dikodok']) ? trim($cc['dikodok']) : '';
+                $jd_spek = isset($cc['dijudok']) ? trim($cc['dijudok']) : '';
+                if (stripos($kd_spek, 'S-') === 0 || stripos($jd_spek, 'spesifikasi') !== false) {
+                    $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
+                    if ($rPmp = mysql_fetch_array($qPmp)) {
+                        $cidPmp = $rPmp['cId'];
+                        if (!in_array($cidPmp, $disin)) {
+                            $disin[] = $cidPmp;
+                            $dsin[] = $cidPmp;
+                        }
+                    }
+                }
+
                 $no=1;
                 foreach ($disin as $x=>$cid1) {
                     $q=mysql_query("INSERT INTO disin(copyke,cId,suid) VALUES ('$no','$cid1','$cc[suid_dinter]')");
@@ -911,6 +940,23 @@ if($_SESSION[levelcv]==0 OR $_SESSION[levelcv]==1){
             }
         }
     
+        // Pastikan akun Pelaksana PMP - Stabilitas otomatis terdaftar jika dokumen bertipe Spesifikasi
+        if (!empty($suid_dinter)) {
+            $dokInfo = mysql_fetch_array(mysql_query("SELECT dikodok, dijudok FROM dinter WHERE suid='$suid_dinter' LIMIT 1"));
+            if ($dokInfo && (stripos($dokInfo['dikodok'], 'S-') === 0 || stripos($dokInfo['dijudok'], 'spesifikasi') !== false)) {
+                $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
+                if ($rPmp = mysql_fetch_array($qPmp)) {
+                    $cidPmp = $rPmp['cId'];
+                    $cekPmp = mysql_query("SELECT dsid FROM disin WHERE cId='$cidPmp' AND suid='$suid_dinter'");
+                    if (mysql_num_rows($cekPmp) == 0) {
+                        $maxCopy = mysql_fetch_array(mysql_query("SELECT MAX(copyke) as max_c FROM disin WHERE suid='$suid_dinter'"));
+                        $nextCopy = ($maxCopy['max_c'] ? $maxCopy['max_c'] + 1 : 1);
+                        mysql_query("INSERT INTO disin (cId, jml_copy, suid, copyke, distatus) VALUES ('$cidPmp', '0', '$suid_dinter', '$nextCopy', 'N')");
+                    }
+                }
+            }
+        }
+
         if (!empty($errors)) {
             echo json_encode(["success" => false, "message" => "Beberapa data gagal disimpan", "errors" => $errors]);
         } else {

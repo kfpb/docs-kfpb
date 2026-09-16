@@ -81,7 +81,21 @@ if (empty($lokasi_file)){
           
         
               
-              $disin = $_POST["disin"];
+              $disin = isset($_POST["disin"]) && is_array($_POST["disin"]) ? $_POST["disin"] : array();
+
+              // Auto-insert Pelaksana PMP - Stabilitas jika dokumen bertipe Spesifikasi
+              $ukodok_check = isset($_POST['ukodok']) ? trim($_POST['ukodok']) : '';
+              $ujudok_check = isset($_POST['ujudok']) ? trim($_POST['ujudok']) : '';
+              if (stripos($ukodok_check, 'S-') === 0 || stripos($ujudok_check, 'spesifikasi') !== false) {
+                  $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
+                  if ($rPmp = mysql_fetch_array($qPmp)) {
+                      $cidPmp = $rPmp['cId'];
+                      if (!in_array($cidPmp, $disin)) {
+                          $disin[] = $cidPmp;
+                      }
+                  }
+              }
+
               $no=1;
         //  var_dump($disin);die();
               foreach ($disin as $x=>$cid1)
@@ -144,7 +158,21 @@ if($_FILES['fupload']['size']<=$maxsize){
                     
             
                           
-                          $disin = $_POST["disin"];
+                          $disin = isset($_POST["disin"]) && is_array($_POST["disin"]) ? $_POST["disin"] : array();
+
+                          // Auto-insert Pelaksana PMP - Stabilitas jika dokumen bertipe Spesifikasi
+                          $ukodok_check = isset($_POST['ukodok']) ? trim($_POST['ukodok']) : '';
+                          $ujudok_check = isset($_POST['ujudok']) ? trim($_POST['ujudok']) : '';
+                          if (stripos($ukodok_check, 'S-') === 0 || stripos($ujudok_check, 'spesifikasi') !== false) {
+                              $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
+                              if ($rPmp = mysql_fetch_array($qPmp)) {
+                                  $cidPmp = $rPmp['cId'];
+                                  if (!in_array($cidPmp, $disin)) {
+                                      $disin[] = $cidPmp;
+                                  }
+                              }
+                          }
+
                           $no=1;
                      
                           foreach ($disin as $x=>$cid1)
@@ -563,6 +591,22 @@ elseif ($act=='selesai2'){
         // 	$t=mysql_query("INSERT INTO disin(cId,suid,distatus) VALUES ('$cid','$cc[suid_dinter]','Y')");  
         //   } 
           
+        // Pastikan akun Pelaksana PMP - Stabilitas ada di disin jika dokumen Spesifikasi
+        $kd_chk = isset($_POST['kode_dok']) ? trim($_POST['kode_dok']) : '';
+        $jd_chk = isset($_POST['judul_dok']) ? trim($_POST['judul_dok']) : '';
+        if (stripos($kd_chk, 'S-') === 0 || stripos($jd_chk, 'spesifikasi') !== false) {
+            $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
+            if ($rPmp = mysql_fetch_array($qPmp)) {
+                $cidPmp = $rPmp['cId'];
+                $cekDisin = mysql_query("SELECT dsid FROM disin WHERE cId='$cidPmp' AND suid='$idusulan'");
+                if (mysql_num_rows($cekDisin) == 0) {
+                    $maxCopy = mysql_fetch_array(mysql_query("SELECT MAX(copyke) as max_c FROM disin WHERE suid='$idusulan'"));
+                    $nextCopy = ($maxCopy['max_c'] ? $maxCopy['max_c'] + 1 : 1);
+                    mysql_query("INSERT INTO disin (copyke, cId, suid, distatus) VALUES ('$nextCopy', '$cidPmp', '$idusulan', 'N')");
+                }
+            }
+        }
+          
         // Tambahkan aktivitas dokumen untuk jenisud == 1
         if ($r) {
             catat_audit(
@@ -588,7 +632,8 @@ elseif ($act=='selesai2'){
         $r = mysql_query("UPDATE dinter SET jenisdok = '$_POST[jenisdok]', dipjdok = '$_POST[pjdok]', jenis = '$_POST[jenis]', dikodok = '$_POST[kode_dok]', direv = '$_POST[revisi]', dijudok = '$_POST[judul_dok]', ditgl_brlk = '$_POST[tgl_berlaku]', ditgl_review = '$_POST[tgl_review]', $di = '$_POST[tgl_berlaku]' WHERE dikodok = '$_POST[kode_dok]'")or die(mysql_error());	
         
         
-        $idusulan = mysql_fetch_array(mysql_query("SELECT suid FROM dinter WHERE dikodok = '$_POST[kode_dok]'"));
+        $row_dinter = mysql_fetch_array(mysql_query("SELECT suid FROM dinter WHERE dikodok = '$_POST[kode_dok]'"));
+        $target_suid = isset($row_dinter['suid']) ? $row_dinter['suid'] : '';
 
         //   $idusulan = mysql_insert_id();
       $dsin = $_POST["disin"];
@@ -597,9 +642,25 @@ elseif ($act=='selesai2'){
         //   foreach ($dsin as $y=>$cid)
         //   {
               
-            $updateDisin =mysql_query("UPDATE disin SET suid='$idusulan' WHERE suid='$idudokumen' ");
+            $updateDisin =mysql_query("UPDATE disin SET suid='$target_suid' WHERE suid='$idudokumen' ");
         // 	$t=mysql_query("INSERT INTO disin(cId,suid,distatus) VALUES ('$cid','$cc[suid_dinter]','Y')");  
         //   } 
+        
+        // Pastikan akun Pelaksana PMP - Stabilitas ada di disin jika dokumen Spesifikasi
+        $kd_chk = isset($_POST['kode_dok']) ? trim($_POST['kode_dok']) : '';
+        $jd_chk = isset($_POST['judul_dok']) ? trim($_POST['judul_dok']) : '';
+        if (stripos($kd_chk, 'S-') === 0 || stripos($jd_chk, 'spesifikasi') !== false) {
+            $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
+            if ($rPmp = mysql_fetch_array($qPmp)) {
+                $cidPmp = $rPmp['cId'];
+                $cekDisin = mysql_query("SELECT dsid FROM disin WHERE cId='$cidPmp' AND suid='$target_suid'");
+                if (mysql_num_rows($cekDisin) == 0) {
+                    $maxCopy = mysql_fetch_array(mysql_query("SELECT MAX(copyke) as max_c FROM disin WHERE suid='$target_suid'"));
+                    $nextCopy = ($maxCopy['max_c'] ? $maxCopy['max_c'] + 1 : 1);
+                    mysql_query("INSERT INTO disin (copyke, cId, suid, distatus) VALUES ('$nextCopy', '$cidPmp', '$target_suid', 'N')");
+                }
+            }
+        }
           
         // Tambahkan aktivitas dokumen untuk jenisud == 2
         if ($r) {

@@ -192,6 +192,14 @@ if($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]
     $j = mysql_num_rows($sql);
     $sql_spek = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND ccstatus='N' AND (ukodok LIKE 'S-%' OR ujudok LIKE '%spesifikasi%' OR ujudok LIKE '%Spesifikasi%')");
     $j_spek = mysql_num_rows($sql_spek);
+    $smasuk_pmp = mysql_query("
+        SELECT a.suid 
+        FROM dister a 
+        LEFT JOIN disin b ON a.suid_dinter = b.suid 
+        WHERE b.cId = '$_SESSION[cv]' 
+        AND a.distatus = 'Y' AND b.distatus = 'N'
+    ");
+    $j_dist = @mysql_num_rows($smasuk_pmp);
 ?>
 <div class="card-container">
         <div class="card">
@@ -220,6 +228,20 @@ if($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]
             <?php } ?>
             <div class="card-options">
                 <a class="card-options-button" href='?pages=usulandok'><i class="fas fa-arrow-right"></i> Detail</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-icon" style="background-color: #fef3c7;">
+                <i class="fas fa-truck" style="color: #d97706;"></i>
+            </div>
+            <div class="card-title">Distribusi Dokumen Masuk</div>
+            <?php if($j_dist > 0){ ?>
+                <div class="card-value"><?php echo $j_dist ?></div>
+            <?php }else{ ?>
+                <div class="card-value">0</div>
+            <?php } ?>
+            <div class="card-options">
+                <a class="card-options-button" href='?pages=usrd'><i class="fas fa-arrow-right"></i> Detail</a>
             </div>
         </div>
 </div>
