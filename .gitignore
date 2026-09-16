@@ -16,3 +16,4 @@ assets/
 *.zip
 *.tar.gz
 konsep_kirim/
+koneksi.php

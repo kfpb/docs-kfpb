@@ -219,8 +219,8 @@
 		
 		
 </ul><?php
-	}elseif($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas')){
-		$is_pmp = ($_SESSION['cv'] == 1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv'] == 'pmp_stabilitas'));
+	}elseif($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1')){
+		$is_pmp = ($_SESSION['cv'] == 1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv'] == 'pmps1'));
 	?>
 				<ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
     <div class="navbar navbar-inner block-header">

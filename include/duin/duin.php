@@ -2114,7 +2114,7 @@ $newID = sprintf("AU-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 	<?php
 	
 
-if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas')){
+if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1')){
     $udmasuk = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' ORDER by udstatus!='2' DESC, cctgl_status='0000-00-00' DESC, udtgl DESC, ccstatus='N' DESC");	 
 }else{
     // $udmasuk = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND udtgl_terima!='0000-00-00' AND ccstatus='Y' OR udstatus2='Y' AND udtgl_selesai!='0000-00-00' AND ccstatus='Y' ORDER by udstatus!='2' DESC, udtgl_terima='0000-00-00' DESC, udtgl DESC, udstatus1 ASC");	 
@@ -2124,7 +2124,7 @@ if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]=
 				
 		while($s = mysql_fetch_array($udmasuk)) {
 		    
-		if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas')){
+		if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1')){
 		    if($s[ccstatus]=='N' AND ($s[cctgl_status]=='0000-00-00' || empty($s[cctgl_status])) ){
 		        echo "<tr class=success>";
 		    }else{
@@ -2174,7 +2174,7 @@ if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]=
 	            echo"</td>
 	            
 				<td>$user[cJabatan]</td>";
-				if($_SESSION[cv]==1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas')){
+				if($_SESSION[cv]==1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1')){
 				    if($s[ccstatus]=='Y' AND $s[cctgl_status]!='0000-00-00'){
 				        echo"<td>Usulan Terima CC / Blm diterima SSDR</td>";
 				    }elseif($s[udstatus]==2){

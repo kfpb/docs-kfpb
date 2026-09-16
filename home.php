@@ -337,7 +337,7 @@ return (true);
             $sqlteknik = mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]' AND bagian2='PTK'");
             $usrteknik = @mysql_num_rows($sqlteknik);
 // SPD		
-			if ($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==1051 OR $_SESSION[cv]==1054 OR $_SESSION[cv]==1055 OR $_SESSION[cv]==1056 OR $_SESSION[cv]==1057 OR $_SESSION[cv]==1058 OR $_SESSION[cv]==1052 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1059 OR $_SESSION[cv]==50 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas')){
+			if ($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==1051 OR $_SESSION[cv]==1054 OR $_SESSION[cv]==1055 OR $_SESSION[cv]==1056 OR $_SESSION[cv]==1057 OR $_SESSION[cv]==1058 OR $_SESSION[cv]==1052 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1059 OR $_SESSION[cv]==50 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1')){
 				include "menuregdok.php";
 				// include "menuusr.php";
 				

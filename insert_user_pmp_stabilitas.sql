@@ -4,10 +4,10 @@
 -- Keterangan:
 -- cId menggunakan AUTO_INCREMENT secara otomatis oleh database MySQL.
 -- Sistem PHP DOCS KFPB sudah disesuaikan untuk mengenali user ini baik
--- melalui cId maupun username (cUser = 'pmp_stabilitas').
+-- melalui cId maupun username (cUser = 'pmps1').
 --
 -- Kredensial Default:
--- Username : pmp_stabilitas
+-- Username : pmps1
 -- Password : stabilitas123 (MD5: 02816f1a9236750cc52cbfd976077ff6)
 -- Atasan   : 9 (Sofia Susilawati - Supervisor Pemeriksaan Stabilitas & Contoh Pertinggal)
 -- Bagian   : QC (Pengawasan Mutu)
@@ -35,7 +35,7 @@ INSERT INTO `users` (
     `delegasi`
 ) VALUES (
     'PMP',
-    'pmp_stabilitas',
+    'pmps1',
     'Pelaksana PMP - Stabilitas',
     'Pelaksana PMP - Stabilitas',
     '9',

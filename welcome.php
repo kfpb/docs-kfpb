@@ -186,7 +186,7 @@ if($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]
         </div>
        
     </div>
-<?php }elseif(in_array($_SESSION['cv'], [55, 81, 99, 1060, 1109]) || (isset($_SESSION['nppcv']) && $_SESSION['nppcv'] == 'pmp_stabilitas')){?>
+<?php }elseif(in_array($_SESSION['cv'], [55, 81, 99, 1060, 1109]) || (isset($_SESSION['nppcv']) && $_SESSION['nppcv'] == 'pmps1')){?>
 <?php 
     $sql = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' AND ccstatus='N'");
     $j = mysql_num_rows($sql);

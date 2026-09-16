@@ -1786,7 +1786,7 @@ $pudid=mysql_fetch_array(mysql_query("SELECT * FROM uddis WHERE pudid = '$_GET[i
 	
 // 			$udmasuk = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' ORDER by udtgl DESC");	  
 
-if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]==1052 OR $_SESSION[cv]==1054 OR $_SESSION[cv]==1055 OR $_SESSION[cv]==1056 OR $_SESSION[cv]==1057 OR $_SESSION[cv]==1058 OR $_SESSION[cv]==1059 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas') OR $_SESSION[cv]==1000){
+if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]==1052 OR $_SESSION[cv]==1054 OR $_SESSION[cv]==1055 OR $_SESSION[cv]==1056 OR $_SESSION[cv]==1057 OR $_SESSION[cv]==1058 OR $_SESSION[cv]==1059 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1') OR $_SESSION[cv]==1000){
     $udmasuk = mysql_query("SELECT * FROM udokumen WHERE udstatus2='Y' ORDER by udstatus!='2' DESC, udtgl_terima='0000-00-00' DESC, udtgl DESC, udstatus1 ASC");	 
 }else{
     $udmasuk = mysql_query("SELECT * FROM udokumen WHERE udtgl_terima!='0000-00-00' AND ccstatus='Y' AND udtgl_selesai='0000-00-00' ORDER by udstatus!='2' DESC, udtgl_terima='0000-00-00' DESC, udtgl DESC, udstatus1 ASC");	 
@@ -1838,7 +1838,7 @@ if($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==53 OR $_SESSION[cv]=
 	            
 				<td>$user[cJabatan]</td>";
 				
-				if($_SESSION[cv]==1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmp_stabilitas')){
+				if($_SESSION[cv]==1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1')){
 				    if($s[ccstatus]=='Y' AND $s[cctgl_status]!='0000-00-00'){
 				        echo"<td>Usulan Terima CC / Blm diterima SSDR</td>";
 				    }elseif($s[udstatus]==2){
