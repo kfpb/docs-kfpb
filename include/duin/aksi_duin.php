@@ -677,8 +677,24 @@ elseif ($act=='selesai2'){
         }
     
     } elseif ($_POST['jenisud'] == 3) {
-        $row_dinter = mysql_fetch_array(mysql_query("SELECT suid FROM dinter WHERE dikodok = '$_POST[kode_dok]' ORDER BY suid DESC LIMIT 1"));
+        $kd_dok = isset($_POST['kode_dok']) ? trim($_POST['kode_dok']) : '';
+        $row_dinter = mysql_fetch_array(mysql_query("SELECT suid FROM dinter WHERE dikodok = '$kd_dok' OR dikodok = '$_POST[kode_dok]' ORDER BY suid DESC LIMIT 1"));
         $target_suid = isset($row_dinter['suid']) ? $row_dinter['suid'] : '';
+
+        $judul_dok = $_POST['judul_dok'];
+        if (stripos($judul_dok, 'OBSOLETE') === false) {
+            $judul_dok .= ' (OBSOLETE)';
+        }
+
+        $kd_dok_escaped = mysql_real_escape_string($_POST['kode_dok']);
+        $kd_dok_trim_escaped = mysql_real_escape_string($kd_dok);
+        $judul_dok_escaped = mysql_real_escape_string($judul_dok);
+
+        $where_dinter = "dikodok = '$kd_dok_escaped' OR dikodok = '$kd_dok_trim_escaped'";
+        if (!empty($target_suid)) {
+            $where_dinter .= " OR suid = '$target_suid'";
+        }
+        $r = mysql_query("UPDATE dinter SET distatus = 'N', dijudok = '$judul_dok_escaped' WHERE $where_dinter");
           
         // Tambahkan aktivitas dokumen untuk jenisud == 3
         if ($r) {
