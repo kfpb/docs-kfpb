@@ -586,7 +586,8 @@ echo"<a href='home1.php?pages=dinter2&act=print&id=$e[suid]' class='btn btn-info
     if (!empty($_POST['judul'])) {
         $judul = mysql_real_escape_string($_POST['judul']); // Sanitasi input
 
-        if ($_SESSION['cv'] == 0 || $_SESSION['cv'] == 1 || $_SESSION['cv'] == 53 || $_SESSION['cv'] == 50 ) {
+        $is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false);
+        if ($_SESSION['cv'] == 0 || $_SESSION['cv'] == 1 || $_SESSION['cv'] == 53 || $_SESSION['cv'] == 50 || $is_pkpa) {
             $query = "SELECT * FROM dinter 
                       WHERE dijudok LIKE '%$judul%' 
                          OR dikodok LIKE '%$judul%' 

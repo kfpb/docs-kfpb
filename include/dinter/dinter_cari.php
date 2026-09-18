@@ -586,17 +586,16 @@ echo"<a href='home1.php?pages=dinter2&act=print&id=$e[suid]' class='btn btn-info
 <div class="span12">
 	<?php
 	
-if ($_POST[user]==0) {
-$dist = mysql_query("SELECT a.*, b.* FROM dinter a, dsin b WHERE a.suid=b.suid AND b.cId='$_POST[user]' AND a.dijudok LIKE '%$_POST[judul]%' OR a.suid=b.suid AND b.cId='$_POST[user]' AND a.dikodok LIKE '%$_POST[judul]%' ORDER BY a.dikodok DESC");
-}
-else
-{
-$dist = mysql_query("SELECT * FROM dinter WHERE dijudok LIKE '%$_POST[judul]%' OR dikodok LIKE '%$_POST[judul]%'  ORDER BY dikodok DESC");	
+if ($_POST['user'] == 0) {
+	$dist = mysql_query("SELECT * FROM dinter WHERE (dijudok LIKE '%$_POST[judul]%' OR dikodok LIKE '%$_POST[judul]%') ORDER BY dikodok DESC");
+} else {
+	$dist = mysql_query("SELECT a.*, b.* FROM dinter a, dsin b WHERE a.suid=b.suid AND b.cId='$_POST[user]' AND (a.dijudok LIKE '%$_POST[judul]%' OR a.dikodok LIKE '%$_POST[judul]%') ORDER BY a.dikodok DESC");
 }
 	
 $vc = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_POST[user]' ORDER BY cId DESC"));
-$tampil = mysql_num_rows($dist)
-    ?> Ditemukan = <b><?=$tampil;?></b> dokumen dengan kata kunci kode/ judul dokumen =<b><?=$_POST[judul];?></b> di Bagian = <b><?=$vc[cJabatan];?></b><br><br>
+$tampil = @mysql_num_rows($dist);
+$bagian_info = !empty($vc['cJabatan']) ? $vc['cJabatan'] : 'Semua Bagian';
+    ?> Ditemukan = <b><?=$tampil;?></b> dokumen dengan kata kunci kode/ judul dokumen =<b><?=$_POST['judul'];?></b> di Bagian = <b><?=$bagian_info;?></b><br><br>
 			<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="Tb14">
 	<thead>
 		<tr>

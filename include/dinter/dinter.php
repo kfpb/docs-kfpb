@@ -586,7 +586,12 @@ Dokumen Level 4 : Catatan/Dokumen Mutu<br>
     </div>
 
     <?php
-    $dist = mysql_query("SELECT * FROM dinter WHERE dipjdok='$_SESSION[cv]' ORDER BY dikodok ASC");
+    $is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false);
+    if ($is_pkpa) {
+        $dist = mysql_query("SELECT * FROM dinter WHERE distatus='Y' ORDER BY dikodok ASC");
+    } else {
+        $dist = mysql_query("SELECT * FROM dinter WHERE dipjdok='$_SESSION[cv]' ORDER BY dikodok ASC");
+    }
     ?>    
 
     <div style="width: 100%; overflow-x: auto; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
@@ -936,7 +941,7 @@ echo"<a href='home1.php?pages=dinter2&act=print&id=$e[suid]' class='btn btn-info
 				</td>
 				</tr>";	
 		}
-	}elseif($_SESSION[cv]==1103 OR $_SESSION[cv]==1104 OR $_SESSION[cv]==1107){
+	}elseif($_SESSION[cv]==1103 OR $_SESSION[cv]==1104 OR $_SESSION[cv]==1107 || (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false)){
     	   ?> 
     
         <form method="post" action="?pages=dintercari" enctype="multipart/form-data" class="form-horizontal">

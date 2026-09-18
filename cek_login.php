@@ -43,8 +43,8 @@ if (!preg_match('/^[a-zA-Z0-9_.-]+$/', $username) OR !ctype_alnum($pass)){
           $_SESSION[bagian]        = $r[cIdjab];
           $_SESSION[bagian2]        = $r[bagian2]; 
           $_SESSION[bagianuser]    = $r[cIdjab];
-          $_SESSION[bagianuser2]    = $r[cIdjab];
-          $_SESSION['is_pkpa']     = isset($r['is_pkpa']) ? $r['is_pkpa'] : 'N';
+          $is_pkpa_user = ((isset($r['is_pkpa']) && $r['is_pkpa'] == 'Y') || (stripos($r['cUser'], 'pkpa') !== false));
+          $_SESSION['is_pkpa']     = $is_pkpa_user ? 'Y' : 'N';
           $_SESSION['tgl_expired'] = isset($r['tgl_expired']) ? $r['tgl_expired'] : '';
 		
 		// session timeout

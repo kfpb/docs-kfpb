@@ -66,8 +66,12 @@
 
 	 <li>
 	<?php
-	
-	  $sql = mysql_query("SELECT a.*,b.*,c.cNama FROM dinter a LEFT JOIN dsin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' && b.distatus = 'N'");
+	$is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false);
+	if ($is_pkpa) {
+		$sql = mysql_query("SELECT suid FROM dinter WHERE distatus='Y'");
+	} else {
+		$sql = mysql_query("SELECT a.*,b.*,c.cNama FROM dinter a LEFT JOIN dsin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' && b.distatus = 'N'");
+	}
 	
 		$j = @mysql_num_rows($sql);
 		if($j > 0){
@@ -80,12 +84,15 @@
 
     <li>
 	<?php
+	if ($is_pkpa) {
+		$sql_obs = mysql_query("SELECT suid FROM dinter WHERE distatus='N'");
+	} else {
+		$sql_obs = mysql_query("SELECT a.*,b.*,c.cNama FROM dinter a LEFT JOIN dsin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' && b.distatus = 'N'");
+	}
 	
-	  $sql = mysql_query("SELECT a.*,b.*,c.cNama FROM dinter a LEFT JOIN dsin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' && b.distatus = 'N'");
-	
-		$j = @mysql_num_rows($sql);
+		$j = @mysql_num_rows($sql_obs);
 		if($j > 0){
-			echo"<a href='?pages=usrdin&act=dokinterobsolate''><i class='icon-list-alt'></i><strong>Daftar Dokumen Internal (Obsolate)<span class='badge badge-info pull-right'>$j</span></strong></a>";
+			echo"<a href='?pages=usrdin&act=dokinterobsolate'><i class='icon-list-alt'></i><strong>Daftar Dokumen Internal (Obsolate)<span class='badge badge-info pull-right'>$j</span></strong></a>";
 		} else {
 			echo"<a href='?pages=usrdin&act=dokinterobsolate'><i class='icon-list-alt'></i>Daftar Dokumen Internal (Obsolate)</a>";
 		}
@@ -137,26 +144,23 @@
 	<?php if($_SESSION[cv]!=53){ ?>
 		<li>
 	<?php
-	
-		$smasuk = mysql_query("
-            SELECT a.suid 
-            FROM dister a 
-            INNER JOIN disin b ON a.suid_dinter = b.suid 
-            WHERE b.cId = '$_SESSION[cv]' 
-            AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
-            AND b.distatus = 'N'
-        ");
-        
-        // $smasuk = mysql_query("
-        //     SELECT a.*, b.*, c.cIdjab 
-        //     FROM dister a 
-        //     LEFT JOIN disin b ON a.suid_dinter = b.suid 
-        //     LEFT JOIN users c ON a.dipengirim = c.cId 
-        //     WHERE b.cId = '$_SESSION[cv]' 
-        //     AND a.distatus = 'Y' 
-        //     GROUP BY a.suid 
-        //     ORDER BY a.ditgl DESC
-        // ");
+		if ($is_pkpa) {
+			$smasuk = mysql_query("
+				SELECT a.suid 
+				FROM dister a 
+				WHERE a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = a.suid_dinter)
+				AND a.distatus = 'Y'
+			");
+		} else {
+			$smasuk = mysql_query("
+				SELECT a.suid 
+				FROM dister a 
+				INNER JOIN disin b ON a.suid_dinter = b.suid 
+				WHERE b.cId = '$_SESSION[cv]' 
+				AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
+				AND b.distatus = 'N'
+			");
+		}
         
 		$j = @mysql_num_rows($smasuk);
 		if($j > 0){

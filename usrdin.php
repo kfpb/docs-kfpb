@@ -5,8 +5,22 @@
 <div class="span12">
 <?php
 if($_GET['act']=="detail"){
-$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab, b.cJabatan FROM dinter a,users b WHERE a.dipengirim=b.cId AND a.suid='$_GET[id]'"));
+$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab, b.cJabatan FROM dinter a LEFT JOIN users b ON a.dipengirim=b.cId WHERE a.suid='$_GET[id]'"));
 $efg = mysql_fetch_array(mysql_query("SELECT nama_jendok FROM jendok WHERE id_jendok='$e[jenisdok]'"));
+
+if (function_exists('catat_audit')) {
+    $session_user = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
+    catat_audit(
+        $e['kode_aktivitas'],
+        $session_user['cNama'],
+        $session_user['cJabatan'],
+        $e['dikodok'],
+        $e['dijudok'],
+        'read',
+        'Membaca Dokumen Internal dengan judul ' . $e['dijudok'],
+        $session_user['cAudit']
+    );
+}
 if ($e[cFoto]==""){
 	$foto = "foto/none.jpg";
 }else{
@@ -457,7 +471,7 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 </fieldset>
 </form>
 <!-- batas dari disposisi.php -->
-<?
+<?php
 }elseif($_GET['act']=="dokinterobsolate"){?>
 
 <div>
@@ -487,10 +501,12 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 	</thead>
 	<tbody>
 	<?php
-  
-		$smasuk = mysql_query("SELECT a.*,b.* FROM dinter a LEFT JOIN disin b ON a.suid=b.suid WHERE b.cId='$_SESSION[cv]' && a.distatus='N' ORDER BY a.dikodok DESC");
-    
-
+		$is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false);
+		if ($is_pkpa) {
+			$smasuk = mysql_query("SELECT * FROM dinter WHERE distatus='N' ORDER BY dikodok DESC");
+		} else {
+			$smasuk = mysql_query("SELECT a.*,b.* FROM dinter a LEFT JOIN disin b ON a.suid=b.suid WHERE b.cId='$_SESSION[cv]' && a.distatus='N' ORDER BY a.dikodok DESC");
+		}
 
 		$no=1;
 		while($s = mysql_fetch_array($smasuk)) {
@@ -524,7 +540,7 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 </div>
 
 
-<?
+<?php
 }else{
 ?>
 <div>
@@ -554,22 +570,12 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 	</thead>
 	<tbody>
 	<?php
-// 		$smasuk = mysql_query("SELECT a.*,b.*,c.* FROM dinter a LEFT JOIN disin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' ORDER BY a.dikodok ASC");
-      
-		$smasuk = mysql_query("SELECT a.*,b.* FROM dinter a LEFT JOIN disin b ON a.suid=b.suid WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' ORDER BY a.dikodok DESC");
-    //   $smasuk = mysql_query("
-    //         SELECT a.*, b.*, c.*, d.*
-    //         FROM dinter a 
-    //         LEFT JOIN dsin b ON a.suid = b.suid 
-    //         LEFT JOIN disin d ON a.suid = d.suid 
-    //         LEFT JOIN users c ON a.dipengirim = c.cId 
-    //         WHERE b.cId = '$_SESSION[cv]' 
-    //         AND a.distatus = 'Y' 
-    //         GROUP BY a.dikodok
-    //         ORDER BY a.dikodok ASC
-    //     ");
-
-
+		$is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false);
+		if ($is_pkpa) {
+			$smasuk = mysql_query("SELECT * FROM dinter WHERE distatus='Y' ORDER BY dikodok ASC");
+		} else {
+			$smasuk = mysql_query("SELECT a.*,b.* FROM dinter a LEFT JOIN disin b ON a.suid=b.suid WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' ORDER BY a.dikodok DESC");
+		}
 
 		$no=1;
 		while($s = mysql_fetch_array($smasuk)) {

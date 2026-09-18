@@ -246,6 +246,81 @@ if($_SESSION[cv]==1 OR $_SESSION[cv]==53 OR $_SESSION[cv]==1051 OR $_SESSION[cv]
             </div>
         </div>
 </div>
+<?php } else {
+    $is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false);
+    
+    // Hitung Dokumen Internal Aktif
+    $q_aktif = mysql_query("SELECT COUNT(*) as total FROM dinter WHERE distatus='Y'");
+    $d_aktif = mysql_fetch_assoc($q_aktif);
+    $total_aktif = $d_aktif ? $d_aktif['total'] : 0;
+    
+    // Hitung Distribusi Dokumen Terkini
+    $q_dist = mysql_query("SELECT COUNT(*) as total FROM dister WHERE distatus='Y'");
+    $d_dist = mysql_fetch_assoc($q_dist);
+    $total_dist = $d_dist ? $d_dist['total'] : 0;
+    
+    // Hitung Dokumen Obsolete
+    $q_obs = mysql_query("SELECT COUNT(*) as total FROM dinter WHERE distatus='N'");
+    $d_obs = mysql_fetch_assoc($q_obs);
+    $total_obs = $d_obs ? $d_obs['total'] : 0;
+?>
+    <?php if ($is_pkpa) { 
+        $tgl_exp = !empty($_SESSION['tgl_expired']) ? tgl_indo($_SESSION['tgl_expired']) : '-';
+    ?>
+    <div class="alert alert-info" style="margin: 15px 20px 25px 20px; font-size: 14px; line-height: 1.6; border-left: 5px solid #0088cc;">
+        <h4 style="margin-top: 0; color: #005580;"><i class="fas fa-user-graduate"></i> Selamat Datang di Portal Dokumen KFPB (Akses PKPA)</h4>
+        Akun Anda aktif untuk keperluan <strong>Praktek Kerja Profesi Apoteker (PKPA)</strong>.<br />
+        Anda memiliki hak akses membaca seluruh dokumen internal terkendali yang berlaku.<br />
+        <span style="font-size: 13px; color: #555;">Masa berlaku akun s/d: <strong><?php echo $tgl_exp; ?></strong></span>
+    </div>
+    <?php } ?>
+
+    <div class="card-container">
+        <div class="card">
+            <div class="card-icon" style="background-color: #e0ffe0;">
+                <i class="fas fa-file-alt" style="color: #2e7d32;"></i>
+            </div>
+            <div class="card-title">Dokumen Internal Aktif</div>
+            <div class="card-value"><?php echo $total_aktif; ?></div>
+            <div class="card-change">
+                <span class="card-change-icon"><i class="fas fa-check-circle" style="color: #4CAF50;"></i></span>
+                <span class="card-change-value">Siap dibaca</span>
+            </div>
+            <div class="card-options">
+                <a class="card-options-button" href='?pages=usrdin'><i class="fas fa-arrow-right"></i> Buka Dokumen</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon" style="background-color: #fef3c7;">
+                <i class="fas fa-truck" style="color: #d97706;"></i>
+            </div>
+            <div class="card-title">Distribusi Dokumen Masuk</div>
+            <div class="card-value"><?php echo $total_dist; ?></div>
+            <div class="card-change">
+                <span class="card-change-icon"><i class="fas fa-clock" style="color: #d97706;"></i></span>
+                <span class="card-change-value">Terkendali</span>
+            </div>
+            <div class="card-options">
+                <a class="card-options-button" href='?pages=usrd'><i class="fas fa-arrow-right"></i> Lihat Distribusi</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon" style="background-color: #fee2e2;">
+                <i class="fas fa-archive" style="color: #dc2626;"></i>
+            </div>
+            <div class="card-title">Dokumen Obsolete</div>
+            <div class="card-value"><?php echo $total_obs; ?></div>
+            <div class="card-change">
+                <span class="card-change-icon"><i class="fas fa-ban" style="color: #dc2626;"></i></span>
+                <span class="card-change-value" style="color: #dc2626;">Tidak berlaku</span>
+            </div>
+            <div class="card-options">
+                <a class="card-options-button" href='?pages=usrdin&act=dokinterobsolate'><i class="fas fa-arrow-right"></i> Detail</a>
+            </div>
+        </div>
+    </div>
 <?php } ?>
 </body>
 </html>

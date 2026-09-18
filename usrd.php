@@ -351,16 +351,29 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 	</thead>
 	<tbody>
 	<?php
-		$smasuk = mysql_query("
-			SELECT a.*, b.*, a.suid AS dister_suid, a.direv AS dister_direv, a.dijudok AS dister_dijudok, 
-			       a.dikodok AS dister_dikodok, a.ditgl AS dister_ditgl, b.distatus AS disin_status, 
-			       b.tgl_baca AS disin_tgl_baca
-			FROM dister a 
-			INNER JOIN disin b ON a.suid_dinter = b.suid 
-			WHERE b.cId = '$_SESSION[cv]' 
-			AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
-			ORDER BY a.ditgl DESC, a.suid DESC
-		");
+		$is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false);
+		if ($is_pkpa) {
+			$smasuk = mysql_query("
+				SELECT a.*, a.suid AS dister_suid, a.direv AS dister_direv, a.dijudok AS dister_dijudok, 
+				       a.dikodok AS dister_dikodok, a.ditgl AS dister_ditgl, 'Y' AS disin_status, 
+				       a.ditgl AS disin_tgl_baca
+				FROM dister a 
+				WHERE a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = a.suid_dinter)
+				AND a.distatus = 'Y'
+				ORDER BY a.ditgl DESC, a.suid DESC
+			");
+		} else {
+			$smasuk = mysql_query("
+				SELECT a.*, b.*, a.suid AS dister_suid, a.direv AS dister_direv, a.dijudok AS dister_dijudok, 
+				       a.dikodok AS dister_dikodok, a.ditgl AS dister_ditgl, b.distatus AS disin_status, 
+				       b.tgl_baca AS disin_tgl_baca
+				FROM dister a 
+				INNER JOIN disin b ON a.suid_dinter = b.suid 
+				WHERE b.cId = '$_SESSION[cv]' 
+				AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
+				ORDER BY a.ditgl DESC, a.suid DESC
+			");
+		}
 
 		while($s = mysql_fetch_array($smasuk)) {
 		if ($s['disin_status'] == 'N'){
