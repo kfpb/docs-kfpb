@@ -16,14 +16,18 @@ $password = "4Bsri2BHcfjhNSPp";
 $database = "sql_docs_kfpb_ki";
 
 $conn = null;
+$conn_error = '';
 if (extension_loaded('mysqli')) {
     mysqli_report(MYSQLI_REPORT_OFF);
     try {
         $conn = @mysqli_connect($server, $username, $password, $database);
         if ($conn) {
             echo "[OK] Terhubung ke MySQL database '$database' via mysqli.\n";
+        } else {
+            $conn_error = mysqli_connect_error();
         }
     } catch (Exception $e) {
+        $conn_error = $e->getMessage();
         $conn = null;
     }
 }
@@ -32,11 +36,14 @@ if (!$conn && function_exists('mysql_connect')) {
     $link = @mysql_connect($server, $username, $password);
     if ($link && @mysql_select_db($database)) {
         echo "[OK] Terhubung ke MySQL database '$database' via mysql legacy.\n";
+        $conn = $link;
+    } else {
+        $conn_error = mysql_error();
     }
 }
 
 function run_query($sql, $conn) {
-    if ($conn) {
+    if (is_object($conn)) {
         return mysqli_query($conn, $sql);
     } elseif (function_exists('mysql_query')) {
         return mysql_query($sql);
@@ -45,7 +52,7 @@ function run_query($sql, $conn) {
 }
 
 function get_error($conn) {
-    if ($conn) {
+    if (is_object($conn)) {
         return mysqli_error($conn);
     } elseif (function_exists('mysql_error')) {
         return mysql_error();
@@ -53,8 +60,8 @@ function get_error($conn) {
     return 'Koneksi database tidak tersedia';
 }
 
-if (!$conn && !function_exists('mysql_connect')) {
-    die("[ERROR] Gagal terhubung ke database '$database' pada '$server'. Pastikan MySQL service berjalan.\n");
+if (!$conn) {
+    die("[ERROR] Gagal terhubung ke database '$database' pada '$server'.\nDetail Error: " . ($conn_error ?: 'Koneksi ditolak / database tidak ditemukan') . "\n");
 }
 
 // 1. Cek & Tambah kolom pada tabel users
