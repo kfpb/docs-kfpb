@@ -1,5 +1,15 @@
 <?php
 if(session_status() == PHP_SESSION_NONE) { session_start(); }
+
+// Validasi Masa Aktif Akun PKPA saat sesi sedang berjalan
+if (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') {
+    if (!empty($_SESSION['tgl_expired']) && date('Y-m-d') > $_SESSION['tgl_expired']) {
+        session_destroy();
+        echo "<script>alert('Masa berlaku akun PKPA Anda telah berakhir (30 hari). Sesi Anda telah dinonaktifkan.'); parent.location = 'index.php';</script>";
+        exit;
+    }
+}
+
 $usr = isset($_SESSION['namacv']) ? $_SESSION['namacv'] : '';
 $jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
 if(!isset($_SESSION['loginefile']))

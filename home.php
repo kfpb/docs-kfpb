@@ -378,10 +378,31 @@ return (true);
         <div class="row-fluid">
 		    <div class="span12" id="content">
 		        <div class="row-fluid">
+<?php
+// Peringatan Keamanan Akses Perangkat Baru untuk User
+if (!empty($_SESSION['peringatan_device_baru'])) {
+    $p = $_SESSION['peringatan_device_baru'];
+    echo "
+    <div class='alert alert-block alert-warning' style='border: 2px solid #f89406; background-color: #fcf8e3; padding: 15px; border-radius: 6px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);'>
+        <button type='button' class='close' data-dismiss='alert'>&times;</button>
+        <h4 class='alert-heading' style='color: #c09853; margin-top: 0;'><i class='icon-warning-sign'></i> Pemberitahuan Keamanan: Akses Perangkat Baru (Audit Trail KFPB)</h4>
+        <p style='font-size: 14px; line-height: 1.5; margin-top: 8px;'>
+            Akun Anda terdeteksi mengakses dokumen dari <strong>Perangkat / PC baru (Perangkat ke-{$p['device_sequence']})</strong> dengan IP Address <code>{$p['ip_address']}</code>.
+        </p>
+        <p style='margin-bottom: 0; font-size: 13px; color: #8a6d3b;'>
+            <strong>Perhatian:</strong> Seluruh riwayat perpindahan perangkat, alamat IP, dan dokumen yang Anda buka tercatat secara otomatis di <strong>Audit Trail Supervisor Sistem Dokumentasi KFPB</strong>. Harap tidak membagikan akun Anda kepada pihak lain.
+        </p>
+    </div>
+    ";
+    unset($_SESSION['peringatan_device_baru']);
+}
+?>
 		            <div class="block"><!-- block -->
                     <?php
 						if($_GET[pages]=="users"){
 							include"include/users/users.php";	//admin untuk kelola user
+						}elseif($_GET[pages]=="monitoring_pkpa"){
+							include"include/monitoring_pkpa/monitoring_pkpa.php"; // Supervisor Sistem Dokumentasi - Monitoring & Audit PKPA
 						}elseif($_GET[pages]=="pegawai"){
 							include"include/pegawai/pegawai.php";	//pegawai
 						}elseif($_GET[pages]=="dokint"){

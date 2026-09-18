@@ -44,6 +44,8 @@ if (!ctype_alnum($username) OR !ctype_alnum($pass)){
           $_SESSION[bagian2]        = $r[bagian2]; 
           $_SESSION[bagianuser]    = $r[cIdjab];
           $_SESSION[bagianuser2]    = $r[cIdjab];
+          $_SESSION['is_pkpa']     = isset($r['is_pkpa']) ? $r['is_pkpa'] : 'N';
+          $_SESSION['tgl_expired'] = isset($r['tgl_expired']) ? $r['tgl_expired'] : '';
 		
 		// session timeout
  
@@ -163,14 +165,72 @@ if (!ctype_alnum($username) OR !ctype_alnum($pass)){
 		    echo "<script>alert('Maaf, Ulangi CAPTCHA...!'); parent.location = 'index.php';</script>";
 		    session_destroy();
 		} else { // jika captcha benar, maka perintah yang bawah akan dijalankan
-// 			echo "Username anda <b>$_SESSION[username]</b>"; echo "<br/>";
-// 			echo "Password anda <b>$_SESSION[password]</b>"; echo "<br/>"; echo "<br/>";
-// 			echo "Kode CAPTCHA anda benar";
-			// now try it
             $ua=getBrowser();
             $yourbrowser= $ua['name'] . " " . $ua['version'] . " on " .$ua['platform'] . " reports: <br >" . $ua['userAgent'];
-            print_r($yourbrowser);
-		
+
+            // 1. Validasi Khusus Akun PKPA (Masa Berlaku 30 Hari & Status Akun)
+            if (isset($r['is_pkpa']) && $r['is_pkpa'] == 'Y') {
+                $today = date('Y-m-d');
+                if (isset($r['status_akun']) && $r['status_akun'] == 'dibekukan') {
+                    echo "<script>alert('Akun PKPA Anda telah dinonaktifkan / dibekukan oleh Supervisor Sistem Dokumentasi.'); parent.location = 'index.php';</script>";
+                    session_destroy();
+                    exit;
+                }
+                if (!empty($r['tgl_expired']) && $today > $r['tgl_expired']) {
+                    @mysql_query("INSERT INTO log_audit_trail (username, nama_user, kategori, detail_kegiatan, ip_address, status_anomali) 
+                                  VALUES ('$r[cUser]', '$r[cNama]', 'EXPIRED_ATTEMPT', 'Mencoba login dengan akun PKPA yang sudah kadaluarsa (Expired: $r[tgl_expired])', '$ipaddress', 'PERINGATAN')");
+                    @mysql_query("UPDATE users SET status_akun='expired' WHERE cId='$r[cId]'");
+                    echo "<script>alert('Masa berlaku akun PKPA Anda telah berakhir (30 hari sejak dibuat). Anda tidak dapat login lagi. Silakan hubungi Supervisor Sistem Dokumentasi.'); parent.location = 'index.php';</script>";
+                    session_destroy();
+                    exit;
+                }
+            }
+
+            // 2. Pelacakan Perangkat PC (Device Token & Soft Enforcement)
+            $device_token = !empty($_COOKIE['kfpb_device_id']) ? $_COOKIE['kfpb_device_id'] : '';
+            if (empty($device_token)) {
+                $device_token = md5($ipaddress . (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '') . microtime());
+                setcookie('kfpb_device_id', $device_token, time() + (86400 * 365), "/");
+            }
+            $_SESSION['device_token'] = $device_token;
+
+            // Cek apakah PC ini sudah pernah terdaftar untuk user ini
+            $cek_dev = mysql_query("SELECT * FROM user_registered_devices WHERE username='$r[cUser]' AND device_token='$device_token'");
+            if (!$cek_dev || mysql_num_rows($cek_dev) == 0) {
+                // Hitung total PC terdaftar sebelumnya
+                $q_c = mysql_query("SELECT COUNT(*) as total FROM user_registered_devices WHERE username='$r[cUser]'");
+                $d_c = ($q_c) ? mysql_fetch_assoc($q_c) : array('total' => 0);
+                $device_seq = intval($d_c['total']) + 1;
+
+                // Daftarkan PC baru ini
+                $uagent_esc = mysql_real_escape_string($yourbrowser);
+                @mysql_query("INSERT INTO user_registered_devices (user_id, username, device_token, device_sequence, ip_address, user_agent, login_count, status) 
+                              VALUES ('$r[cId]', '$r[cUser]', '$device_token', '$device_seq', '$ipaddress', '$uagent_esc', 1, 'aktif')");
+
+                if (isset($r['is_pkpa']) && $r['is_pkpa'] == 'Y') {
+                    if ($device_seq > 1) {
+                        $_SESSION['peringatan_device_baru'] = array(
+                            'device_sequence' => $device_seq,
+                            'ip_address' => $ipaddress
+                        );
+                        @mysql_query("INSERT INTO log_audit_trail (username, nama_user, kategori, detail_kegiatan, ip_address, device_token, device_sequence, status_anomali) 
+                                      VALUES ('$r[cUser]', '$r[cNama]', 'ANOMALI_DEVICE', 'Login dari PC baru (Perangkat ke-$device_seq) dengan IP $ipaddress', '$device_token', '$device_seq', 'PERINGATAN')");
+                    } else {
+                        @mysql_query("INSERT INTO log_audit_trail (username, nama_user, kategori, detail_kegiatan, ip_address, device_token, device_sequence, status_anomali) 
+                                      VALUES ('$r[cUser]', '$r[cNama]', 'LOGIN', 'Login pertama kali - PC Utama (Perangkat ke-1) terdaftar', '$device_token', 1, 'NORMAL')");
+                    }
+                }
+            } else {
+                // PC sudah terdaftar
+                $dev_row = mysql_fetch_assoc($cek_dev);
+                @mysql_query("UPDATE user_registered_devices SET last_login=NOW(), login_count=login_count+1, ip_address='$ipaddress' WHERE id='$dev_row[id]'");
+                if (isset($r['is_pkpa']) && $r['is_pkpa'] == 'Y') {
+                    @mysql_query("INSERT INTO log_audit_trail (username, nama_user, kategori, detail_kegiatan, ip_address, device_token, device_sequence, status_anomali) 
+                                  VALUES ('$r[cUser]', '$r[cNama]', 'LOGIN', 'Login normal dari Perangkat ke-$dev_row[device_sequence]', '$device_token', '$dev_row[device_sequence]', 'NORMAL')");
+                }
+            }
+
+            // Catat log activity bawaan sistem
     		$q=mysql_query("INSERT INTO log_activity(user,
                                       jabatan,
                                       action,
@@ -181,10 +241,10 @@ if (!ctype_alnum($username) OR !ctype_alnum($pass)){
     	                            'login',
     	                            '$ipaddress',
     	                            '$yourbrowser'
-    	                            
     	                     )");
 	                     
-			header('location:home.php');
+			echo "<script>parent.location = 'home.php';</script>";
+			exit;
 		}
 		
 // 		header('location:home.php');

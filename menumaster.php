@@ -7,6 +7,7 @@
  <!--       <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>-->
  <!--       <ul class="dropdown-menu">-->
 	<li><a href="?pages=users"><i class="icon-user"></i> User</span></a></li>
+	<li><a href="?pages=monitoring_pkpa"><i class="icon-eye-open"></i> Monitoring & Audit PKPA</span></a></li>
     <li><a href="?pages=jabatan"><i class="icon-tasks"></i> Level Jabatan</span></a></li>
     <!--<li><a href="?pages=jenisms"><i class="icon-tasks"></i> Jenis Memo/Surat</span></a></li>-->
     <!--<li><a href="?pages=cchl"><i class="icon-tasks"></i> CCHL</span></a></li>-->

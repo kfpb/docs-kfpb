@@ -15,6 +15,12 @@ if ($act=='tambah'){
   $acak           = rand(1,99);
   $foto = $acak.$nama_file; 
   
+  $is_pkpa = (isset($_POST['is_pkpa']) && $_POST['is_pkpa'] == 'Y') ? 'Y' : 'N';
+  $tgl_mulai_sql = ($is_pkpa == 'Y') ? "'" . date('Y-m-d') . "'" : "NULL";
+  $masa_hari = (!empty($_POST['masa_aktif_hari'])) ? intval($_POST['masa_aktif_hari']) : 30;
+  $tgl_expired_sql = ($is_pkpa == 'Y') ? "'" . date('Y-m-d', strtotime("+$masa_hari days")) . "'" : "NULL";
+  $status_akun = 'aktif';
+
   if (!empty($lokasi_file)){
 	UploadFoto($foto);
 	$q=mysql_query("INSERT INTO users(cUser,
@@ -23,14 +29,18 @@ if ($act=='tambah'){
 									cIdjab,
 									cAtasan,
 									cAccatasan,
-									cAudit
+									cAudit,
 									cTelp, 
 									cEmail,
 									cEmail2,
 									cFoto,
 									cPass,
 									idj,
-									bagian) 
+									bagian,
+									is_pkpa,
+									tgl_mulai,
+									tgl_expired,
+									status_akun) 
 							VALUES('$_POST[user]',
 									'$_POST[nama]',
 									'$_POST[nama_jabatan]',
@@ -44,7 +54,11 @@ if ($act=='tambah'){
 									'$foto',
 									'$pass',
 									'$_POST[jabatan]',
-									'$_POST[singkatan_bagian]')");
+									'$_POST[singkatan_bagian]',
+									'$is_pkpa',
+									$tgl_mulai_sql,
+									$tgl_expired_sql,
+									'$status_akun')");
   }else{
 	$q=mysql_query("INSERT INTO users(cUser,
 									cNama,
@@ -58,7 +72,11 @@ if ($act=='tambah'){
 									cEmail2,
 									cPass,
 									idj,
-									bagian) 
+									bagian,
+									is_pkpa,
+									tgl_mulai,
+									tgl_expired,
+									status_akun) 
 							VALUES('$_POST[user]',
 									'$_POST[nama]',
 									'$_POST[nama_jabatan]',
@@ -71,7 +89,11 @@ if ($act=='tambah'){
 									'$_POST[email2]',
 									'$pass',
 									'$_POST[jabatan]',
-									'$_POST[singkatan_bagian]'
+									'$_POST[singkatan_bagian]',
+									'$is_pkpa',
+									$tgl_mulai_sql,
+									$tgl_expired_sql,
+									'$status_akun'
 									)");
 	}
   if ($q){
@@ -99,6 +121,14 @@ elseif ($act=='edit'){
   $foto = $acak.$nama_file; 
 
 if ($_SESSION[levelcv]==0){
+  $pkpa_update_sql = "";
+  if (isset($_POST['is_pkpa'])) {
+      $p_is = ($_POST['is_pkpa'] == 'Y') ? 'Y' : 'N';
+      $p_exp = (!empty($_POST['tgl_expired'])) ? "'" . $_POST['tgl_expired'] . "'" : "NULL";
+      $p_st = (!empty($_POST['status_akun'])) ? $_POST['status_akun'] : 'aktif';
+      $pkpa_update_sql = ", is_pkpa='$p_is', tgl_expired=$p_exp, status_akun='$p_st'";
+  }
+
   //jika data diupdate ubahfoto=0 dan ubahpassword=0
   if ((empty($lokasi_file)) && ($_POST['pass']=="")){
 	$q=mysql_query("UPDATE users SET cUser    = '$_POST[user]',
@@ -112,6 +142,7 @@ if ($_SESSION[levelcv]==0){
                                    cEmail	 = '$_POST[email]',
 								   cEmail2	 = '$_POST[email2]',
 								   idj		 = '$_POST[jabatan]'
+								   $pkpa_update_sql
 								   WHERE cId = '$_GET[id]'");
 	
   }
@@ -135,6 +166,7 @@ if ($_SESSION[levelcv]==0){
 								   cEmail2	 = '$_POST[email2]',
 								   cFoto	 = '$foto',
 								   idj		 = '$_POST[jabatan]'
+								   $pkpa_update_sql
 								   WHERE cId = '$_GET[id]'");
   }
   //jika data diupdate ubahfoto=0 dan ubahpassword=1
@@ -152,6 +184,7 @@ if ($_SESSION[levelcv]==0){
 								   cEmail2	 = '$_POST[email2]',
 								   cPass	 = '$pass',
 								   idj		 = '$_POST[jabatan]'
+								   $pkpa_update_sql
 								   WHERE cId = '$_GET[id]'");
   }
   //jika data diupdate ubahfoto=1 dan ubahpassword=1
@@ -176,6 +209,7 @@ if ($_SESSION[levelcv]==0){
 								   cPass	 = '$pass',
 								   cFoto	 = '$foto',
 								   idj		 = '$_POST[jabatan]'
+								   $pkpa_update_sql
 								   WHERE cId = '$_GET[id]'");  
   }
 }

@@ -8,6 +8,9 @@
 	<li>
 		<a href="?pages=dinter"><i class="icon-list-alt"></i> Daftar Dokumen Internal</a>
 	</li>
+	<li>
+		<a href="?pages=monitoring_pkpa"><i class="icon-eye-open"></i> <strong>Monitoring & Audit PKPA</strong></a>
+	</li>
 	
 	<?php if(in_array($_SESSION['cv'], [50])){?>
 	

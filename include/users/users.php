@@ -124,6 +124,23 @@ if($_GET[act]=="tambah"){
     </div>
 	
     <div class="control-group">
+		<label class="control-label" for="is_pkpa"><strong>Akun PKPA?</strong></label>
+        <div class="controls">
+        	<select name="is_pkpa" id="is_pkpa" class="span3" onchange="document.getElementById('div_pkpa_days').style.display = (this.value === 'Y') ? 'block' : 'none';">
+                <option value="N" selected>Bukan (Pegawai Tetap/Kontrak)</option>
+                <option value="Y">Ya (Mahasiswa PKPA)</option>
+            </select>
+         </div>
+    </div>
+    <div class="control-group" id="div_pkpa_days" style="display: none;">
+		<label class="control-label" for="masa_aktif_hari">Masa Aktif Akun</label>
+        <div class="controls">
+        	<input class="input-mini focused" id="masa_aktif_hari" type="number" name="masa_aktif_hari" value="30" min="1" max="365"> <strong>Hari</strong>
+            <span class="help-inline" style="color: #666;">(Otomatis kadaluarsa setelah 30 hari sejak dibuat)</span>
+         </div>
+    </div>
+
+    <div class="control-group">
 		<label class="control-label" for="pass">Password<br>
 		<small>(Minimal 8 Karakter)</small></label>
         <div class="controls"><input class="input-medium focused" id="pass" minlength="8" type="password" name="pass" required="required"></div>
@@ -244,8 +261,32 @@ if ($e[cFoto]==""){
          </div>
     </div>
 	
-	
-	
+	<div class="control-group">
+		<label class="control-label" for="is_pkpa"><strong>Akun PKPA?</strong></label>
+        <div class="controls">
+        	<select name="is_pkpa" class="span3">
+                <option value='N' <?=(isset($e['is_pkpa']) && $e['is_pkpa']=='Y')?'':'selected';?>>Bukan</option>
+                <option value='Y' <?=(isset($e['is_pkpa']) && $e['is_pkpa']=='Y')?'selected':'';?>>Ya (Mahasiswa PKPA)</option>
+            </select>
+         </div>
+    </div>
+    <div class="control-group">
+		<label class="control-label" for="tgl_expired">Tanggal Expired PKPA</label>
+        <div class="controls">
+        	<input class="input-medium focused" id="tgl_expired" type="date" name="tgl_expired" value="<?=(isset($e['tgl_expired'])?$e['tgl_expired']:'');?>">
+            <span class="help-inline" style="color: #666;">(Masa berlaku akun)</span>
+         </div>
+    </div>
+    <div class="control-group">
+		<label class="control-label" for="status_akun">Status Akun</label>
+        <div class="controls">
+        	<select name="status_akun" class="span3">
+                <option value='aktif' <?=(isset($e['status_akun']) && $e['status_akun']=='aktif')?'selected':'';?>>Aktif</option>
+                <option value='expired' <?=(isset($e['status_akun']) && $e['status_akun']=='expired')?'selected':'';?>>Expired</option>
+                <option value='dibekukan' <?=(isset($e['status_akun']) && $e['status_akun']=='dibekukan')?'selected':'';?>>Dibekukan</option>
+            </select>
+         </div>
+    </div>
 	
     <?php
 	} else {
@@ -263,7 +304,7 @@ if ($e[cFoto]==""){
 		<label class="control-label" for="nama">Nama</label>
         <div class="controls"><b><input id="nama" type="hidden" name="nama" value="<?=$e[cNama];?>"><?=$e[cNama];?></b></div>
     </div>
-	<? } ?>
+	<?php } ?>
     <div class="control-group">
 		<label class="control-label" for="pass">Password</label>
         <div class="controls">
