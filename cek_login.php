@@ -8,11 +8,11 @@ function anti_injection($data){
   return $filter;
 }
 
-$username = anti_injection($_POST['username']);
-$pass     = anti_injection(md5($_POST['password']));
+$username = trim(anti_injection($_POST['username']));
+$pass     = trim(anti_injection(md5($_POST['password'])));
 
-// pastikan username dan password adalah berupa huruf atau angka.
-if (!ctype_alnum($username) OR !ctype_alnum($pass)){
+// pastikan username dan password adalah karakter yang valid (huruf, angka, underscore, titik, strip).
+if (!preg_match('/^[a-zA-Z0-9_.-]+$/', $username) OR !ctype_alnum($pass)){
   header('location:index.php');
 }else{
 	$login=mysql_query("SELECT * FROM users WHERE cUser='$username' AND cPass='$pass'");
