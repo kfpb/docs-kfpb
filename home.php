@@ -664,7 +664,7 @@ if (!empty($_SESSION['peringatan_device_baru'])) {
 	<!--batas footer -->
 	<footer>
         <p>
-			Copyright &copy; <?php echo date('Y'); ?> | <b>QA Pengendalian Sistem</b><br />
+			Copyright &copy; <?php echo date('Y'); ?> | <b>Teknik Pengendalian Sistem</b><br />
 			<a href="http://www.kimiafarma.co.id"><strong>PT. Kimia Farma</strong></a> <a href="http://www.kfpb.kimiafarma.co.id">Plant Banjaran</a>
 			
 		</p>

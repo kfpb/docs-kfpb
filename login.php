@@ -59,7 +59,7 @@ if (isset($_SESSION['cv'])) {
         <br />
         <center>
 Rekomendasi Browser : Chrome</strong></h5> 
-         <p>Copyright &copy; <?php echo date('Y'); ?> | <strong>Pengembangan Sistem</strong> <br /><a href="http://docs.kfpb.kimiafarma.co.id">Plant Banjaran - <strong>PT. Kimia Farma
+         <p>Copyright &copy; <?php echo date('Y'); ?> | <strong>Teknik</strong> <br /><a href="http://docs.kfpb.kimiafarma.co.id">Plant Banjaran - <strong>PT. Kimia Farma
          </strong></p>         
          </center>
     	</form>
