@@ -138,14 +138,13 @@
 		<li>
 	<?php
 	
-	  $sql = mysql_query("SELECT a.*,b.*,c.cNama FROM dister a LEFT JOIN disin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' && b.distatus = 'N'");
 		$smasuk = mysql_query("
-            SELECT a.*, b.*, c.cIdjab 
+            SELECT a.suid 
             FROM dister a 
-            LEFT JOIN disin b ON a.suid_dinter = b.suid 
-            LEFT JOIN users c ON a.dipengirim = c.cId 
+            INNER JOIN disin b ON a.suid_dinter = b.suid 
             WHERE b.cId = '$_SESSION[cv]' 
-            AND a.distatus = 'Y' AND b.distatus = 'N'
+            AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
+            AND b.distatus = 'N'
         ");
         
         // $smasuk = mysql_query("

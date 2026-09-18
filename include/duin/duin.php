@@ -1830,28 +1830,244 @@ $rev = 0;
         </div> 
 	</div>
 	<?php //var_dump($e[uid]);?>
-		 <label class="control-label" for="dsin">Penerima Dokumen:</label>
-			  <div class="controls">
-    			<select multiple="multiple" id="disin" name="disin[]" class="chzn-select span8" disabled="true">
-                	<?php
-                	
-                            
-    				$cv = mysql_query("SELECT cId, cNama, bagian, cJabatan FROM users WHERE cId IN(SELECT cId FROM disin WHERE suid='$e[uid]') AND cId NOT IN (1103, 1104)");
-    			?>
-    			<?php
-    				while ($dcv=mysql_fetch_array($cv)){
-    	    	     	echo "<option value='$dcv[cId]' selected>$dcv[cJabatan] - $dcv[cNama]</option>";
-    				}
-    				$cv = mysql_query("SELECT cId, cNama, bagian, cJabatan FROM users WHERE cId NOT IN(SELECT cId FROM disin WHERE suid='$data[uid]') AND cId NOT IN (1103, 1104)");
-    				while ($dcv=mysql_fetch_array($cv)){
-    	    	     	echo "<option value='$dcv[cId]'>$dcv[cJabatan] - $dcv[cNama]</option>";
-    				}
-    				
-    				?>                             
-                </select>
-                <br>
-        <small>Lakukan Perubahan penerima di halaman distribusi</small>
-            </div>
+	<div class="control-group">
+		<label class="control-label" style="font-weight:bold;">Penerima Distribusi Dokumen:</label>
+		<div class="controls">
+			<style>
+				.filter-section-duin {
+					background-color: #f9f9f9;
+					padding: 12px 15px;
+					border: 1px solid #e3e3e3;
+					border-radius: 4px;
+					margin-bottom: 15px;
+				}
+				.chosen-container .chosen-drop { z-index: 99999 !important; border-bottom: 1px solid #aaa; }
+				.chosen-container { width: 100% !important; }
+				#tabelPenerima td { vertical-align: middle !important; overflow: visible !important; }
+				.input-jml { width: 50px !important; text-align: center; margin: 0 !important; }
+			</style>
+
+			<div class="filter-section-duin span10" style="margin-left: 0;">
+				<div class="row-fluid">
+					<div class="span6">
+						<label style="font-weight:bold; margin-bottom:5px;">Filter Jabatan Penerima:</label>
+						<select id="jabatan_filter" class="chzn-select span11" data-placeholder="Pilih Jabatan...">
+							<option value="">-- Pilih Filter Jabatan --</option>
+							<option value="asisten">Asman</option>
+							<option value="visor">SPV</option>
+							<option value="gabungan">Asman + SPV</option>
+							<option value="gabungan_mgr">Asman + SPV + Manager</option>
+						</select>
+					</div>
+					<div class="span6" style="text-align: right; padding-top: 23px;">
+						<button type="button" id="tambahPenerima1" class="btn btn-primary"><i class="icon-plus"></i> Tambah Manual</button>
+						<button type="button" id="hapusSemua" class="btn btn-danger"><i class="icon-trash"></i> Reset</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="span10" style="margin-left: 0;">
+				<table id="tabelPenerima" class="table table-striped table-bordered table-hover">
+					<thead>
+						<tr>
+							<th width="6%" style="text-align:center;">No.</th>
+							<th width="74%">Penerima Dokumen (Jabatan - Nama)</th>
+							<th width="20%" style="text-align:center;">Jumlah Copy & Aksi</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						$no = 1;
+						// Prioritas 1: Ambil penerima dari usulan dokumen saat ini
+						$q_penerima = mysql_query("
+							SELECT DISTINCT a.cId, a.cNama, a.cJabatan, b.copyke, b.jml_copy
+							FROM disin b
+							LEFT JOIN users a ON a.cId = b.cId
+							WHERE b.suid = '$e[uid]' AND b.cId NOT IN (1103, 1104)
+							ORDER BY b.copyke ASC, a.cNama ASC
+						");
+
+						// Prioritas 2: Jika kosong dan merupakan dokumen perubahan, ambil penerima dari dinter sebelumnya
+						if (mysql_num_rows($q_penerima) == 0 && !empty($e['ukodok'])) {
+							$row_dinter_chk = mysql_fetch_array(mysql_query("SELECT suid FROM dinter WHERE dikodok='$e[ukodok]' ORDER BY suid DESC LIMIT 1"));
+							if (!empty($row_dinter_chk['suid'])) {
+								$q_penerima = mysql_query("
+									SELECT DISTINCT a.cId, a.cNama, a.cJabatan, b.copyke, b.jml_copy
+									FROM disin b
+									LEFT JOIN users a ON a.cId = b.cId
+									WHERE b.suid = '$row_dinter_chk[suid]' AND b.cId NOT IN (1103, 1104)
+									ORDER BY b.copyke ASC, a.cNama ASC
+								");
+							}
+						}
+
+						while ($dcv = mysql_fetch_array($q_penerima)):
+							if (empty($dcv['cId'])) continue;
+						?>
+						<tr class="penerima-row" style="overflow: visible;">
+							<td style="text-align:center;"><?= $no; ?></td>
+							<td style="overflow: visible;">
+								<input type="hidden" name="penerima_copyke[]" value="<?= $no; ?>">
+								<input type="hidden" name="penerima_cId[]" value="<?= $dcv['cId']; ?>">
+								<select class="chzn-select span12 select-user-penerima">
+									<option value="<?= $dcv['cId']; ?>" selected><?= $dcv['cJabatan']; ?> - <?= $dcv['cNama']; ?></option>
+								</select>
+							</td>
+							<td style="text-align:center;">
+								<div style="display: flex; justify-content: center; gap: 5px; align-items: center;">
+									<input type="text" name="penerima_jml_copy[]" value="<?= (isset($dcv['jml_copy']) ? $dcv['jml_copy'] : '0'); ?>" class="input-jml" placeholder="0">
+									<button type="button" class="btn btn-danger btn-small hapusPenerimaRow" title="Hapus"><i class="icon-trash"></i> Hapus</button>
+								</div>
+							</td>
+						</tr>
+						<?php
+							$no++;
+						endwhile;
+						?>
+					</tbody>
+				</table>
+				<small style="color: #666;">Penerima di atas otomatis akan tersimpan sebagai daftar distribusi dokumen ini saat Anda mengklik tombol <b>Selesai</b> di bawah.</small>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+		// Inisialisasi chosen untuk tabel penerima
+		$("#tabelPenerima .chzn-select").chosen({ search_contains: true, width: "100%", no_results_text: "Oops, Tidak ditemukan!" });
+		$("#jabatan_filter").chosen({ search_contains: true, width: "100%", no_results_text: "Tidak ditemukan!" });
+
+		function updateNomorUrut() {
+			$("#tabelPenerima tbody tr").each(function(index) {
+				$(this).find("td:first").text(index + 1);
+				$(this).find("input[name='penerima_copyke[]']").val(index + 1);
+			});
+		}
+
+		function tambahPenerimaRow(cId, cJabatan, cNama) {
+			cId = cId || "";
+			cJabatan = cJabatan || "";
+			cNama = cNama || "";
+			let counter = $("#tabelPenerima tbody tr").length + 1;
+
+			$.ajax({
+				url: "include/dister/get_dister_userselect.php",
+				type: "POST",
+				dataType: "json",
+				success: function(users) {
+					let options = '<option value="0">-- Pilih Nama / Jabatan --</option>';
+					users.forEach(function(user) {
+						let selected = (user.cId == cId) ? 'selected' : '';
+						options += `<option value="${user.cId}" ${selected}>${user.cJabatan} - ${user.cNama}</option>`;
+					});
+
+					let newRow = `
+						<tr class="penerima-row" style="overflow: visible;">
+							<td style="text-align:center;">${counter}</td>
+							<td style="overflow: visible;">
+								<input type="hidden" name="penerima_copyke[]" value="${counter}">
+								<input type="hidden" name="penerima_cId[]" value="${cId}">
+								<select class="chzn-select span12 select-user-penerima">${options}</select>
+							</td>
+							<td style="text-align:center;">
+								<div style="display: flex; justify-content: center; gap: 5px; align-items: center;">
+									<input type="text" name="penerima_jml_copy[]" value="0" class="input-jml" placeholder="0">
+									<button type="button" class="btn btn-danger btn-small hapusPenerimaRow" title="Hapus"><i class="icon-trash"></i> Hapus</button>
+								</div>
+							</td>
+						</tr>
+					`;
+					$("#tabelPenerima tbody").append(newRow);
+					$("#tabelPenerima tbody tr:last .chzn-select").chosen({ search_contains: true, width: "100%", no_results_text: "Oops, Tidak ditemukan!" });
+					updateNomorUrut();
+				},
+				error: function(xhr, status, error) {
+					console.error("Gagal memuat data user:", error);
+				}
+			});
+		}
+
+		// Tombol Tambah Manual
+		$("#tambahPenerima1").click(function(e) {
+			e.preventDefault();
+			tambahPenerimaRow();
+		});
+
+		// Filter Jabatan (memanggil include/dister/get_userselect.php)
+		$("#jabatan_filter").change(function() {
+			let selectedJabatan = ($(this).val() || "").toLowerCase();
+			if (selectedJabatan === "") return;
+
+			$.ajax({
+				url: "include/dister/get_userselect.php",
+				type: "POST",
+				data: { jabatan_filter: selectedJabatan },
+				dataType: "json",
+				success: function(resp) {
+					let users = (Array.isArray(resp)) ? resp : (resp && Array.isArray(resp.data) ? resp.data : []);
+					users.forEach(function(user) {
+						let exists = false;
+						$("#tabelPenerima tbody input[name='penerima_cId[]']").each(function() {
+							if ($(this).val() == user.cId) {
+								exists = true;
+							}
+						});
+						if (!exists) {
+							let counter = $("#tabelPenerima tbody tr").length + 1;
+							let rowHtml = `
+								<tr class="penerima-row" style="overflow: visible;">
+									<td style="text-align:center;">${counter}</td>
+									<td style="overflow: visible;">
+										<input type="hidden" name="penerima_copyke[]" value="${counter}">
+										<input type="hidden" name="penerima_cId[]" value="${user.cId}">
+										<select class="chzn-select span12 select-user-penerima">
+											<option value="${user.cId}" selected>${user.cJabatan} - ${user.cNama}</option>
+										</select>
+									</td>
+									<td style="text-align:center;">
+										<div style="display: flex; justify-content: center; gap: 5px; align-items: center;">
+											<input type="text" name="penerima_jml_copy[]" value="0" class="input-jml" placeholder="0">
+											<button type="button" class="btn btn-danger btn-small hapusPenerimaRow" title="Hapus"><i class="icon-trash"></i> Hapus</button>
+										</div>
+									</td>
+								</tr>
+							`;
+							$("#tabelPenerima tbody").append(rowHtml);
+							$("#tabelPenerima tbody tr:last .chzn-select").chosen({ search_contains: true, width: "100%", no_results_text: "Oops, Tidak ditemukan!" });
+						}
+					});
+					updateNomorUrut();
+				},
+				error: function(xhr, status, error) {
+					console.error("Gagal memfilter jabatan:", error);
+				}
+			});
+		});
+
+		// Event listener saat dropdown user diubah
+		$(document).on("change", ".select-user-penerima", function() {
+			$(this).closest("tr").find("input[name='penerima_cId[]']").val($(this).val());
+		});
+
+		// Hapus 1 baris
+		$(document).on("click", ".hapusPenerimaRow", function(e) {
+			e.preventDefault();
+			$(this).closest("tr").remove();
+			updateNomorUrut();
+		});
+
+		// Hapus semua (Reset)
+		$("#hapusSemua").click(function(e) {
+			e.preventDefault();
+			if (confirm("Kosongkan semua daftar penerima dokumen?")) {
+				$("#tabelPenerima tbody").empty();
+				updateNomorUrut();
+			}
+		});
+
+		updateNomorUrut();
+	});
+	</script>
 	<div class="control-group">
 	    <div class="control-label">
 	        Tanda <span style="color: red">*</span> Wajib Diisi!

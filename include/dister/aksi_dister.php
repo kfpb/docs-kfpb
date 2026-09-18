@@ -74,6 +74,7 @@ if (empty($lokasi_file)){
                                    ditgl_review  = '$_POST[tgl_review]'
 								   WHERE suid = '$data[suid]'");
     
+		 $tgl_penarikan = !empty($_POST['ditgl_selesaipenarikan']) ? $_POST['ditgl_selesaipenarikan'] : $tgl_sekarang;
 		 $q=mysql_query("INSERT INTO dister(suid_dinter,
 		                           ditgl,
                                   dipengirim,
@@ -85,6 +86,7 @@ if (empty($lokasi_file)){
 								   jenisdok,
 								   ditgl_brlk,
 								   ditgl_review,
+								   ditgl_selesaipenarikan,
                                   diket,
 								   distatus) 
 	                     VALUES('$data[suid]',
@@ -98,6 +100,7 @@ if (empty($lokasi_file)){
 								'$_POST[jenisdok]',
 								'$_POST[tgl_brlk]',
 								'$_POST[tgl_review]',
+								'$tgl_penarikan',
 								'$_POST[ket]',
 								'N')");
 				// $idusulan = mysql_insert_id();
@@ -133,6 +136,7 @@ if (empty($lokasi_file)){
 								   difile    =  '$nama_file_unik'
 								   WHERE suid = '$data[suid]'");
         
+			 $tgl_penarikan = !empty($_POST['ditgl_selesaipenarikan']) ? $_POST['ditgl_selesaipenarikan'] : $tgl_sekarang;
 			 $q=mysql_query("INSERT INTO dister(suid_dinter,
 			                       ditgl,
                                   dipengirim,
@@ -144,11 +148,12 @@ if (empty($lokasi_file)){
 								   jenisdok,
 								   ditgl_brlk,
 								   ditgl_review,
+								   ditgl_selesaipenarikan,
                                   diket,
 								   distatus) 
 	                     VALUES('$data[suid]',
 	                            '$_POST[tgl]',
-                                '$_POST[pengirim]',
+                                 '$_POST[pengirim]',
 								'$_POST[dikodok]',
 								'$_POST[revisi]',
 								'$_POST[dikodok1]',
@@ -157,6 +162,7 @@ if (empty($lokasi_file)){
 								'$_POST[jenisdok]',
 								'$_POST[tgl_brlk]',
 								'$_POST[tgl_review]',
+								'$tgl_penarikan',
 								'$_POST[ket]',
 								'N')");
 				// $idusulan = mysql_insert_id();
@@ -180,7 +186,11 @@ if (empty($lokasi_file)){
 							
 		
   if ($q){
-    echo "<script>window.alert('Distribusi Dokumen tersimpan, Pilih Penerima dan klik Kirim');window.location=('../../home.php?pages=dister')</script>";
+    // Reset status baca penerima disin agar notifikasi revisi baru langsung masuk ke user penerima
+    if (!empty($data['suid'])) {
+        mysql_query("UPDATE disin SET distatus='N', tgl_baca=NULL WHERE suid='$data[suid]'");
+    }
+    echo "<script>window.alert('Distribusi Dokumen berhasil tersimpan dan langsung masuk ke distribusi user.');window.location=('../../home.php?pages=dister')</script>";
      if($cek) {
       echo "Successfully uploaded";         
     } else {

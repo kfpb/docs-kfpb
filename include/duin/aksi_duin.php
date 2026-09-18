@@ -581,15 +581,28 @@ elseif ($act=='selesai2'){
             VALUES('2','$_POST[kode_dok]','$_POST[revisi]','$_POST[judul_dok]','$_POST[jenisdok]','$_POST[jenis]','$_POST[tgl_berlaku]','$_POST[tgl_review]','$_POST[pjdok]','$_POST[tgl_berlaku]','Y')");
       	
       $idusulan = mysql_insert_id();
-      $dsin = $_POST["disin"];
+      $target_suid = $idusulan;
       $idudokumen = $_POST["id_udokumen"];
-        //   mysql_query("DELETE FROM dsin WHERE suid='$cc[suid_dinter]'");
-        //   foreach ($dsin as $y=>$cid)
-        //   {
-              
-            $updateDisin =mysql_query("UPDATE disin SET suid='$idusulan' WHERE suid='$idudokumen' ");
-        // 	$t=mysql_query("INSERT INTO disin(cId,suid,distatus) VALUES ('$cid','$cc[suid_dinter]','Y')");  
-        //   } 
+
+      if (!empty($target_suid)) {
+          if (isset($_POST['penerima_cId']) && is_array($_POST['penerima_cId']) && count($_POST['penerima_cId']) > 0) {
+              mysql_query("DELETE FROM disin WHERE suid='$target_suid' OR suid='$idudokumen'");
+              $penerimaList = $_POST['penerima_cId'];
+              $jmlCopyList  = isset($_POST['penerima_jml_copy']) ? $_POST['penerima_jml_copy'] : [];
+              $seen = [];
+              $copyUrut = 1;
+              foreach ($penerimaList as $idx => $cid) {
+                  $cid = (int)$cid;
+                  if ($cid <= 0 || in_array($cid, [1103, 1104]) || isset($seen[$cid])) continue;
+                  $seen[$cid] = true;
+                  $jml = isset($jmlCopyList[$idx]) ? (int)$jmlCopyList[$idx] : 0;
+                  mysql_query("INSERT INTO disin (copyke, cId, suid, jml_copy, distatus) VALUES ('$copyUrut', '$cid', '$target_suid', '$jml', 'N')");
+                  $copyUrut++;
+              }
+          } else {
+              mysql_query("UPDATE disin SET suid='$target_suid' WHERE suid='$idudokumen'");
+          }
+      }
           
         // Pastikan akun Pelaksana PMP - Stabilitas ada di disin jika dokumen Spesifikasi
         $kd_chk = isset($_POST['kode_dok']) ? trim($_POST['kode_dok']) : '';
@@ -598,11 +611,11 @@ elseif ($act=='selesai2'){
             $qPmp = mysql_query("SELECT cId FROM users WHERE cUser='pmps1' LIMIT 1");
             if ($rPmp = mysql_fetch_array($qPmp)) {
                 $cidPmp = $rPmp['cId'];
-                $cekDisin = mysql_query("SELECT dsid FROM disin WHERE cId='$cidPmp' AND suid='$idusulan'");
+                $cekDisin = mysql_query("SELECT dsid FROM disin WHERE cId='$cidPmp' AND suid='$target_suid'");
                 if (mysql_num_rows($cekDisin) == 0) {
-                    $maxCopy = mysql_fetch_array(mysql_query("SELECT MAX(copyke) as max_c FROM disin WHERE suid='$idusulan'"));
+                    $maxCopy = mysql_fetch_array(mysql_query("SELECT MAX(copyke) as max_c FROM disin WHERE suid='$target_suid'"));
                     $nextCopy = ($maxCopy['max_c'] ? $maxCopy['max_c'] + 1 : 1);
-                    mysql_query("INSERT INTO disin (copyke, cId, suid, distatus) VALUES ('$nextCopy', '$cidPmp', '$idusulan', 'N')");
+                    mysql_query("INSERT INTO disin (copyke, cId, suid, jml_copy, distatus) VALUES ('$nextCopy', '$cidPmp', '$target_suid', 0, 'N')");
                 }
             }
         }
@@ -634,17 +647,27 @@ elseif ($act=='selesai2'){
         
         $row_dinter = mysql_fetch_array(mysql_query("SELECT suid FROM dinter WHERE dikodok = '$_POST[kode_dok]'"));
         $target_suid = isset($row_dinter['suid']) ? $row_dinter['suid'] : '';
-
-        //   $idusulan = mysql_insert_id();
-      $dsin = $_POST["disin"];
-      $idudokumen = $_POST["id_udokumen"];
+        $idudokumen = $_POST["id_udokumen"];
       
-        //   foreach ($dsin as $y=>$cid)
-        //   {
-              
-            $updateDisin =mysql_query("UPDATE disin SET suid='$target_suid' WHERE suid='$idudokumen' ");
-        // 	$t=mysql_query("INSERT INTO disin(cId,suid,distatus) VALUES ('$cid','$cc[suid_dinter]','Y')");  
-        //   } 
+        if (!empty($target_suid)) {
+            if (isset($_POST['penerima_cId']) && is_array($_POST['penerima_cId']) && count($_POST['penerima_cId']) > 0) {
+                mysql_query("DELETE FROM disin WHERE suid='$target_suid' OR suid='$idudokumen'");
+                $penerimaList = $_POST['penerima_cId'];
+                $jmlCopyList  = isset($_POST['penerima_jml_copy']) ? $_POST['penerima_jml_copy'] : [];
+                $seen = [];
+                $copyUrut = 1;
+                foreach ($penerimaList as $idx => $cid) {
+                    $cid = (int)$cid;
+                    if ($cid <= 0 || in_array($cid, [1103, 1104]) || isset($seen[$cid])) continue;
+                    $seen[$cid] = true;
+                    $jml = isset($jmlCopyList[$idx]) ? (int)$jmlCopyList[$idx] : 0;
+                    mysql_query("INSERT INTO disin (copyke, cId, suid, jml_copy, distatus) VALUES ('$copyUrut', '$cid', '$target_suid', '$jml', 'N')");
+                    $copyUrut++;
+                }
+            } else {
+                mysql_query("UPDATE disin SET suid='$target_suid' WHERE suid='$idudokumen'");
+            }
+        }
         
         // Pastikan akun Pelaksana PMP - Stabilitas ada di disin jika dokumen Spesifikasi
         $kd_chk = isset($_POST['kode_dok']) ? trim($_POST['kode_dok']) : '';
@@ -657,7 +680,7 @@ elseif ($act=='selesai2'){
                 if (mysql_num_rows($cekDisin) == 0) {
                     $maxCopy = mysql_fetch_array(mysql_query("SELECT MAX(copyke) as max_c FROM disin WHERE suid='$target_suid'"));
                     $nextCopy = ($maxCopy['max_c'] ? $maxCopy['max_c'] + 1 : 1);
-                    mysql_query("INSERT INTO disin (copyke, cId, suid, distatus) VALUES ('$nextCopy', '$cidPmp', '$target_suid', 'N')");
+                    mysql_query("INSERT INTO disin (copyke, cId, suid, jml_copy, distatus) VALUES ('$nextCopy', '$cidPmp', '$target_suid', 0, 'N')");
                 }
             }
         }

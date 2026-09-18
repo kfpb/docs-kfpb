@@ -5,7 +5,14 @@
 <div class="span12">
 <?php
 if($_GET['act']=="detail"){
-$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a,users b WHERE a.dipengirim=b.cId AND a.suid_dinter='$_GET[id]'"));
+$id_param = mysql_real_escape_string($_GET['id']);
+// Cek apakah $_GET['id'] adalah ID distribusi spesifik (dister.suid) atau suid_dinter
+$q_dister = mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a LEFT JOIN users b ON a.dipengirim=b.cId WHERE a.suid='$id_param' LIMIT 1");
+if (mysql_num_rows($q_dister) == 0) {
+	// Fallback jika yang dikirim adalah suid_dinter, ambil distribusi TERBARU (revisi paling baru)
+	$q_dister = mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a LEFT JOIN users b ON a.dipengirim=b.cId WHERE a.suid_dinter='$id_param' ORDER BY a.suid DESC LIMIT 1");
+}
+$e = mysql_fetch_array($q_dister);
 $efg = mysql_fetch_array(mysql_query("SELECT nama_jendok FROM jendok WHERE id_jendok='$e[jenisdok]'"));
 if ($e[cFoto]==""){
 	$foto = "foto/none.jpg";
@@ -13,9 +20,10 @@ if ($e[cFoto]==""){
 	$foto = "foto/$e[cFoto]";
 }
 
-$get_dinter = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$_GET[id]'"));
+$target_dinter_id = !empty($e['suid_dinter']) ? $e['suid_dinter'] : $id_param;
+$get_dinter = mysql_fetch_array(mysql_query("SELECT * FROM dinter WHERE suid='$target_dinter_id'"));
 //fungsi untuk post audit trail — [FIX] ditambah guard cAudit agar user mode audit tidak dicatat
- $session = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
+$session = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
 
 // [FIX] Guard cAudit: sebelumnya tidak ada, semua user selalu dicatat walau cAudit='Y'
 // [FIX] Refactor ke catat_audit() agar ip_address & user_agent terisi otomatis
@@ -95,12 +103,11 @@ if (!$is_obsolete) { ?>
 */ ?>
 <?php	
 $tgl_sekarang = date("Y-m-d");
-$baca = mysql_fetch_array(mysql_query("SELECT * FROM disin WHERE suid='$_GET[id]' AND cId='$_SESSION[cv]'"));
-if ($baca[tgl_baca]='IS NULL') {
-mysql_query("UPDATE disin SET tgl_baca='$tgl_sekarang', distatus='Y' WHERE suid='$_GET[id]' AND cId='$_SESSION[cv]'");
-}
-elseif  ($baca[tgl_baca]='IS NOT NULL' AND $baca[distatus]=='N') {
-mysql_query("UPDATE disin SET distatus='Y' WHERE suid='$_GET[id]' AND cId='$_SESSION[cv]'");
+$baca = mysql_fetch_array(mysql_query("SELECT * FROM disin WHERE suid='$target_dinter_id' AND cId='$_SESSION[cv]'"));
+if (empty($baca['tgl_baca']) || $baca['tgl_baca'] == '0000-00-00') {
+	mysql_query("UPDATE disin SET tgl_baca='$tgl_sekarang', distatus='Y' WHERE suid='$target_dinter_id' AND cId='$_SESSION[cv]'");
+} elseif ($baca['distatus'] == 'N') {
+	mysql_query("UPDATE disin SET distatus='Y' WHERE suid='$target_dinter_id' AND cId='$_SESSION[cv]'");
 }
 
 $e = mysql_fetch_array(mysql_query("SELECT a.*,b.*,c.cNama,c.cFoto,d.* FROM distribusidok a 
@@ -344,37 +351,32 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 	</thead>
 	<tbody>
 	<?php
-// 		$smasuk = mysql_query("SELECT a.*,b.*,c.cIdjab FROM dister a LEFT JOIN disin b ON a.suid=b.suid LEFT JOIN users c ON a.dipengirim=c.cId WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' GROUP BY a.suid ORDER BY a.ditgl DESC");
-		$smasuk = mysql_query("SELECT a.*,b.* FROM dister a LEFT JOIN disin b ON a.suid_dinter=b.suid WHERE b.cId='$_SESSION[cv]' && a.distatus='Y' GROUP BY b.suid ORDER BY a.ditgl DESC");
-		
-// 		$smasuk = mysql_query("
-//             SELECT a.*, b.*, c.cIdjab 
-//             FROM dister a 
-//             LEFT JOIN disin b ON a.suid_dinter = b.suid 
-//             LEFT JOIN users c ON a.dipengirim = c.cId 
-//             WHERE b.cId = '$_SESSION[cv]' 
-//             AND a.distatus = 'Y' 
-//             GROUP BY a.suid 
-//             ORDER BY a.ditgl DESC
-//         ");
-        
-
+		$smasuk = mysql_query("
+			SELECT a.*, b.*, a.suid AS dister_suid, a.direv AS dister_direv, a.dijudok AS dister_dijudok, 
+			       a.dikodok AS dister_dikodok, a.ditgl AS dister_ditgl, b.distatus AS disin_status, 
+			       b.tgl_baca AS disin_tgl_baca
+			FROM dister a 
+			INNER JOIN disin b ON a.suid_dinter = b.suid 
+			WHERE b.cId = '$_SESSION[cv]' 
+			AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
+			ORDER BY a.ditgl DESC, a.suid DESC
+		");
 
 		while($s = mysql_fetch_array($smasuk)) {
-		if ($s[distatus]=='N'){
+		if ($s['disin_status'] == 'N'){
 			echo "<tr class=success>";
 		}else{
 			echo "<tr>";
 		}
-		echo"<td>$s[distatus]</td>";
-		echo"<td>";echo tgl_indo1($s[ditgl]);echo"</td>
-				<td >$s[dikodok]</td>
-				<td>$s[direv]</td>
-				<td>$s[dijudok]</td><td>";
+		echo"<td>$s[disin_status]</td>";
+		echo"<td>";echo tgl_indo1($s['dister_ditgl']);echo"</td>
+				<td >$s[dister_dikodok]</td>
+				<td>$s[dister_direv]</td>
+				<td>$s[dister_dijudok]</td><td>";
                 
-                if ($s[tgl_baca]='IS NOT NULL') { echo "Belum dibaca,<br> klik Baca!";} else { echo tgl_indo1($s[tgl_baca]); }
+                if (empty($s['disin_tgl_baca']) || $s['disin_tgl_baca'] == '0000-00-00') { echo "Belum dibaca,<br> klik Baca!";} else { echo tgl_indo1($s['disin_tgl_baca']); }
 				echo"</td>
-				<td><a href='home.php?pages=usrd&act=detail&id=$s[suid]' title=Detail class='btn btn-info'>Baca!</a></td>
+				<td><a href='home.php?pages=usrd&act=detail&id=$s[dister_suid]' title=Detail class='btn btn-info'>Baca!</a></td>
 				</tr>";	
 		}
 	?>
