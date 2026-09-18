@@ -1301,7 +1301,8 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
 
 <div class="span12">
 	<?php
-	if($_SESSION[cv]=='0' OR $_SESSION[cv]=='1' OR $_SESSION[cv]=='53' OR $_SESSION[cv]=='1051' OR $_SESSION[cv]=='1052' OR $_SESSION[cv]=='1054' OR $_SESSION[cv]=='1055' OR $_SESSION[cv]=='1056' OR $_SESSION[cv]=='1057' OR $_SESSION[cv]=='1059' OR $_SESSION[cv]=='1058' OR $_SESSION[cv]=='1000' OR $_SESSION[cv]=='50') {
+	$akses_admin_dister = [0, '0', 1, '1', 50, '50', 53, '53', 1000, '1000', 1051, '1051', 1052, '1052', 1054, '1054', 1055, '1055', 1056, '1056', 1057, '1057', 1058, '1058', 1059, '1059'];
+	if (in_array($_SESSION['cv'], $akses_admin_dister) || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false)) {
 	?>
 	<button class="btn-info btn-large" onclick="window.location.href='?pages=dister&act=tambah'">Buat Distribusi Dokumen Manual</button><br /><br />
 	
@@ -1317,6 +1318,7 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
     </form>
 </div>
 	<hr>
+	<?php } ?>
 	
 	<?php
 
@@ -1431,7 +1433,6 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
     //             				</td>
     //             				</tr>";	
     //             	}
-	}
 	}
 	?>
 	</tbody>

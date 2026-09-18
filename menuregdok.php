@@ -265,9 +265,10 @@
 		$smasuk_pmp = mysql_query("
 			SELECT a.suid 
 			FROM dister a 
-			LEFT JOIN disin b ON a.suid_dinter = b.suid 
+			INNER JOIN disin b ON a.suid_dinter = b.suid 
 			WHERE b.cId = '$_SESSION[cv]' 
-			AND a.distatus = 'Y' AND b.distatus = 'N'
+			AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
+			AND b.distatus = 'N'
 		");
 		$j_dist = @mysql_num_rows($smasuk_pmp);
 		if($j_dist > 0){
