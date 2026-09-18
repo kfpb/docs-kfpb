@@ -1,4 +1,4 @@
-<?php if(in_array($_SESSION['cv'], [0, 1, 53, 1000, 1052, 1055, 1054, 1051, 1059, 1058, 1056, 1057, 50])){?>
+<?php if(in_array($_SESSION['cv'], [0, 1, 53, 1000, 1052, 1055, 1054, 1051, 1059, 1058, 1056, 1057, 50, 81, 55, 99, 1060, 1109, 1103, 1104, 1107, 1108]) || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false)){?>
 			
 				<ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
     <div class="navbar navbar-inner block-header">

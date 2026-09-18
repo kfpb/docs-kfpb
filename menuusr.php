@@ -48,6 +48,17 @@
 ?>
 
 
+<?php if ((isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false) || (isset($_SESSION['levelcv']) && $_SESSION['levelcv'] == 0) || in_array($_SESSION['cv'], [1, 53, 1000, 1052, 1055, 1054, 1051, 1059, 1058, 1056, 1057, 50, 81, 55, 99, 1060, 1109])) { ?>
+<ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
+    <div class="navbar navbar-inner block-header">
+        <div class="muted pull-left"><strong><font color=black>Menu Supervisor Dokumentasi</font></strong></div>
+    </div>
+    <li>
+        <a href="?pages=monitoring_pkpa"><i class="icon-eye-open"></i> <strong>Monitoring & Audit PKPA</strong></a>
+    </li>
+</ul>
+<?php } ?>
+
 <ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
     <div class="navbar navbar-inner block-header">
 	    <div class="muted pull-left"><strong><font color=black>Menu e-Dokumen</font></strong></div>
