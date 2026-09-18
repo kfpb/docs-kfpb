@@ -145,12 +145,9 @@
 		<li>
 	<?php
 		if ($is_pkpa) {
-			$smasuk = mysql_query("
-				SELECT a.suid 
-				FROM dister a 
-				WHERE a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = a.suid_dinter)
-				AND a.distatus = 'Y'
-			");
+			$res_cnt = mysql_query("SELECT COUNT(*) as total FROM dister WHERE distatus = 'Y'");
+			$row_cnt = mysql_fetch_assoc($res_cnt);
+			$j = $row_cnt ? $row_cnt['total'] : 0;
 		} else {
 			$smasuk = mysql_query("
 				SELECT a.suid 
@@ -160,9 +157,8 @@
 				AND a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = b.suid)
 				AND b.distatus = 'N'
 			");
+			$j = @mysql_num_rows($smasuk);
 		}
-        
-		$j = @mysql_num_rows($smasuk);
 		if($j > 0){
 			echo"<a href='?pages=usrd'><i class='icon-list-alt'></i><strong>Distribusi Dokumen Masuk<span class='badge badge-info pull-right'>$j</span></strong></a>";
 		} else {

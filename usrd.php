@@ -358,9 +358,9 @@ $newID = sprintf("ID-%04s/$_SESSION[nppcv]/$bln", $noUrut);
 				       a.dikodok AS dister_dikodok, a.ditgl AS dister_ditgl, 'Y' AS disin_status, 
 				       a.ditgl AS disin_tgl_baca
 				FROM dister a 
-				WHERE a.suid = (SELECT MAX(d2.suid) FROM dister d2 WHERE d2.suid_dinter = a.suid_dinter)
-				AND a.distatus = 'Y'
+				WHERE a.distatus = 'Y'
 				ORDER BY a.ditgl DESC, a.suid DESC
+				LIMIT 200
 			");
 		} else {
 			$smasuk = mysql_query("
