@@ -1423,6 +1423,9 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
                         } else {
                             echo "<td><b>Sudah ACC</b></td>";
                         }
+                        echo "<td class='center'>
+                                <a href='home.php?pages=dister&act=detail&id={$s['suid']}' class='btn btn-info'>Detail</a>
+                              </td>";
                     }
 	
 				// 	}else{
