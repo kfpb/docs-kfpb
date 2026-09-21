@@ -167,6 +167,21 @@
 		?>
 	</li>
 	<?php } ?>
+
+	<?php if ($is_pkpa) { ?>
+	<li>
+		<?php
+	    $sql_dister = mysql_query("SELECT COUNT(*) as total FROM dister WHERE distatus='N'");
+		$d_dister = mysql_fetch_assoc($sql_dister);
+		$j_dister = $d_dister ? $d_dister['total'] : 0;
+		if($j_dister > 0){
+			echo"<a href='?pages=dister'><i class='icon-arrow-left'></i><strong> Distribusi Dokumen <span class='badge badge-info pull-right'>$j_dister</span></strong></a>";
+		} else {
+			echo"<a href='?pages=dister'><i class='icon-arrow-left'></i> Distribusi Dokumen </a>";
+		}
+		?>
+	</li>
+	<?php } ?>
 	<li>
 	<?php
 	    $sql = mysql_query("SELECT * FROM copydok WHERE okepada='$_SESSION[cv]' AND sstatus='N' OR opengirim='$_SESSION[cv]' AND sstatus='N'");

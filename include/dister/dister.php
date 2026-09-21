@@ -1171,8 +1171,8 @@ $q=mysql_query("UPDATE dister SET ditgl_slesai = '$tgl'
 ?>
 <?php
 }elseif($_GET['act']=="detail"){
-	$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a,users b WHERE a.dipengirim=b.cId AND a.suid='$_GET[id]'"));
-	$ef = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a,users b WHERE a.dipengirim=b.cId AND a.suid='$_GET[id]'"));
+	$e = mysql_fetch_array(mysql_query("SELECT a.*, b.cNama, b.cIdjab FROM dister a LEFT JOIN users b ON a.dipengirim=b.cId WHERE a.suid='$_GET[id]'"));
+	$ef = $e;
 	$efg = mysql_fetch_array(mysql_query("SELECT nama_jendok FROM jendok WHERE id_jendok='$ef[jenisdok]'"));
     if (!empty($e['suid_dinter'])) {
         $dok = mysql_query("SELECT * FROM dinter WHERE suid='$e[suid_dinter]'");
@@ -1180,6 +1180,20 @@ $q=mysql_query("UPDATE dister SET ditgl_slesai = '$tgl'
         $dok = mysql_query("SELECT * FROM dinter WHERE dikodok='$e[dikodok]' ORDER BY suid DESC LIMIT 1");
     }
     $r    = mysql_fetch_array($dok);
+
+    if (function_exists('catat_audit')) {
+        $session_user = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
+        catat_audit(
+            $r['kode_aktivitas'],
+            $session_user['cNama'],
+            $session_user['cJabatan'],
+            $e['dikodok'],
+            $e['dijudok'],
+            'read',
+            'Membaca Distribusi Dokumen dengan judul ' . $e['dijudok'],
+            $session_user['cAudit']
+        );
+    }
 	?>
 <strong>
 <legend>Detail Distribusi & Penarikan Dokumen </legend>
@@ -1384,7 +1398,7 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
         				    echo"<td><a href='?pages=dister&act=lp&id=$s[suid]' class='btn btn-info'>Edit</a></td>";
         				}
 					}else{
-					    echo"<td>Tidak Memiliki Akses</td>";
+					    echo"<td><a href='home.php?pages=dister&act=detail&id={$s['suid']}' class='btn btn-info btn-small'>Lihat</a></td>";
 					}
 				// if ($s[distatus]=='N'){
 					$cv = $_SESSION['cv'];
