@@ -882,9 +882,15 @@ echo"<a href='home1.php?pages=dinter2&act=print&id=$e[suid]' class='btn btn-info
 
 <div class="span12">
 	<?php
-	if($_SESSION[cv]=='1' OR $_SESSION[cv]=='53' OR $_SESSION[cv]=='1051' OR $_SESSION[cv]=='1054' OR $_SESSION[cv]=='1055' OR $_SESSION[cv]=='1056' OR $_SESSION[cv]=='1057' OR $_SESSION[cv]=='1058' OR $_SESSION[cv]=='1059' OR $_SESSION[cv]=='1000' OR $_SESSION[cv]=='50') {
+	$is_pmp = ($_SESSION['cv'] == 1109 || (isset($_SESSION['nppcv']) && ($_SESSION['nppcv'] == 'pmps1' || $_SESSION['nppcv'] == 'pmp_stabilitas')));
+	$can_manage = in_array($_SESSION['cv'], ['1', '53', '1051', '1054', '1055', '1056', '1057', '1058', '1059', '1000', '50', '1052']) || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false);
+	$is_cc_or_pmp = $is_pmp || in_array($_SESSION['cv'], [81, 55, 99, 1060]);
+
+	if($can_manage || $is_cc_or_pmp) {
 	?>
+	<?php if($can_manage){ ?>
 	<button class="btn-info btn-large" onclick="window.location.href='?pages=dinter&act=tambah'">Tambah Dokumen Manual</button> <button class="btn-info btn-large" target=_blank onclick="window.location.href='home.php?pages=dinter&act=lengkap'">Registrasi Dokumen Terkendali</button>
+	<?php } ?>
 	<button class="btn-info btn-large" target=_blank onclick="window.location.href='home.php?pages=dinter&act=rdtcc'">Registrasi Dokumen Terkendali CC</button>
 	<br /><br />
 
@@ -925,16 +931,14 @@ echo"<a href='home1.php?pages=dinter2&act=print&id=$e[suid]' class='btn btn-info
 				<td>$s[dijudok]</td>
                 ";
                 
-				// <td><a href='?pages=dister&act=lp&id=$s[suid]' class='btn btn-info'>List</a></td>
-				// <td><a href='?pages=dinter&act=lp&id=$s[suid]' class='btn btn-info'>List</a></td>
-                //<td><a href='dok/web/viewer.html?file=index1.php?id=$s[suid]'class='btn btn-info' target=_blank>File</a></td>
-                // 	<a href='include/dinter/aksi_dinter.php?act=hapus&id=$s[suid]' onClick=\"return confirm('Yakin ingin menghapus??')\"><i class='icon-trash'></i></a>  
-				
 				echo "
 				 
-				<td class='center'>
-			    <a href='javascript:void(0);' onClick=\"hapusDinter('$s[suid]')\"> <i class='icon-trash'></i></a>
-				<a href='?pages=dinter&act=edit&id=$s[suid]'><i class='icon-edit'></i></a> 
+				<td class='center'>";
+		if($can_manage){
+			echo "<a href='javascript:void(0);' onClick=\"hapusDinter('$s[suid]')\"> <i class='icon-trash'></i></a>
+				<a href='?pages=dinter&act=edit&id=$s[suid]'><i class='icon-edit'></i></a> ";
+		}
+		echo "
 				<a href='home.php?pages=dinter&act=detail&id=$s[suid]' title='Detail Info Dokumen' class='btn btn-info'> I</a>
 				<a href='home.php?pages=usulandok&act=tambah&id=$s[suid]' title='Buat Usulan Dokumen' class='btn btn-info'> U</a>
 				<a href='home.php?pages=dister&act=tambah2&id=$s[dikodok]' title='Buat Distribusi Dokumen' class='btn btn-info'> D</a>

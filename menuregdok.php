@@ -1,4 +1,4 @@
-<?php if(in_array($_SESSION['cv'], [0, 1, 53, 1000, 1052, 1055, 1054, 1051, 1059, 1058, 1056, 1057, 50, 81, 55, 99, 1060, 1109, 1103, 1104, 1107, 1108]) || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false)){?>
+<?php if(in_array($_SESSION['cv'], [0, 1, 53, 1000, 1052, 1055, 1054, 1051, 1059, 1058, 1056, 1057, 50]) || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false)){?>
 			
 				<ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
     <div class="navbar navbar-inner block-header">
@@ -222,8 +222,8 @@
 		
 		
 </ul><?php
-	}elseif($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && $_SESSION['nppcv']=='pmps1')){
-		$is_pmp = ($_SESSION['cv'] == 1109 || (isset($_SESSION['nppcv']) && $_SESSION['nppcv'] == 'pmps1'));
+	}elseif($_SESSION[cv]==81 OR $_SESSION[cv]==55 OR $_SESSION[cv]==99 OR $_SESSION[cv]==1060 OR $_SESSION[cv]==1000 OR $_SESSION[cv]==1109 OR (isset($_SESSION['nppcv']) && ($_SESSION['nppcv']=='pmps1' || $_SESSION['nppcv']=='pmp_stabilitas'))){
+		$is_pmp = ($_SESSION['cv'] == 1109 || (isset($_SESSION['nppcv']) && ($_SESSION['nppcv'] == 'pmps1' || $_SESSION['nppcv'] == 'pmp_stabilitas')));
 	?>
 				<ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
     <div class="navbar navbar-inner block-header">
