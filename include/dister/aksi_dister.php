@@ -327,7 +327,7 @@ if (empty($lokasi_file)){
 
 // kirim distribusi dokumen
 elseif ($act=='acc'){
-    
+    $e = mysql_fetch_array(mysql_query("SELECT * FROM users WHERE cId='$_SESSION[cv]'"));
     
     // id di sini adalah suid di tabel dister
     $suid = isset($_GET['id']) ? $_GET['id'] : '';

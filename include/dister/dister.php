@@ -1315,8 +1315,11 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
 
 <div class="span12">
 	<?php
+	$is_pkpa = (isset($_SESSION['is_pkpa']) && $_SESSION['is_pkpa'] == 'Y') || 
+	           (isset($_SESSION['nppcv']) && stripos($_SESSION['nppcv'], 'pkpa') !== false) ||
+	           (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'PKPA') !== false);
 	$akses_admin_dister = [0, '0', 1, '1', 50, '50', 53, '53', 1000, '1000', 1051, '1051', 1052, '1052', 1054, '1054', 1055, '1055', 1056, '1056', 1057, '1057', 1058, '1058', 1059, '1059'];
-	if (in_array($_SESSION['cv'], $akses_admin_dister) || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false)) {
+	if (in_array($_SESSION['cv'], $akses_admin_dister) || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false) || $is_pkpa) {
 	?>
 	<button class="btn-info btn-large" onclick="window.location.href='?pages=dister&act=tambah'">Buat Distribusi Dokumen Manual</button><br /><br />
 	
@@ -1389,7 +1392,7 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
                                     ORDER BY b.copyke ASC");
 				// $cv = mysql_num_rows(mysql_query("SELECT * FROM disin WHERE suid='$s[suid]'"));
 				// echo"$dsin";
-				if ($_SESSION[cv]==0 or $_SESSION[cv]=='1' or $_SESSION[cv]=='53' OR $_SESSION[cv]=='1051' OR $_SESSION[cv]=='1052' OR $_SESSION[cv]=='1054' OR $_SESSION[cv]=='1055' OR $_SESSION[cv]=='1056' OR $_SESSION[cv]=='1057' OR $_SESSION[cv]=='1058' OR $_SESSION[cv]=='1059' OR $_SESSION[cv]=='1000')
+				if ($_SESSION[cv]==0 or $_SESSION[cv]=='1' or $_SESSION[cv]=='53' OR $_SESSION[cv]=='1051' OR $_SESSION[cv]=='1052' OR $_SESSION[cv]=='1054' OR $_SESSION[cv]=='1055' OR $_SESSION[cv]=='1056' OR $_SESSION[cv]=='1057' OR $_SESSION[cv]=='1058' OR $_SESSION[cv]=='1059' OR $_SESSION[cv]=='1000' || $is_pkpa)
 					{
         				if ($psn==0){
         				    echo"<td><a href='?pages=dister&act=lp2&id=$s[suid]' class='btn btn-info'>Buat</a></td>";
@@ -1403,10 +1406,11 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
 				// if ($s[distatus]=='N'){
 					$cv = $_SESSION['cv'];
                     $akses_acc = [0, '1', '53', '1000', '1051', '1052', '1054', '1055', '1056', '1057', '1058', '1059'];
+                    $is_spv_or_pkpa = ($cv == '53' || $cv == '1000' || $is_pkpa || (isset($_SESSION['jabatan']) && stripos($_SESSION['jabatan'], 'Dokumentasi') !== false));
                     
-                    if (in_array($cv, $akses_acc)) {
-                        if ($cv == '53' || $cv == '1000') {
-                            // User dengan hak ACC
+                    if (in_array($cv, $akses_acc) || $is_pkpa) {
+                        if ($is_spv_or_pkpa) {
+                            // User dengan hak ACC (SPV / PKPA)
                             if ($s['distatus'] == 'N') {
                                 echo "<td><a href='include/dister/aksi_dister.php?act=acc&id={$s['suid']}'
                                             onClick=\"return confirm('Yakin akan kirim distribusi dokumen ini??')\"
@@ -1424,11 +1428,13 @@ echo"<a href='home1.php?pages=dister1&act=print1&id=$e[suid]' class='btn btn-inf
                         }
                     
                         // Aksi umum (hapus, edit, detail)
-                        echo "<td class='center'>
-                                <a href='include/dister/aksi_dister.php?act=hapus&id={$s['suid']}'
+                        echo "<td class='center'>";
+                        if (!$is_pkpa) {
+                            echo "<a href='include/dister/aksi_dister.php?act=hapus&id={$s['suid']}'
                                    onClick=\"return confirm('Yakin ingin menghapus??')\"><i class='icon-trash'></i></a> -
-                                <a href='?pages=dister&act=edit&id={$s['suid']}'><i class='icon-edit'></i></a> -
-                                <a href='home.php?pages=dister&act=detail&id={$s['suid']}' class='btn btn-info'>Detail</a>
+                                <a href='?pages=dister&act=edit&id={$s['suid']}'><i class='icon-edit'></i></a> - ";
+                        }
+                        echo "<a href='home.php?pages=dister&act=detail&id={$s['suid']}' class='btn btn-info'>Detail</a>
                               </td>";
                     } else {
                         // Untuk user yang tidak termasuk $akses_acc
